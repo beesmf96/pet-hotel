@@ -1,29 +1,29 @@
 # Pet Hotel App — Task List
 
-**Stack:** Laravel (latest stable, L12+) · Vue 3 · Inertia.js · Filament v3 · Laravel Sanctum · PostgreSQL · Redis
+**Stack:** Laravel 13 · Vue 3 · Inertia.js · Filament v4 · Laravel Sanctum · PostgreSQL · Redis
 
 ---
 
 ## Module 0 — Infrastructure & Docker
 
 ### Docker Compose
-- [ ] Create `docker-compose.yml` with services: `app`, `nginx`, `postgres`, `redis`, `node`
-- [ ] Create `docker/nginx/default.conf` for Laravel
-- [ ] Create `docker/php/Dockerfile` (PHP 8.3 + extensions)
-- [ ] Create `.env.docker` example file
-- [ ] Verify all services spin up: `docker compose up -d`
+- [x] Create `docker-compose.yml` with services: `app`, `nginx`, `postgres`, `redis`, `node`
+- [x] Create `docker/nginx/default.conf` for Laravel
+- [x] Create `docker/php/Dockerfile` (PHP 8.4 + extensions incl. intl, redis)
+- [x] Create `.env.docker` example file
+- [x] Verify all services spin up: `docker compose up -d`
 
 ### Laravel Project Bootstrap
-- [ ] Scaffold Laravel project inside repo root (`laravel new . --stack=vue --ssr` — verify latest stable at laravel.com first)
-- [ ] Install frontend deps: `bun install` (Vite + Vue 3)
-- [ ] Install Inertia.js server-side adapter (`inertiajs/inertia-laravel`)
-- [ ] Install Inertia.js client-side adapter (`@inertiajs/vue3`)
-- [ ] Install Filament v3 (`filament/filament`)
-- [ ] Install Sanctum (`laravel/sanctum`)
-- [ ] Configure PostgreSQL connection in `.env`
-- [ ] Configure Redis for session, cache, and queue
-- [ ] Set up base layout: `resources/js/Layouts/AppLayout.vue`
-- [ ] Run initial migrations
+- [x] Scaffold Laravel project inside repo root (Laravel 13)
+- [x] Install frontend deps: `bun install` (Vite + Vue 3 + `@inertiajs/vue3` + `@vitejs/plugin-vue`)
+- [x] Install Inertia.js server-side adapter (`inertiajs/inertia-laravel` v3.1)
+- [x] Install Inertia.js client-side adapter (`@inertiajs/vue3` v3.1)
+- [x] Install Filament v4 (`filament/filament` v4.11 — v3 does not support Laravel 13)
+- [x] Install Sanctum (`laravel/sanctum` v4.3)
+- [x] Configure PostgreSQL connection in `.env`
+- [x] Configure Redis for session, cache, and queue
+- [x] Set up base layout: `resources/js/Layouts/AppLayout.vue`
+- [x] Run initial migrations
 
 ---
 

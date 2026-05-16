@@ -1,4 +1,4 @@
-FROM php:8.3-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 RUN apk add --no-cache \
     postgresql-dev \
@@ -7,11 +7,13 @@ RUN apk add --no-cache \
     libjpeg-turbo-dev \
     freetype-dev \
     oniguruma-dev \
+    icu-dev \
+    autoconf \
+    g++ \
+    make \
     git \
     curl \
-    unzip \
-    nodejs \
-    npm
+    unzip
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
@@ -23,7 +25,8 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
         mbstring \
         exif \
         pcntl \
-        bcmath
+        bcmath \
+        intl
 
 RUN pecl install redis && docker-php-ext-enable redis
 
