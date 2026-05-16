@@ -23,12 +23,7 @@ function logout() {
                             <a href="/dashboard" class="text-sm text-gray-600 hover:text-gray-900">Dashboard</a>
                             <a href="/pets" class="text-sm text-gray-600 hover:text-gray-900">My Pets</a>
                             <a href="/profile" class="text-sm text-gray-600 hover:text-gray-900">Profile</a>
-                            <button
-                                @click="logout"
-                                class="text-sm text-gray-600 hover:text-gray-900"
-                            >
-                                Sign out
-                            </button>
+                            <button class="text-sm text-gray-600 hover:text-gray-900" @click="logout">Sign out</button>
                         </template>
                         <template v-else>
                             <a href="/login" class="text-sm text-gray-600 hover:text-gray-900">Sign in</a>

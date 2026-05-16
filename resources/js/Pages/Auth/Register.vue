@@ -20,7 +20,7 @@ function submit() {
     <AuthLayout>
         <template #subtitle>Create your account</template>
 
-        <form @submit.prevent="submit" class="space-y-5">
+        <form class="space-y-5" @submit.prevent="submit">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
                 <input

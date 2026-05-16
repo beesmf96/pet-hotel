@@ -18,14 +18,18 @@ const form = useForm({
     photo: null,
 });
 
-watch(() => props.pet, (pet) => {
-    form.name = pet?.name ?? '';
-    form.species = pet?.species ?? '';
-    form.breed = pet?.breed ?? '';
-    form.age = pet?.age ?? '';
-    form.special_needs = pet?.special_needs ?? '';
-    form.photo = null;
-}, { immediate: true });
+watch(
+    () => props.pet,
+    (pet) => {
+        form.name = pet?.name ?? '';
+        form.species = pet?.species ?? '';
+        form.breed = pet?.breed ?? '';
+        form.age = pet?.age ?? '';
+        form.special_needs = pet?.special_needs ?? '';
+        form.photo = null;
+    },
+    { immediate: true },
+);
 
 function submit() {
     if (props.pet) {
@@ -48,17 +52,13 @@ function close() {
 
 <template>
     <Teleport to="body">
-        <div
-            v-if="show"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-            @click.self="close"
-        >
+        <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" @click.self="close">
             <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">
                     {{ pet ? 'Edit Pet' : 'Add Pet' }}
                 </h2>
 
-                <form @submit.prevent="submit" class="space-y-4">
+                <form class="space-y-4" @submit.prevent="submit">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                         <input
@@ -111,7 +111,9 @@ function close() {
                             rows="2"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 resize-none"
                         />
-                        <p v-if="form.errors.special_needs" class="mt-1 text-xs text-red-600">{{ form.errors.special_needs }}</p>
+                        <p v-if="form.errors.special_needs" class="mt-1 text-xs text-red-600">
+                            {{ form.errors.special_needs }}
+                        </p>
                     </div>
 
                     <div>
@@ -119,8 +121,8 @@ function close() {
                         <input
                             type="file"
                             accept="image/*"
-                            @change="form.photo = $event.target.files[0]"
                             class="text-sm text-gray-600"
+                            @change="form.photo = $event.target.files[0]"
                         />
                         <p v-if="form.errors.photo" class="mt-1 text-xs text-red-600">{{ form.errors.photo }}</p>
                     </div>
@@ -128,8 +130,8 @@ function close() {
                     <div class="flex justify-end gap-3 pt-2">
                         <button
                             type="button"
-                            @click="close"
                             class="text-sm text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg border border-gray-300"
+                            @click="close"
                         >
                             Cancel
                         </button>

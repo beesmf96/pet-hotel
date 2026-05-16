@@ -21,11 +21,9 @@ function submit() {
             {{ status }}
         </div>
 
-        <p class="mb-5 text-sm text-gray-600">
-            Enter your email and we'll send you a password reset link.
-        </p>
+        <p class="mb-5 text-sm text-gray-600">Enter your email and we'll send you a password reset link.</p>
 
-        <form @submit.prevent="submit" class="space-y-5">
+        <form class="space-y-5" @submit.prevent="submit">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input

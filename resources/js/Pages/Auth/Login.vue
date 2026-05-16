@@ -27,7 +27,7 @@ function submit() {
             {{ status }}
         </div>
 
-        <form @submit.prevent="submit" class="space-y-5">
+        <form class="space-y-5" @submit.prevent="submit">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input
@@ -54,7 +54,7 @@ function submit() {
             </div>
 
             <div class="flex items-center gap-2">
-                <input v-model="form.remember" type="checkbox" id="remember" class="rounded border-gray-300" />
+                <input id="remember" v-model="form.remember" type="checkbox" class="rounded border-gray-300" />
                 <label for="remember" class="text-sm text-gray-600">Remember me</label>
             </div>
 

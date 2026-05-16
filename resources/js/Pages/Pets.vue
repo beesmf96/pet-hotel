@@ -5,7 +5,10 @@ import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 defineProps({
-    pets: Array,
+    pets: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const showModal = ref(false);
@@ -38,10 +41,7 @@ function deletePet(pet) {
         <template #header>
             <div class="flex items-center justify-between">
                 <h1 class="text-xl font-semibold text-gray-900">My Pets</h1>
-                <button
-                    @click="openAdd"
-                    class="bg-gray-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-700"
-                >
+                <button class="bg-gray-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-700" @click="openAdd">
                     + Add Pet
                 </button>
             </div>
@@ -49,10 +49,7 @@ function deletePet(pet) {
 
         <div v-if="pets.length === 0" class="bg-white rounded-xl shadow-sm border border-gray-200 p-10 text-center">
             <p class="text-gray-500 text-sm">You haven't added any pets yet.</p>
-            <button
-                @click="openAdd"
-                class="mt-4 bg-gray-900 text-white text-sm px-5 py-2 rounded-lg hover:bg-gray-700"
-            >
+            <button class="mt-4 bg-gray-900 text-white text-sm px-5 py-2 rounded-lg hover:bg-gray-700" @click="openAdd">
                 Add your first pet
             </button>
         </div>
@@ -70,31 +67,26 @@ function deletePet(pet) {
                         :alt="pet.name"
                         class="w-16 h-16 rounded-full object-cover border border-gray-200"
                     />
-                    <div
-                        v-else
-                        class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-2xl"
-                    >
+                    <div v-else class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-2xl">
                         🐾
                     </div>
                 </div>
 
                 <div class="flex-1 min-w-0">
                     <h3 class="font-semibold text-gray-900">{{ pet.name }}</h3>
-                    <p class="text-sm text-gray-600">{{ pet.species }}<span v-if="pet.breed"> · {{ pet.breed }}</span></p>
-                    <p v-if="pet.age != null" class="text-sm text-gray-500">{{ pet.age }} yr{{ pet.age !== 1 ? 's' : '' }}</p>
+                    <p class="text-sm text-gray-600">
+                        {{ pet.species }}<span v-if="pet.breed"> · {{ pet.breed }}</span>
+                    </p>
+                    <p v-if="pet.age != null" class="text-sm text-gray-500">
+                        {{ pet.age }} yr{{ pet.age !== 1 ? 's' : '' }}
+                    </p>
                     <p v-if="pet.special_needs" class="text-xs text-amber-700 mt-1 truncate">{{ pet.special_needs }}</p>
 
                     <div class="flex gap-3 mt-3">
-                        <button
-                            @click="openEdit(pet)"
-                            class="text-xs text-gray-600 hover:text-gray-900 underline"
-                        >
+                        <button class="text-xs text-gray-600 hover:text-gray-900 underline" @click="openEdit(pet)">
                             Edit
                         </button>
-                        <button
-                            @click="deletePet(pet)"
-                            class="text-xs text-red-500 hover:text-red-700 underline"
-                        >
+                        <button class="text-xs text-red-500 hover:text-red-700 underline" @click="deletePet(pet)">
                             Remove
                         </button>
                     </div>
@@ -102,10 +94,6 @@ function deletePet(pet) {
             </div>
         </div>
 
-        <PetFormModal
-            :show="showModal"
-            :pet="editingPet"
-            @close="closeModal"
-        />
+        <PetFormModal :show="showModal" :pet="editingPet" @close="closeModal" />
     </AppLayout>
 </template>

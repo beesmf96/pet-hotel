@@ -25,7 +25,7 @@ function submit() {
     <AuthLayout>
         <template #subtitle>Choose a new password</template>
 
-        <form @submit.prevent="submit" class="space-y-5">
+        <form class="space-y-5" @submit.prevent="submit">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input

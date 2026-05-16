@@ -30,24 +30,23 @@ function logout() {
         </div>
 
         <p class="mb-6 text-sm text-gray-600">
-            Thanks for registering! Before getting started, please verify your email address by
-            clicking on the link we just sent you. If you didn't receive the email, we'll gladly
-            send another.
+            Thanks for registering! Before getting started, please verify your email address by clicking on the link we
+            just sent you. If you didn't receive the email, we'll gladly send another.
         </p>
 
         <div class="flex flex-col gap-3">
             <button
-                @click="resend"
                 :disabled="resendForm.processing"
                 class="w-full bg-gray-900 text-white py-2 rounded-lg text-sm font-medium hover:bg-gray-700 disabled:opacity-50"
+                @click="resend"
             >
                 {{ resendForm.processing ? 'Sending...' : 'Resend verification email' }}
             </button>
 
             <button
-                @click="logout"
                 :disabled="logoutForm.processing"
                 class="w-full text-center text-sm text-gray-600 hover:text-gray-900 disabled:opacity-50"
+                @click="logout"
             >
                 Sign out
             </button>
