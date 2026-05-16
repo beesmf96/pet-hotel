@@ -73,21 +73,21 @@
 **Covers:** FR #3 (View Pet Hotel Profiles)
 
 ### Backend
-- [ ] `pet_hotels` table: name, slug, description, address, city, lat, lng, cover_photo
-- [ ] `pet_hotel_facilities` table: hotel_id, type (enum: grooming, play_area, vet_care, …)
-- [ ] `pet_hotel_photos` table: hotel_id, url, sort_order
-- [ ] `pet_hotel_policies` table: hotel_id, check_in_time, check_out_time, cancellation_policy
-- [ ] `pet_hotel_pricing` table: hotel_id, pet_type, price_per_night
-- [ ] `HotelController@show` — public profile endpoint
-- [ ] Slug-based routing (`/hotels/{slug}`)
+- [x] `pet_hotels` table: name, slug, description, address, city, lat, lng, cover_photo
+- [x] `pet_hotel_facilities` table: hotel_id, type (enum: grooming, play_area, vet_care, …)
+- [x] `pet_hotel_photos` table: hotel_id, url, sort_order
+- [x] `pet_hotel_policies` table: hotel_id, check_in_time, check_out_time, cancellation_policy
+- [x] `pet_hotel_pricing` table: hotel_id, pet_type, price_per_night
+- [x] `HotelController@show` — public profile endpoint
+- [x] Slug-based routing (`/hotels/{slug}`)
 
 ### Frontend
-- [ ] `HotelProfilePage.vue` — full profile layout
-  - [ ] Photo gallery carousel
-  - [ ] Pricing table per pet type
-  - [ ] Facilities chips/icons
-  - [ ] Policies section
-  - [ ] Ratings summary (feeds from Module 6)
+- [x] `HotelProfilePage.vue` — full profile layout
+  - [x] Photo gallery carousel
+  - [x] Pricing table per pet type
+  - [x] Facilities chips/icons
+  - [x] Policies section
+  - [x] Ratings summary (feeds from Module 6)
 
 ---
 

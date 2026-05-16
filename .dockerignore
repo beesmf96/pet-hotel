@@ -1,0 +1,6 @@
+node_modules
+.git
+storage/framework/testing
+storage/logs
+bootstrap/cache
+*.log
