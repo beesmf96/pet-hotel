@@ -1,14 +1,15 @@
 <?php
 
-use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\UserController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('welcome'));
@@ -38,7 +39,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('verified')->group(function () {
         Route::get('/dashboard', DashboardController::class)->name('dashboard');
-        Route::get('/user', fn (\Illuminate\Http\Request $r) => $r->user());
+        Route::get('/user', fn (Request $r) => $r->user());
 
         Route::get('/profile', [UserController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [UserController::class, 'update'])->name('profile.update');

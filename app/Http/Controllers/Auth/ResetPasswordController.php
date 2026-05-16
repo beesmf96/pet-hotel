@@ -23,8 +23,8 @@ class ResetPasswordController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'token'    => 'required',
-            'email'    => 'required|email',
+            'token' => 'required',
+            'email' => 'required|email',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -33,7 +33,7 @@ class ResetPasswordController extends Controller
             function ($user, $password) {
                 // The 'hashed' cast on the User model handles hashing automatically.
                 $user->forceFill(['password' => $password])
-                     ->setRememberToken(Str::random(60));
+                    ->setRememberToken(Str::random(60));
                 $user->save();
                 event(new PasswordReset($user));
             }

@@ -18,10 +18,10 @@ class PetFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'    => fake()->firstName(),
+            'name' => fake()->firstName(),
             'species' => fake()->randomElement(['Dog', 'Cat', 'Bird', 'Rabbit']),
-            'breed'   => fake()->optional()->word(),
-            'age'     => fake()->optional()->numberBetween(0, 20),
+            'breed' => fake()->optional()->word(),
+            'age' => fake()->optional()->numberBetween(0, 20),
         ];
     }
 }

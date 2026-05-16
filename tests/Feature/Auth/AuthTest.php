@@ -27,9 +27,9 @@ class AuthTest extends TestCase
     public function test_guest_can_register(): void
     {
         $response = $this->post('/register', [
-            'name'                  => 'Alice',
-            'email'                 => 'alice@example.com',
-            'password'              => 'password',
+            'name' => 'Alice',
+            'email' => 'alice@example.com',
+            'password' => 'password',
             'password_confirmation' => 'password',
         ]);
 
@@ -41,8 +41,8 @@ class AuthTest extends TestCase
     public function test_register_requires_name(): void
     {
         $this->post('/register', [
-            'email'                 => 'alice@example.com',
-            'password'              => 'password',
+            'email' => 'alice@example.com',
+            'password' => 'password',
             'password_confirmation' => 'password',
         ])->assertSessionHasErrors('name');
     }
@@ -50,9 +50,9 @@ class AuthTest extends TestCase
     public function test_register_requires_valid_email(): void
     {
         $this->post('/register', [
-            'name'                  => 'Alice',
-            'email'                 => 'not-an-email',
-            'password'              => 'password',
+            'name' => 'Alice',
+            'email' => 'not-an-email',
+            'password' => 'password',
             'password_confirmation' => 'password',
         ])->assertSessionHasErrors('email');
     }
@@ -62,9 +62,9 @@ class AuthTest extends TestCase
         User::factory()->create(['email' => 'alice@example.com']);
 
         $this->post('/register', [
-            'name'                  => 'Alice',
-            'email'                 => 'alice@example.com',
-            'password'              => 'password',
+            'name' => 'Alice',
+            'email' => 'alice@example.com',
+            'password' => 'password',
             'password_confirmation' => 'password',
         ])->assertSessionHasErrors('email');
     }
@@ -72,9 +72,9 @@ class AuthTest extends TestCase
     public function test_register_requires_password_confirmation(): void
     {
         $this->post('/register', [
-            'name'                  => 'Alice',
-            'email'                 => 'alice@example.com',
-            'password'              => 'password',
+            'name' => 'Alice',
+            'email' => 'alice@example.com',
+            'password' => 'password',
             'password_confirmation' => 'wrong',
         ])->assertSessionHasErrors('password');
     }
@@ -82,9 +82,9 @@ class AuthTest extends TestCase
     public function test_register_requires_minimum_password_length(): void
     {
         $this->post('/register', [
-            'name'                  => 'Alice',
-            'email'                 => 'alice@example.com',
-            'password'              => 'short',
+            'name' => 'Alice',
+            'email' => 'alice@example.com',
+            'password' => 'short',
             'password_confirmation' => 'short',
         ])->assertSessionHasErrors('password');
     }
@@ -108,7 +108,7 @@ class AuthTest extends TestCase
         $user = User::factory()->create();
 
         $this->post('/login', [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'password',
         ])->assertRedirect('/dashboard');
 
@@ -120,7 +120,7 @@ class AuthTest extends TestCase
         $user = User::factory()->create();
 
         $this->post('/login', [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'wrong-password',
         ])->assertSessionHasErrors('email');
 
@@ -130,7 +130,7 @@ class AuthTest extends TestCase
     public function test_user_cannot_login_with_unknown_email(): void
     {
         $this->post('/login', [
-            'email'    => 'nobody@example.com',
+            'email' => 'nobody@example.com',
             'password' => 'password',
         ])->assertSessionHasErrors('email');
 

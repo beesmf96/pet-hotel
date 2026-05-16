@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Models;
 
-use App\Models\Pet;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,7 +14,7 @@ class PetTest extends TestCase
     public function test_pet_has_user_relationship(): void
     {
         $user = User::factory()->create();
-        $pet  = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
 
         $this->assertInstanceOf(BelongsTo::class, $pet->user());
     }
@@ -23,7 +22,7 @@ class PetTest extends TestCase
     public function test_pet_belongs_to_correct_user(): void
     {
         $user = User::factory()->create();
-        $pet  = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
 
         $this->assertEquals($user->id, $pet->user->id);
     }
@@ -31,13 +30,13 @@ class PetTest extends TestCase
     public function test_pet_is_fillable_with_expected_attributes(): void
     {
         $user = User::factory()->create();
-        $pet  = $user->pets()->create([
-            'name'          => 'Buddy',
-            'species'       => 'Dog',
-            'breed'         => 'Labrador',
-            'age'           => 3,
+        $pet = $user->pets()->create([
+            'name' => 'Buddy',
+            'species' => 'Dog',
+            'breed' => 'Labrador',
+            'age' => 3,
             'special_needs' => 'Hypoallergenic food',
-            'photo'         => 'pet-photos/buddy.jpg',
+            'photo' => 'pet-photos/buddy.jpg',
         ]);
 
         $this->assertEquals('Buddy', $pet->name);
@@ -51,7 +50,7 @@ class PetTest extends TestCase
     public function test_pet_breed_is_nullable(): void
     {
         $user = User::factory()->create();
-        $pet  = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog', 'breed' => null]);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog', 'breed' => null]);
 
         $this->assertNull($pet->breed);
     }
@@ -59,7 +58,7 @@ class PetTest extends TestCase
     public function test_pet_age_is_nullable(): void
     {
         $user = User::factory()->create();
-        $pet  = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog', 'age' => null]);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog', 'age' => null]);
 
         $this->assertNull($pet->age);
     }
@@ -67,7 +66,7 @@ class PetTest extends TestCase
     public function test_pet_special_needs_is_nullable(): void
     {
         $user = User::factory()->create();
-        $pet  = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog', 'special_needs' => null]);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog', 'special_needs' => null]);
 
         $this->assertNull($pet->special_needs);
     }

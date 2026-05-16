@@ -5,6 +5,7 @@ namespace Tests\Feature\Auth;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 use Tests\TestCase;
@@ -86,15 +87,15 @@ class PasswordResetTest extends TestCase
         $token = Password::createToken($user);
 
         $this->post('/reset-password', [
-            'token'                 => $token,
-            'email'                 => $user->email,
-            'password'              => 'newpassword',
+            'token' => $token,
+            'email' => $user->email,
+            'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
         ])->assertRedirect('/login');
 
         // Verify the password was actually changed
         $this->assertTrue(
-            \Illuminate\Support\Facades\Hash::check('newpassword', $user->fresh()->password)
+            Hash::check('newpassword', $user->fresh()->password)
         );
     }
 
@@ -103,9 +104,9 @@ class PasswordResetTest extends TestCase
         $user = User::factory()->create();
 
         $this->post('/reset-password', [
-            'token'                 => 'invalid-token',
-            'email'                 => $user->email,
-            'password'              => 'newpassword',
+            'token' => 'invalid-token',
+            'email' => $user->email,
+            'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
         ])->assertSessionHasErrors('email');
     }
@@ -113,8 +114,8 @@ class PasswordResetTest extends TestCase
     public function test_reset_password_requires_token(): void
     {
         $this->post('/reset-password', [
-            'email'                 => 'alice@example.com',
-            'password'              => 'newpassword',
+            'email' => 'alice@example.com',
+            'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
         ])->assertSessionHasErrors('token');
     }
@@ -125,9 +126,9 @@ class PasswordResetTest extends TestCase
         $token = Password::createToken($user);
 
         $this->post('/reset-password', [
-            'token'                 => $token,
-            'email'                 => $user->email,
-            'password'              => 'newpassword',
+            'token' => $token,
+            'email' => $user->email,
+            'password' => 'newpassword',
             'password_confirmation' => 'different',
         ])->assertSessionHasErrors('password');
     }
@@ -138,9 +139,9 @@ class PasswordResetTest extends TestCase
         $token = Password::createToken($user);
 
         $this->post('/reset-password', [
-            'token'                 => $token,
-            'email'                 => $user->email,
-            'password'              => 'short',
+            'token' => $token,
+            'email' => $user->email,
+            'password' => 'short',
             'password_confirmation' => 'short',
         ])->assertSessionHasErrors('password');
     }

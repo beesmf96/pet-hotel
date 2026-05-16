@@ -36,7 +36,7 @@ class EmailVerificationTest extends TestCase
         $user = User::factory()->unverified()->create();
 
         $url = URL::signedRoute('verification.verify', [
-            'id'   => $user->id,
+            'id' => $user->id,
             'hash' => sha1($user->email),
         ]);
 
@@ -52,7 +52,7 @@ class EmailVerificationTest extends TestCase
         $user = User::factory()->create(); // email_verified_at is set by default
 
         $url = URL::signedRoute('verification.verify', [
-            'id'   => $user->id,
+            'id' => $user->id,
             'hash' => sha1($user->email),
         ]);
 
@@ -66,7 +66,7 @@ class EmailVerificationTest extends TestCase
         $user = User::factory()->unverified()->create();
 
         $url = URL::signedRoute('verification.verify', [
-            'id'   => $user->id,
+            'id' => $user->id,
             'hash' => 'invalid-hash',
         ]);
 
@@ -82,7 +82,7 @@ class EmailVerificationTest extends TestCase
         $user = User::factory()->unverified()->create();
 
         $this->actingAs($user)
-            ->get("/email/verify/{$user->id}/" . sha1($user->email))
+            ->get("/email/verify/{$user->id}/".sha1($user->email))
             ->assertForbidden();
     }
 

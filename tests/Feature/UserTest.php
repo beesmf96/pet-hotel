@@ -34,8 +34,8 @@ class UserTest extends TestCase
     public function test_profile_page_contains_user_data(): void
     {
         $user = User::factory()->create([
-            'name'               => 'Alice',
-            'phone'              => '555-1234',
+            'name' => 'Alice',
+            'phone' => '555-1234',
             'preferred_location' => 'Central Park',
         ]);
 
@@ -72,17 +72,17 @@ class UserTest extends TestCase
 
         $this->actingAs($user)
             ->patch('/profile', [
-                'name'               => 'New Name',
-                'phone'              => '555-9999',
+                'name' => 'New Name',
+                'phone' => '555-9999',
                 'preferred_location' => 'Downtown',
             ])
             ->assertRedirect()
             ->assertSessionHas('success', 'Profile updated.');
 
         $this->assertDatabaseHas('users', [
-            'id'                 => $user->id,
-            'name'               => 'New Name',
-            'phone'              => '555-9999',
+            'id' => $user->id,
+            'name' => 'New Name',
+            'phone' => '555-9999',
             'preferred_location' => 'Downtown',
         ]);
     }

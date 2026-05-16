@@ -25,9 +25,15 @@ bun run build         # Production frontend build
 docker compose up -d                        # Start app, nginx, postgres, redis
 docker compose --profile dev up -d          # Also start the Bun/Vite node container
 docker compose exec app php artisan migrate # Run migrations inside container
+docker compose exec app php artisan <cmd>   # Run any artisan command (avoids finding php binary)
+docker compose exec app php artisan test    # Run tests in container
+docker compose exec app vendor/bin/pint     # Run Pint formatter in container
+docker compose exec app composer <cmd>      # Run composer in container
 ```
 
 App is served at `http://localhost:8080` (nginx) when running in Docker.
+
+> **Tip:** Always use `docker compose exec app` for PHP/artisan/composer — the container has the correct PHP binary on PATH.
 
 ### Artisan shortcuts
 ```bash
@@ -35,6 +41,44 @@ php artisan make:model ModelName -mfc        # Model + migration + factory + con
 php artisan make:filament-resource Name      # Filament admin resource
 php artisan migrate:fresh --seed             # Wipe and re-seed DB
 ```
+
+## Code Quality
+
+### Post-implementation checklist
+
+After finishing any implementation task:
+1. Ensure tests exist for the new/changed behaviour — run `composer test` (local) or `docker compose exec app php artisan test` (Docker)
+2. Run Laravel Pint to fix PHP style — `vendor/bin/pint` (local) or `docker compose exec app vendor/bin/pint` (Docker)
+3. For frontend changes, run `bun run lint` (once ESLint is configured — see below)
+
+### PHP — Laravel Pint
+
+```bash
+vendor/bin/pint                  # Auto-fix all PHP files
+vendor/bin/pint --test           # Check only, no changes (useful in CI)
+vendor/bin/pint app/Models/      # Fix a specific directory
+```
+
+Pint uses Laravel's default ruleset. No config file needed unless you want to customise rules.
+
+### Frontend — ESLint + Prettier (setup required)
+
+The project currently has no frontend linter. Recommended one-time setup for Vue 3 + Inertia:
+
+```bash
+# Install
+bun add --dev eslint eslint-plugin-vue prettier eslint-config-prettier
+
+# Then add to package.json scripts:
+# "lint":   "eslint resources/js --ext .vue,.js --fix"
+# "format": "prettier --write resources/js"
+```
+
+- `eslint-plugin-vue` — catches template errors, component naming, Vue-specific anti-patterns
+- `prettier` — consistent formatting of `.vue` and `.js` files
+- `eslint-config-prettier` — disables ESLint style rules that conflict with Prettier
+
+Once configured, run `bun run lint` after any frontend change.
 
 ## Architecture
 
