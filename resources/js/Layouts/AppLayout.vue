@@ -19,6 +19,8 @@ function logout() {
                     <div class="flex items-center gap-4">
                         <slot name="nav" />
 
+                        <a href="/hotels" class="text-sm text-gray-600 hover:text-gray-900">Find Hotels</a>
+
                         <template v-if="user">
                             <a href="/dashboard" class="text-sm text-gray-600 hover:text-gray-900">Dashboard</a>
                             <a href="/pets" class="text-sm text-gray-600 hover:text-gray-900">My Pets</a>

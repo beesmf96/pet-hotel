@@ -96,18 +96,18 @@
 **Covers:** FR #1 (Search by Location), FR #7 (Filter and Sort)
 
 ### Backend
-- [ ] `HotelSearchController@index` — query builder with filters
-- [ ] Filter params: `city`, `pet_type`, `price_min`, `price_max`, `check_in`, `check_out`
-- [ ] Sort params: `rating`, `price_asc`, `price_desc`, `distance` (requires lat/lng)
-- [ ] Pagination (15 per page)
+- [x] `HotelSearchController@index` — query builder with filters
+- [x] Filter params: `city`, `pet_type`, `price_min`, `price_max`, `check_in`, `check_out`
+- [x] Sort params: `rating`, `price_asc`, `price_desc`, `distance` (requires lat/lng)
+- [x] Pagination (15 per page)
 
 ### Frontend
-- [ ] `SearchPage.vue` — search results grid
-- [ ] `SearchBar.vue` — city input + date range picker + pet type selector
-- [ ] `FilterSidebar.vue` — price range slider, pet type, facilities checkboxes
-- [ ] `HotelCard.vue` — card component (name, city, price from, rating, cover photo)
-- [ ] Sort dropdown (rating, price)
-- [ ] Empty state illustration
+- [x] `SearchPage.vue` — search results grid
+- [x] `SearchBar.vue` — city input + date range picker + pet type selector
+- [x] `FilterSidebar.vue` — price range slider, pet type, facilities checkboxes
+- [x] `HotelCard.vue` — card component (name, city, price from, rating, cover photo)
+- [x] Sort dropdown (rating, price)
+- [x] Empty state illustration
 
 ---
 
