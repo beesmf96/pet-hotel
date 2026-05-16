@@ -20,7 +20,9 @@ function logout() {
                         <slot name="nav" />
 
                         <template v-if="user">
-                            <span class="text-sm text-gray-700">{{ user.name }}</span>
+                            <a href="/dashboard" class="text-sm text-gray-600 hover:text-gray-900">Dashboard</a>
+                            <a href="/pets" class="text-sm text-gray-600 hover:text-gray-900">My Pets</a>
+                            <a href="/profile" class="text-sm text-gray-600 hover:text-gray-900">Profile</a>
                             <button
                                 @click="logout"
                                 class="text-sm text-gray-600 hover:text-gray-900"

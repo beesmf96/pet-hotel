@@ -7,6 +7,8 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PetController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('welcome'));
@@ -37,5 +39,13 @@ Route::middleware('auth')->group(function () {
     Route::middleware('verified')->group(function () {
         Route::get('/dashboard', DashboardController::class)->name('dashboard');
         Route::get('/user', fn (\Illuminate\Http\Request $r) => $r->user());
+
+        Route::get('/profile', [UserController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [UserController::class, 'update'])->name('profile.update');
+
+        Route::get('/pets', [PetController::class, 'index'])->name('pets.index');
+        Route::post('/pets', [PetController::class, 'store'])->name('pets.store');
+        Route::patch('/pets/{pet}', [PetController::class, 'update'])->name('pets.update');
+        Route::delete('/pets/{pet}', [PetController::class, 'destroy'])->name('pets.destroy');
     });
 });

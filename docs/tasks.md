@@ -54,17 +54,17 @@
 **Covers:** FR #5 (User and Pet Profile Management)
 
 ### Backend
-- [ ] `users` table: name, email, phone, preferred_location
-- [ ] `pets` table: user_id, name, breed, species, age, special_needs, photo
-- [ ] `UserController@update` — update contact details
-- [ ] `PetController` — CRUD for user's pets
-- [ ] Pet photo upload (local disk or S3-compatible)
-- [ ] Form Request validation for pet and user updates
+- [x] `users` table: name, email, phone, preferred_location
+- [x] `pets` table: user_id, name, breed, species, age, special_needs, photo
+- [x] `UserController@update` — update contact details
+- [x] `PetController` — CRUD for user's pets
+- [x] Pet photo upload (local disk or S3-compatible)
+- [x] Form Request validation for pet and user updates
 
 ### Frontend
-- [ ] `ProfilePage.vue` — edit name, phone, preferred location
-- [ ] `PetsPage.vue` — list user's pets
-- [ ] `PetFormModal.vue` — add/edit pet (inline modal)
+- [x] `ProfilePage.vue` — edit name, phone, preferred location
+- [x] `PetsPage.vue` — list user's pets
+- [x] `PetFormModal.vue` — add/edit pet (inline modal)
 
 ---
 
