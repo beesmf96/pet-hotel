@@ -1,3 +1,14 @@
+<script setup>
+import { computed } from 'vue';
+import { usePage, router } from '@inertiajs/vue3';
+
+const user = computed(() => usePage().props.auth?.user);
+
+function logout() {
+    router.post('/logout');
+}
+</script>
+
 <template>
     <div class="min-h-screen bg-gray-50">
         <nav class="bg-white border-b border-gray-200">
@@ -7,6 +18,25 @@
 
                     <div class="flex items-center gap-4">
                         <slot name="nav" />
+
+                        <template v-if="user">
+                            <span class="text-sm text-gray-700">{{ user.name }}</span>
+                            <button
+                                @click="logout"
+                                class="text-sm text-gray-600 hover:text-gray-900"
+                            >
+                                Sign out
+                            </button>
+                        </template>
+                        <template v-else>
+                            <a href="/login" class="text-sm text-gray-600 hover:text-gray-900">Sign in</a>
+                            <a
+                                href="/register"
+                                class="text-sm bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+                            >
+                                Register
+                            </a>
+                        </template>
                     </div>
                 </div>
             </div>
