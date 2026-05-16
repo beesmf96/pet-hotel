@@ -32,20 +32,20 @@
 **Covers:** FR #9 (Basic User Authentication)
 
 ### Backend
-- [ ] Enable Sanctum SPA authentication (cookie-based)
-- [ ] `POST /register` — email, password, name
-- [ ] `POST /login` — email + password
-- [ ] `POST /logout`
-- [ ] `GET /user` — return authenticated user
-- [ ] Email verification on registration (`MustVerifyEmail`)
-- [ ] Password reset flow (built-in Laravel)
+- [x] Enable Sanctum SPA authentication (cookie-based)
+- [x] `POST /register` — email, password, name
+- [x] `POST /login` — email + password
+- [x] `POST /logout`
+- [x] `GET /user` — return authenticated user
+- [x] Email verification on registration (`MustVerifyEmail`)
+- [x] Password reset flow (built-in Laravel)
 
 ### Frontend
-- [ ] `RegisterPage.vue` — form with validation errors via Inertia
-- [ ] `LoginPage.vue`
-- [ ] `ForgotPasswordPage.vue`
-- [ ] `ResetPasswordPage.vue`
-- [ ] Auth middleware redirect (guest → login, auth → dashboard)
+- [x] `RegisterPage.vue` — form with validation errors via Inertia
+- [x] `LoginPage.vue`
+- [x] `ForgotPasswordPage.vue`
+- [x] `ResetPasswordPage.vue`
+- [x] Auth middleware redirect (guest → login, auth → dashboard)
 
 ---
 
