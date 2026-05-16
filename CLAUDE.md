@@ -1,3 +1,77 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+Pet Hotel — a booking platform for pet boarding. Built with **Laravel 13 · Vue 3 · Inertia.js · Filament v4 · Sanctum · PostgreSQL · Redis**.
+
+See `docs/tasks.md` for the full feature roadmap (Modules 0–9). Module 0 (infrastructure) is complete; Modules 1–9 are still being built.
+
+## Key Commands
+
+### Local development (no Docker)
+```bash
+composer dev          # Starts everything: PHP server, queue worker, Pail log viewer, Vite
+composer test         # Clears config cache then runs PHPUnit
+php artisan test --filter=TestName   # Run a single test
+vendor/bin/pint       # Laravel Pint code formatter
+bun run dev           # Frontend only (Vite dev server)
+bun run build         # Production frontend build
+```
+
+### Docker
+```bash
+docker compose up -d                        # Start app, nginx, postgres, redis
+docker compose --profile dev up -d          # Also start the Bun/Vite node container
+docker compose exec app php artisan migrate # Run migrations inside container
+```
+
+App is served at `http://localhost:8080` (nginx) when running in Docker.
+
+### Artisan shortcuts
+```bash
+php artisan make:model ModelName -mfc        # Model + migration + factory + controller
+php artisan make:filament-resource Name      # Filament admin resource
+php artisan migrate:fresh --seed             # Wipe and re-seed DB
+```
+
+## Architecture
+
+### Request flow
+Browser → Nginx (`:8080`) → PHP-FPM (`app` container) → Laravel
+
+Inertia.js bridges Laravel and Vue: Laravel returns `Inertia::render('PageName', $props)` instead of a Blade view, and the Vue SPA picks it up without a full page reload.
+
+### Frontend structure
+- Pages live in `resources/js/Pages/` — resolved by name from `app.js` via `resolvePageComponent`
+- Shared layouts go in `resources/js/Layouts/` (e.g. `AppLayout.vue`)
+- Global shared props (auth user, flash messages, etc.) are added in `app/Http/Middleware/HandleInertiaRequests.php` → `share()`
+- Styling: Tailwind CSS v4 (via `@tailwindcss/vite` plugin — no `tailwind.config.js` needed)
+- JS package manager: **Bun** (use `bun install`, not npm/pnpm)
+
+### Backend structure
+- `app/Models/` — Eloquent models
+- `app/Http/Controllers/` — Inertia controllers (return `Inertia::render(...)`)
+- `app/Filament/Resources/` — auto-discovered Filament admin resources
+- `app/Filament/Pages/` — auto-discovered Filament pages
+- `app/Filament/Widgets/` — auto-discovered Filament dashboard widgets
+- Queue driver: Redis. Run `php artisan queue:work` or use `composer dev`
+
+### Admin panel (Filament v4)
+- Route: `/admin`, configured in `app/Providers/Filament/AdminPanelProvider.php`
+- Auto-discovers Resources/Pages/Widgets from the `app/Filament/` directory
+- Filament has its own auth stack (separate from Sanctum SPA auth)
+
+### Authentication
+- **Customer-facing**: Laravel Sanctum (cookie-based SPA auth), to be wired up in Module 1
+- **Admin panel**: Filament's built-in auth at `/admin/login`
+
+### Database
+- PostgreSQL 16 (port `5432`). Credentials in `.env` / `.env.docker`
+- Migrations in `database/migrations/`, seeders in `database/seeders/`
+- A `database.sqlite` file exists for quick local runs without Docker (change `DB_CONNECTION=sqlite` in `.env`)
+
 <!-- rtk-instructions v2 -->
 # RTK (Rust Token Killer) - Token-Optimized Commands
 
