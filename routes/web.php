@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HotelAvailabilityController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\HotelSearchController;
 use App\Http\Controllers\PetController;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', fn () => view('welcome'));
 Route::get('/hotels', [HotelSearchController::class, 'index'])->name('hotels.index');
 Route::get('/hotels/{slug}', [HotelController::class, 'show'])->name('hotels.show');
+Route::get('/hotels/{slug}/availability', [HotelAvailabilityController::class, 'index'])->name('hotels.availability');
 
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisterController::class, 'create'])->name('register');

@@ -1,5 +1,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
+import AvailabilityCalendar from '@/Components/Hotels/AvailabilityCalendar.vue';
 import { ref, computed } from 'vue';
 
 const props = defineProps({
@@ -171,7 +172,10 @@ function nextPhoto() {
                         </ul>
                     </div>
 
-                    <!-- Ratings placeholder — feeds from Module 6 -->
+                    <!-- Availability Calendar -->
+                    <AvailabilityCalendar :hotel-slug="hotel.slug" />
+
+                    <!-- Ratings placeholder — feeds from Module 7 -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                         <h2 class="text-base font-semibold text-gray-900 mb-2">Ratings</h2>
                         <p class="text-sm text-gray-400 italic">Reviews coming soon.</p>
