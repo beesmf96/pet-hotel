@@ -42,6 +42,10 @@ watch(sort, (value) => {
 function visitPage(url) {
     if (url) router.visit(url);
 }
+
+function decodeLabel(label) {
+    return label.replace(/&laquo;/g, '«').replace(/&raquo;/g, '»');
+}
 </script>
 
 <template>
@@ -93,7 +97,6 @@ function visitPage(url) {
                         <button
                             v-for="link in hotels.links"
                             :key="link.label"
-                            v-html="link.label"
                             :disabled="!link.url"
                             class="px-3 py-1.5 text-sm rounded-lg"
                             :class="[
@@ -104,7 +107,7 @@ function visitPage(url) {
                                     : 'text-gray-300 cursor-not-allowed',
                             ]"
                             @click="visitPage(link.url)"
-                        />
+                        >{{ decodeLabel(link.label) }}</button>
                     </div>
                 </div>
             </div>

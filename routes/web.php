@@ -11,7 +11,6 @@ use App\Http\Controllers\HotelController;
 use App\Http\Controllers\HotelSearchController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('welcome'));
@@ -20,10 +19,10 @@ Route::get('/hotels/{slug}', [HotelController::class, 'show'])->name('hotels.sho
 
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
-    Route::post('/register', [RegisterController::class, 'store']);
+    Route::post('/register', [RegisterController::class, 'store'])->middleware('throttle:5,1');
 
     Route::get('/login', [LoginController::class, 'create'])->name('login');
-    Route::post('/login', [LoginController::class, 'store']);
+    Route::post('/login', [LoginController::class, 'store'])->middleware('throttle:5,1');
 
     Route::get('/forgot-password', [ForgotPasswordController::class, 'create'])->name('password.request');
     Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])->name('password.email');
@@ -43,7 +42,6 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('verified')->group(function () {
         Route::get('/dashboard', DashboardController::class)->name('dashboard');
-        Route::get('/user', fn (Request $r) => $r->user());
 
         Route::get('/profile', [UserController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [UserController::class, 'update'])->name('profile.update');
