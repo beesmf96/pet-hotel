@@ -24,6 +24,7 @@ function logout() {
                         <template v-if="user">
                             <a href="/dashboard" class="text-sm text-gray-600 hover:text-gray-900">Dashboard</a>
                             <a href="/pets" class="text-sm text-gray-600 hover:text-gray-900">My Pets</a>
+                            <a href="/bookings" class="text-sm text-gray-600 hover:text-gray-900">My Bookings</a>
                             <a href="/profile" class="text-sm text-gray-600 hover:text-gray-900">Profile</a>
                             <button class="text-sm text-gray-600 hover:text-gray-900" @click="logout">Sign out</button>
                         </template>

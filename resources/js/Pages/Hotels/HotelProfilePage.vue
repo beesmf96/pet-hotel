@@ -172,6 +172,16 @@ function nextPhoto() {
                         </ul>
                     </div>
 
+                    <!-- Book Now CTA -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <a
+                            :href="`/hotels/${hotel.slug}/book`"
+                            class="block w-full text-center bg-gray-900 text-white text-sm font-medium px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors"
+                        >
+                            Book Now
+                        </a>
+                    </div>
+
                     <!-- Availability Calendar -->
                     <AvailabilityCalendar :hotel-slug="hotel.slug" />
 

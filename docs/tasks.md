@@ -116,14 +116,14 @@
 **Covers:** FR #2 (View Available Dates and Times)
 
 ### Backend
-- [ ] `hotel_availabilities` table: hotel_id, date, available_spots, is_blocked
-- [ ] `HotelAvailabilityController@index` — return available dates for a hotel in a range
-- [ ] Block dates when bookings are confirmed (Module 6 triggers this)
-- [ ] Seed dummy availability data for development
+- [x] `hotel_availabilities` table: hotel_id, date, available_spots, is_blocked
+- [x] `HotelAvailabilityController@index` — return available dates for a hotel in a range
+- [x] Block dates when bookings are confirmed (Module 6 triggers this)
+- [x] Seed dummy availability data for development
 
 ### Frontend
-- [ ] `AvailabilityCalendar.vue` — month calendar with available/unavailable day states
-- [ ] Integrate into `HotelProfilePage.vue` — show calendar before booking CTA
+- [x] `AvailabilityCalendar.vue` — month calendar with available/unavailable day states
+- [x] Integrate into `HotelProfilePage.vue` — show calendar before booking CTA
 
 ---
 
@@ -132,18 +132,18 @@
 **Covers:** FR #4 (Book a Pet Hotel), FR #10 (Booking Confirmation)
 
 ### Backend
-- [ ] `bookings` table: user_id, hotel_id, pet_id, check_in, check_out, status (pending/confirmed/cancelled), notes, total_price
-- [ ] `BookingController@store` — create booking with status=pending
-- [ ] `BookingController@index` — user's booking history
-- [ ] `BookingController@cancel` — user cancel (if policy allows)
-- [ ] Queue job: `SendBookingRequestNotification` — email to user + admin on new booking
-- [ ] Queue job: `SendBookingConfirmationNotification` — email to user when confirmed
+- [x] `bookings` table: user_id, hotel_id, pet_id, check_in, check_out, status (pending/confirmed/cancelled), notes, total_price
+- [x] `BookingController@store` — create booking with status=pending
+- [x] `BookingController@index` — user's booking history
+- [x] `BookingController@cancel` — user cancel (if policy allows)
+- [x] Queue job: `SendBookingRequestNotification` — email to user + admin on new booking
+- [x] Queue job: `SendBookingConfirmationNotification` — email to user when confirmed
 
 ### Frontend
-- [ ] `BookingFormPage.vue` — select pet, dates, add notes, price summary
-- [ ] `BookingConfirmationPage.vue` — "Your request is pending" screen
-- [ ] `MyBookingsPage.vue` — list of bookings with status badges
-- [ ] `BookingDetailPage.vue` — booking details + cancel button
+- [x] `BookingFormPage.vue` — select pet, dates, add notes, price summary
+- [x] `BookingConfirmationPage.vue` — "Your request is pending" screen
+- [x] `MyBookingsPage.vue` — list of bookings with status badges
+- [x] `BookingDetailPage.vue` — booking details + cancel button
 
 ---
 

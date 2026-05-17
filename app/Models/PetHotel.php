@@ -34,4 +34,9 @@ class PetHotel extends Model
     {
         return $this->hasMany(PetHotelPricing::class, 'hotel_id');
     }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class, 'hotel_id');
+    }
 }
