@@ -67,6 +67,48 @@ class PetTest extends TestCase
             );
     }
 
+    public function test_photo_url_is_null_when_pet_has_no_photo(): void
+    {
+        $user = User::factory()->create();
+        $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+
+        $this->actingAs($user)
+            ->get('/pets')
+            ->assertInertia(fn ($page) => $page
+                ->has('pets', 1)
+                ->where('pets.0.photo_url', null)
+            );
+    }
+
+    // ── Unverified user write guards ─────────────────────────────────────────
+
+    public function test_unverified_user_cannot_create_pet(): void
+    {
+        $this->actingAs(User::factory()->unverified()->create())
+            ->post('/pets', ['name' => 'Buddy', 'species' => 'Dog'])
+            ->assertRedirect('/email/verify');
+    }
+
+    public function test_unverified_user_cannot_update_pet(): void
+    {
+        $user = User::factory()->unverified()->create();
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+
+        $this->actingAs($user)
+            ->patch("/pets/{$pet->id}", ['name' => 'Max', 'species' => 'Dog'])
+            ->assertRedirect('/email/verify');
+    }
+
+    public function test_unverified_user_cannot_delete_pet(): void
+    {
+        $user = User::factory()->unverified()->create();
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+
+        $this->actingAs($user)
+            ->delete("/pets/{$pet->id}")
+            ->assertRedirect('/email/verify');
+    }
+
     // ── Store ─────────────────────────────────────────────────────────────────
 
     public function test_guest_cannot_create_pet(): void
@@ -216,6 +258,46 @@ class PetTest extends TestCase
         $this->actingAs($user)
             ->patch("/pets/{$pet->id}", ['species' => 'Dog'])
             ->assertSessionHasErrors('name');
+    }
+
+    public function test_update_requires_species(): void
+    {
+        $user = User::factory()->create();
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+
+        $this->actingAs($user)
+            ->patch("/pets/{$pet->id}", ['name' => 'Buddy'])
+            ->assertSessionHasErrors('species');
+    }
+
+    public function test_update_rejects_non_image_file(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+
+        $this->actingAs($user)
+            ->patch("/pets/{$pet->id}", [
+                'name' => 'Buddy',
+                'species' => 'Dog',
+                'photo' => UploadedFile::fake()->create('document.pdf', 100, 'application/pdf'),
+            ])
+            ->assertSessionHasErrors('photo');
+    }
+
+    public function test_update_rejects_oversized_photo(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+
+        $this->actingAs($user)
+            ->patch("/pets/{$pet->id}", [
+                'name' => 'Buddy',
+                'species' => 'Dog',
+                'photo' => UploadedFile::fake()->image('big.jpg')->size(3000),
+            ])
+            ->assertSessionHasErrors('photo');
     }
 
     public function test_update_with_new_photo_replaces_old(): void

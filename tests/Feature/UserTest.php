@@ -66,6 +66,26 @@ class UserTest extends TestCase
         $this->patch('/profile', ['name' => 'Alice'])->assertRedirect('/login');
     }
 
+    public function test_unverified_user_cannot_update_profile(): void
+    {
+        $this->actingAs(User::factory()->unverified()->create())
+            ->patch('/profile', ['name' => 'Alice'])
+            ->assertRedirect('/email/verify');
+    }
+
+    public function test_update_does_not_change_email(): void
+    {
+        $user = User::factory()->create(['email' => 'original@example.com']);
+
+        $this->actingAs($user)
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => 'changed@example.com',
+            ]);
+
+        $this->assertDatabaseHas('users', ['id' => $user->id, 'email' => 'original@example.com']);
+    }
+
     public function test_user_can_update_profile(): void
     {
         $user = User::factory()->create(['name' => 'Old Name']);

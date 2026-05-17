@@ -89,4 +89,26 @@ class HotelTest extends TestCase
                 ->where('hotel.name', 'Happy Paws Hotel')
             );
     }
+
+    public function test_hotel_profile_renders_without_policy(): void
+    {
+        $hotel = PetHotel::factory()->create();
+
+        $this->get("/hotels/{$hotel->slug}")
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('hotel.policy', null)
+            );
+    }
+
+    public function test_hotel_profile_renders_without_pricing(): void
+    {
+        $hotel = PetHotel::factory()->create();
+
+        $this->get("/hotels/{$hotel->slug}")
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->has('hotel.pricing', 0)
+            );
+    }
 }

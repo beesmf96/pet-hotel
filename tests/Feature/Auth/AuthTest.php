@@ -182,4 +182,29 @@ class AuthTest extends TestCase
     {
         $this->post('/logout')->assertRedirect('/login');
     }
+
+    public function test_login_with_remember_me_stores_remember_token(): void
+    {
+        $user = User::factory()->create();
+
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+            'remember' => true,
+        ]);
+
+        $this->assertNotNull($user->fresh()->remember_token);
+    }
+
+    public function test_login_without_remember_me_does_not_store_remember_token(): void
+    {
+        $user = User::factory()->create(['remember_token' => null]);
+
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertNull($user->fresh()->remember_token);
+    }
 }

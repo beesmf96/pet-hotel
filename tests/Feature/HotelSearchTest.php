@@ -198,6 +198,29 @@ class HotelSearchTest extends TestCase
             );
     }
 
+    public function test_check_in_and_check_out_are_passed_back_to_page(): void
+    {
+        $this->get('/hotels?check_in=2025-06-01&check_out=2025-06-07')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('filters.check_in', '2025-06-01')
+                ->where('filters.check_out', '2025-06-07')
+            );
+    }
+
+    public function test_pagination_page_two_returns_remaining_results(): void
+    {
+        PetHotel::factory(20)->create();
+
+        $this->get('/hotels?page=2')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('hotels.current_page', 2)
+                ->where('hotels.total', 20)
+                ->has('hotels.data', 5)
+            );
+    }
+
     public function test_empty_city_returns_all_hotels(): void
     {
         $this->makeHotel(['city' => 'Penang']);
