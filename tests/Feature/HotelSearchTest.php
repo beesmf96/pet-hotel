@@ -207,4 +207,47 @@ class HotelSearchTest extends TestCase
             ->assertOk()
             ->assertInertia(fn ($page) => $page->where('hotels.total', 2));
     }
+
+    public function test_sort_by_distance_without_coords_falls_back_to_latest(): void
+    {
+        $this->makeHotel();
+        $this->makeHotel();
+
+        $this->get('/hotels?sort=distance')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->where('hotels.total', 2));
+    }
+
+    public function test_sort_by_distance_with_coords_orders_by_proximity(): void
+    {
+        $near = $this->makeHotel(['lat' => 1.3, 'lng' => 103.8]);
+        $far = $this->makeHotel(['lat' => 3.1, 'lng' => 101.7]);
+
+        $this->get('/hotels?sort=distance&lat=1.3&lng=103.8')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('hotels.data.0.id', $near->id)
+                ->where('hotels.data.1.id', $far->id)
+            );
+    }
+
+    public function test_facilities_filter_accepts_comma_separated_string(): void
+    {
+        $this->makeHotel([], [], ['grooming', 'play_area']);
+        $this->makeHotel([], [], ['vet_care']);
+
+        $this->get('/hotels?facilities=grooming,play_area')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->where('hotels.total', 1));
+    }
+
+    public function test_empty_result_set_has_correct_shape(): void
+    {
+        $this->get('/hotels')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('hotels.total', 0)
+                ->has('hotels.data', 0)
+            );
+    }
 }

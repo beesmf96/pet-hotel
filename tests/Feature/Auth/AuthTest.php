@@ -3,7 +3,9 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -15,6 +17,20 @@ class AuthTest extends TestCase
     public function test_register_page_renders(): void
     {
         $this->get('/register')->assertStatus(200);
+    }
+
+    public function test_registration_dispatches_registered_event(): void
+    {
+        Event::fake();
+
+        $this->post('/register', [
+            'name' => 'Alice',
+            'email' => 'alice@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        Event::assertDispatched(Registered::class);
     }
 
     public function test_authenticated_user_is_redirected_from_register(): void
