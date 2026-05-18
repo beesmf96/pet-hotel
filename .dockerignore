@@ -4,3 +4,14 @@ storage/framework/testing
 storage/logs
 bootstrap/cache
 *.log
+
+# Secrets and local config — never bake into image
+.env
+.env.*
+!.env.example
+
+# Dev runtime artifacts
+public/hot
+public/build
+.phpunit.result.cache
+*.cache

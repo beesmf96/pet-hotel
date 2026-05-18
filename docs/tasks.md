@@ -170,17 +170,17 @@
 **Covers:** FR #10 (Booking Confirmation / email or in-app)
 
 ### Backend
-- [ ] Set up Laravel queue worker (`redis` driver)
-- [ ] `BookingRequestedMail` — sent to user on booking submission
-- [ ] `BookingConfirmedMail` — sent to user when admin confirms
-- [ ] `BookingCancelledMail` — sent to user on cancellation
-- [ ] `in_app_notifications` table (or use Laravel's built-in notifications table)
-- [ ] `NotificationController@index` — return unread notifications for auth user
-- [ ] Mark-as-read endpoint
+- [x] Set up Laravel queue worker (`redis` driver)
+- [x] `BookingRequestedMail` — sent to user on booking submission
+- [x] `BookingConfirmedMail` — sent to user when admin confirms
+- [x] `BookingCancelledMail` — sent to user on cancellation
+- [x] `in_app_notifications` table (or use Laravel's built-in notifications table)
+- [x] `NotificationController@index` — return unread notifications for auth user
+- [x] Mark-as-read endpoint
 
 ### Frontend
-- [ ] `NotificationBell.vue` — navbar bell icon with unread count badge
-- [ ] `NotificationsDropdown.vue` — last 10 notifications list
+- [x] `NotificationBell.vue` — navbar bell icon with unread count badge
+- [x] `NotificationsDropdown.vue` — last 10 notifications list
 
 ---
 

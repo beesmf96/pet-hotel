@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Jobs\SendBookingCancelledNotification;
+use App\Jobs\SendBookingConfirmationNotification;
 use Database\Factories\BookingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -35,6 +37,21 @@ class Booking extends Model
                 self::adjustAvailability($booking, -1);
             } elseif ($new === 'cancelled' && in_array($original, ['confirmed', 'completed'])) {
                 self::adjustAvailability($booking, 1);
+            }
+        });
+
+        static::updated(function (Booking $booking) {
+            if (! $booking->wasChanged('status')) {
+                return;
+            }
+
+            $new = $booking->status;
+            $original = $booking->getOriginal('status');
+
+            if ($new === 'confirmed' && $original !== 'confirmed') {
+                SendBookingConfirmationNotification::dispatch($booking);
+            } elseif ($new === 'cancelled') {
+                SendBookingCancelledNotification::dispatch($booking);
             }
         });
     }

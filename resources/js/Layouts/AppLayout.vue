@@ -1,8 +1,11 @@
 <script setup>
 import { computed } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
+import NotificationBell from '@/Components/NotificationBell.vue';
 
-const user = computed(() => usePage().props.auth?.user);
+const page = usePage();
+const user = computed(() => page.props.auth?.user);
+const unreadCount = computed(() => page.props.unread_notifications_count ?? 0);
 
 function logout() {
     router.post('/logout');
@@ -26,6 +29,7 @@ function logout() {
                             <a href="/pets" class="text-sm text-gray-600 hover:text-gray-900">My Pets</a>
                             <a href="/bookings" class="text-sm text-gray-600 hover:text-gray-900">My Bookings</a>
                             <a href="/profile" class="text-sm text-gray-600 hover:text-gray-900">Profile</a>
+                            <NotificationBell :unread-count="unreadCount" />
                             <button class="text-sm text-gray-600 hover:text-gray-900" @click="logout">Sign out</button>
                         </template>
                         <template v-else>

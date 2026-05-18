@@ -11,6 +11,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HotelAvailabilityController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\HotelSearchController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserController;
@@ -64,5 +65,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/bookings/{booking}/confirmation', [BookingController::class, 'confirmation'])->name('bookings.confirmation');
         Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
         Route::patch('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
+
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::patch('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+        Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
     });
 });

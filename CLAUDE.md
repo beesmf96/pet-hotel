@@ -22,18 +22,20 @@ bun run build         # Production frontend build
 
 ### Docker
 ```bash
-docker compose up -d                        # Start app, nginx, postgres, redis
-docker compose --profile dev up -d          # Also start the Bun/Vite node container
-docker compose exec app php artisan migrate # Run migrations inside container
-docker compose exec app php artisan <cmd>   # Run any artisan command (avoids finding php binary)
-docker compose exec app php artisan test    # Run tests in container
-docker compose exec app vendor/bin/pint     # Run Pint formatter in container
-docker compose exec app composer <cmd>      # Run composer in container
+docker compose up -d                                              # Start app, nginx, postgres, redis
+docker compose --profile dev up -d                               # Also start the Bun/Vite node container
+docker compose exec --user appuser app php artisan migrate        # Run migrations inside container
+docker compose exec --user appuser app php artisan <cmd>          # Run any artisan command (avoids finding php binary)
+docker compose exec --user appuser app php artisan test           # Run tests in container
+docker compose exec --user appuser app vendor/bin/pint            # Run Pint formatter in container
+docker compose exec --user appuser app composer <cmd>             # Run composer in container
 ```
 
 App is served at `http://localhost:8080` (nginx) when running in Docker.
 
-> **Tip:** Always use `docker compose exec app` for PHP/artisan/composer — the container has the correct PHP binary on PATH.
+> **Important:** Always pass `--user appuser` to `docker compose exec`. Docker Compose v5 does not inherit the service's `user:` setting for exec commands — without it, exec runs as root and creates root-owned files on the host that can't be edited directly.
+
+> **One-time fix** (if files end up root-owned): `docker compose exec -u root app chown -R 1000:1000 /var/www`
 
 ### Artisan shortcuts
 ```bash
@@ -47,8 +49,8 @@ php artisan migrate:fresh --seed             # Wipe and re-seed DB
 ### Post-implementation checklist
 
 After finishing any implementation task:
-1. Ensure tests exist for the new/changed behaviour — run `composer test` (local) or `docker compose exec app php artisan test` (Docker)
-2. Run Laravel Pint to fix PHP style — `vendor/bin/pint` (local) or `docker compose exec app vendor/bin/pint` (Docker)
+1. Ensure tests exist for the new/changed behaviour — run `composer test` (local) or `docker compose exec --user appuser app php artisan test` (Docker)
+2. Run Laravel Pint to fix PHP style — `vendor/bin/pint` (local) or `docker compose exec --user appuser app vendor/bin/pint` (Docker)
 3. For frontend changes, run `bun run lint` (once ESLint is configured — see below)
 
 ### PHP — Laravel Pint

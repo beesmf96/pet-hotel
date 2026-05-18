@@ -3,14 +3,14 @@
 namespace App\Jobs;
 
 use App\Models\Booking;
-use App\Notifications\BookingConfirmed;
+use App\Notifications\BookingCancelled;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class SendBookingConfirmationNotification implements ShouldQueue
+class SendBookingCancelledNotification implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -19,6 +19,6 @@ class SendBookingConfirmationNotification implements ShouldQueue
     public function handle(): void
     {
         $this->booking->loadMissing(['hotel', 'user']);
-        $this->booking->user->notify(new BookingConfirmed($this->booking));
+        $this->booking->user->notify(new BookingCancelled($this->booking));
     }
 }
