@@ -24,5 +24,6 @@ class DatabaseSeeder extends Seeder
 
         $this->call(PetHotelSeeder::class);
         $this->call(HotelAvailabilitySeeder::class);
+        $this->call(AdminUserSeeder::class);
     }
 }

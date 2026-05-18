@@ -184,25 +184,60 @@
 
 ---
 
-## Module 9 — Admin Panel (Filament)
+## Module 9a — Admin Panel Setup
 
-**Manages:** Hotels, Bookings, Users, Reviews
+**Goal:** Get Filament installed, secured, and seeded with an admin user.
 
-### Setup
-- [ ] Install and configure Filament v3
-- [ ] Create `AdminUser` seeder
-- [ ] Restrict `/admin` to users with `is_admin` flag
+- [x] Add `is_admin` boolean column migration to `users` table
+- [x] Add `canAccessPanel()` to `User` model to restrict `/admin` to admins
+- [x] Create `AdminUserSeeder` — seeds one admin account
+- [x] Update `DatabaseSeeder` to call `AdminUserSeeder`
+- [x] Verify `/admin` login works and non-admins are rejected
 
-### Resources
-- [ ] `HotelResource` — CRUD for pet hotels, photos, facilities, pricing, policies
-- [ ] `BookingResource` — list bookings, filter by status, confirm/cancel action buttons
-- [ ] `UserResource` — read-only user list, view pets
-- [ ] `ReviewResource` — moderate reviews (toggle `is_visible`)
+---
 
-### Dashboard Widgets
-- [ ] Bookings today (stat widget)
-- [ ] Pending bookings count (stat widget)
-- [ ] New users this week (stat widget)
+## Module 9b — Manage Hotels (Admin)
+
+**Goal:** Full CRUD for pet hotels from the admin panel.
+
+- [ ] Generate `HotelResource` with table (name, city, status) and form
+- [ ] Form includes: name, description, address, city, price fields
+- [ ] Form includes repeater or relation manager for photos
+- [ ] Form includes repeater or relation manager for policies
+- [ ] Form includes repeater or relation manager for pricing tiers
+
+---
+
+## Module 9c — Manage Bookings (Admin)
+
+**Goal:** Let admins view, filter, confirm, and cancel bookings.
+
+- [ ] Generate `BookingResource` with table (pet, hotel, dates, status)
+- [ ] Filter by status (pending / confirmed / cancelled)
+- [ ] Add `Confirm` action button (sets status → confirmed, fires notification)
+- [ ] Add `Cancel` action button (sets status → cancelled, fires notification)
+
+---
+
+## Module 9d — Manage Users & Reviews (Admin)
+
+**Goal:** Read-only user list with pets, and review moderation.
+
+- [ ] Generate `UserResource` — read-only table (name, email, created_at)
+- [ ] Add relation manager to show pets per user
+- [ ] Generate `ReviewResource` — table with rating, body, visibility toggle
+- [ ] Add `Toggle Visibility` action (flips `is_visible`)
+
+---
+
+## Module 9e — Dashboard Widgets
+
+**Goal:** At-a-glance stats on the Filament dashboard.
+
+- [ ] `BookingsTodayWidget` — stat widget: count of bookings with check-in today
+- [ ] `PendingBookingsWidget` — stat widget: count of bookings with status = pending
+- [ ] `NewUsersThisWeekWidget` — stat widget: users created in the last 7 days
+- [ ] Register all three widgets in `AdminPanelProvider`
 
 ---
 
