@@ -152,16 +152,16 @@
 **Covers:** FR #6 (View Ratings and Reviews), FR #8 (Leave Feedback)
 
 ### Backend
-- [ ] `reviews` table: user_id, hotel_id, booking_id, rating (1–5), comment, is_visible
-- [ ] Only allow review after a confirmed + completed booking
-- [ ] `ReviewController@store` — submit review
-- [ ] `ReviewController@index` — public list per hotel (paginated)
-- [ ] Compute average rating on `pet_hotels` table (via DB view or accessor)
+- [x] `reviews` table: user_id, hotel_id, booking_id, rating (1–5), comment, is_visible
+- [x] Only allow review after a confirmed + completed booking
+- [x] `ReviewController@store` — submit review
+- [x] `ReviewController@index` — public list per hotel (paginated)
+- [x] Compute average rating on `pet_hotels` table (via DB view or accessor)
 
 ### Frontend
-- [ ] `ReviewList.vue` — paginated reviews with star display
-- [ ] `LeaveReviewModal.vue` — star picker + comment textarea
-- [ ] Show "Leave a review" prompt on `MyBookingsPage` for completed bookings
+- [x] `ReviewList.vue` — paginated reviews with star display
+- [x] `LeaveReviewModal.vue` — star picker + comment textarea
+- [x] Show "Leave a review" prompt on `MyBookingsPage` for completed bookings
 
 ---
 
