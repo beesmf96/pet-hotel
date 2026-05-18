@@ -32,13 +32,20 @@ RUN pecl install redis && docker-php-ext-enable redis
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+ARG UID=1000
+ARG GID=1000
+RUN addgroup -g ${GID} appgroup && \
+    adduser -u ${UID} -G appgroup -s /bin/sh -D appuser
+
 WORKDIR /var/www
 
 COPY . .
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction 2>/dev/null || true
 
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
+RUN chown -R appuser:appgroup /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
+
+USER appuser
 
 EXPOSE 9000
 CMD ["php-fpm"]
