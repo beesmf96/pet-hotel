@@ -9,7 +9,6 @@ const props = defineProps({
 });
 
 const form = useForm({
-    hotel_id: props.hotel.id,
     pet_id: '',
     check_in: '',
     check_out: '',
@@ -34,8 +33,10 @@ const totalPrice = computed(() => {
     return (Number(pricing.value.price_per_night) * nights.value).toFixed(2);
 });
 
+const todayStr = new Date().toISOString().slice(0, 10);
+
 function submit() {
-    form.post('/bookings');
+    form.post(`/hotels/${props.hotel.slug}/bookings`);
 }
 </script>
 
@@ -87,6 +88,7 @@ function submit() {
                             <input
                                 v-model="form.check_in"
                                 type="date"
+                                :min="todayStr"
                                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
                             />
                             <p v-if="form.errors.check_in" class="mt-1 text-xs text-red-600">{{ form.errors.check_in }}</p>
@@ -97,6 +99,7 @@ function submit() {
                             <input
                                 v-model="form.check_out"
                                 type="date"
+                                :min="form.check_in || todayStr"
                                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
                             />
                             <p v-if="form.errors.check_out" class="mt-1 text-xs text-red-600">{{ form.errors.check_out }}</p>

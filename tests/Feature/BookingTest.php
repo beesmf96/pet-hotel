@@ -82,8 +82,7 @@ class BookingTest extends TestCase
         $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
         $hotel->pricing()->create(['pet_type' => 'dog', 'price_per_night' => 50]);
 
-        $response = $this->actingAs($user)->post('/bookings', [
-            'hotel_id' => $hotel->id,
+        $response = $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
             'pet_id' => $pet->id,
             'check_in' => '2026-06-01',
             'check_out' => '2026-06-04',
@@ -111,8 +110,7 @@ class BookingTest extends TestCase
         $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'cat']);
         $hotel->pricing()->create(['pet_type' => 'cat', 'price_per_night' => 75.50]);
 
-        $this->actingAs($user)->post('/bookings', [
-            'hotel_id' => $hotel->id,
+        $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
             'pet_id' => $pet->id,
             'check_in' => '2026-07-10',
             'check_out' => '2026-07-12',
@@ -131,8 +129,7 @@ class BookingTest extends TestCase
         $hotel = PetHotel::factory()->create();
         $pet = $user->pets()->create(['name' => 'Tweety', 'species' => 'bird']);
 
-        $this->actingAs($user)->post('/bookings', [
-            'hotel_id' => $hotel->id,
+        $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
             'pet_id' => $pet->id,
             'check_in' => '2026-07-10',
             'check_out' => '2026-07-12',
@@ -148,8 +145,7 @@ class BookingTest extends TestCase
         $hotel = PetHotel::factory()->create();
         $foreignPet = $other->pets()->create(['name' => 'Whiskers', 'species' => 'cat']);
 
-        $this->actingAs($user)->post('/bookings', [
-            'hotel_id' => $hotel->id,
+        $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
             'pet_id' => $foreignPet->id,
             'check_in' => '2026-06-01',
             'check_out' => '2026-06-03',
@@ -159,9 +155,10 @@ class BookingTest extends TestCase
     public function test_store_validates_required_fields(): void
     {
         $user = User::factory()->create();
+        $hotel = PetHotel::factory()->create();
 
-        $this->actingAs($user)->post('/bookings', [])
-            ->assertSessionHasErrors(['hotel_id', 'pet_id', 'check_in', 'check_out']);
+        $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [])
+            ->assertSessionHasErrors(['pet_id', 'check_in', 'check_out']);
     }
 
     public function test_store_validates_check_out_after_check_in(): void
@@ -170,8 +167,7 @@ class BookingTest extends TestCase
         $hotel = PetHotel::factory()->create();
         $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
-        $this->actingAs($user)->post('/bookings', [
-            'hotel_id' => $hotel->id,
+        $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
             'pet_id' => $pet->id,
             'check_in' => '2026-06-05',
             'check_out' => '2026-06-03',

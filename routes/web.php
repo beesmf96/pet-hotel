@@ -55,7 +55,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/pets/{pet}', [PetController::class, 'destroy'])->name('pets.destroy');
 
         Route::get('/hotels/{slug}/book', [BookingController::class, 'create'])->name('bookings.create');
-        Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+        Route::post('/hotels/{slug}/bookings', [BookingController::class, 'store'])->name('bookings.store');
         Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
         Route::get('/bookings/{booking}/confirmation', [BookingController::class, 'confirmation'])->name('bookings.confirmation');
         Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');

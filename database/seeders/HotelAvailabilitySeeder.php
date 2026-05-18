@@ -33,7 +33,7 @@ class HotelAvailabilitySeeder extends Seeder
                     [
                         'hotel_id' => $hotel->id,
                         'date' => $cursor->format('Y-m-d'),
-                        'available_spots' => $isBlocked ? 10 : $spots,
+                        'available_spots' => $spots,
                         'is_blocked' => $isBlocked,
                     ],
                 ], ['hotel_id', 'date'], ['available_spots', 'is_blocked']);

@@ -15,6 +15,7 @@ const currentYear = ref(today.getFullYear());
 const currentMonth = ref(today.getMonth()); // 0-indexed
 
 const loading = ref(false);
+const error = ref(null);
 const days = ref({});
 
 const monthLabel = computed(() =>
@@ -62,10 +63,15 @@ function cellClass(cell) {
 
 async function fetchMonth() {
     loading.value = true;
+    error.value = null;
     try {
         const res = await fetch(`/hotels/${props.hotelSlug}/availability?month=${monthKey.value}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         days.value = data.days ?? {};
+    } catch {
+        error.value = 'Could not load availability. Please try again.';
+        days.value = {};
     } finally {
         loading.value = false;
     }
@@ -144,6 +150,9 @@ onMounted(fetchMonth);
                 <span v-if="cell">{{ cell.day }}</span>
             </div>
         </div>
+
+        <!-- Error state -->
+        <p v-if="error" class="mt-3 text-sm text-red-600 text-center">{{ error }}</p>
 
         <!-- Legend -->
         <div class="flex flex-wrap gap-4 mt-4 pt-4 border-t border-gray-100">

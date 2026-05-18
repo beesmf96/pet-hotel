@@ -8,13 +8,12 @@ class StoreBookingRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user() !== null;
     }
 
     public function rules(): array
     {
         return [
-            'hotel_id' => ['required', 'integer', 'exists:pet_hotels,id'],
             'pet_id' => ['required', 'integer', 'exists:pets,id'],
             'check_in' => ['required', 'date', 'after_or_equal:today'],
             'check_out' => ['required', 'date', 'after:check_in'],

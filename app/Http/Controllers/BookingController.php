@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBookingRequest;
 use App\Jobs\SendBookingRequestNotification;
 use App\Models\Booking;
+use App\Models\HotelAvailability;
 use App\Models\PetHotel;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -23,29 +25,36 @@ class BookingController extends Controller
         ]);
     }
 
-    public function store(StoreBookingRequest $request): RedirectResponse
+    public function store(StoreBookingRequest $request, string $slug): RedirectResponse
     {
-        $hotel = PetHotel::with('pricing')->findOrFail($request->hotel_id);
-        $pet = $request->user()->pets()->findOrFail($request->pet_id);
+        $booking = DB::transaction(function () use ($request, $slug): Booking {
+            $hotel = PetHotel::where('slug', $slug)->with('pricing')->firstOrFail();
+            $pet = $request->user()->pets()->findOrFail($request->pet_id);
 
-        $checkIn = $request->date('check_in');
-        $checkOut = $request->date('check_out');
-        $nights = $checkIn->diffInDays($checkOut);
+            $checkIn = $request->date('check_in');
+            $checkOut = $request->date('check_out');
+            $nights = $checkIn->diffInDays($checkOut);
 
-        $pricing = $hotel->pricing->firstWhere('pet_type', $pet->species);
-        $pricePerNight = $pricing ? (float) $pricing->price_per_night : 0;
-        $totalPrice = $pricePerNight * $nights;
+            HotelAvailability::where('hotel_id', $hotel->id)
+                ->whereBetween('date', [$checkIn->toDateString(), $checkOut->copy()->subDay()->toDateString()])
+                ->lockForUpdate()
+                ->get();
 
-        $booking = Booking::create([
-            'user_id' => $request->user()->id,
-            'hotel_id' => $hotel->id,
-            'pet_id' => $pet->id,
-            'check_in' => $checkIn,
-            'check_out' => $checkOut,
-            'status' => 'pending',
-            'notes' => $request->notes,
-            'total_price' => $totalPrice,
-        ]);
+            $pricing = $hotel->pricing->firstWhere('pet_type', $pet->species);
+            $pricePerNight = $pricing ? (float) $pricing->price_per_night : 0;
+            $totalPrice = $pricePerNight * $nights;
+
+            return Booking::create([
+                'user_id' => $request->user()->id,
+                'hotel_id' => $hotel->id,
+                'pet_id' => $pet->id,
+                'check_in' => $checkIn,
+                'check_out' => $checkOut,
+                'status' => 'pending',
+                'notes' => $request->notes,
+                'total_price' => $totalPrice,
+            ]);
+        });
 
         SendBookingRequestNotification::dispatch($booking);
 
