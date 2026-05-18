@@ -3,6 +3,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import AvailabilityCalendar from '@/Components/Hotels/AvailabilityCalendar.vue';
 import ReviewList from '@/Components/Hotels/ReviewList.vue';
 import { ref, computed } from 'vue';
+import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
     hotel: { type: Object, required: true },
@@ -175,12 +176,12 @@ function nextPhoto() {
 
                     <!-- Book Now CTA -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <a
+                        <Link
                             :href="`/hotels/${hotel.slug}/book`"
                             class="block w-full text-center bg-gray-900 text-white text-sm font-medium px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors"
                         >
                             Book Now
-                        </a>
+                        </Link>
                     </div>
 
                     <!-- Availability Calendar -->
@@ -190,13 +191,13 @@ function nextPhoto() {
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="text-base font-semibold text-gray-900">Reviews</h2>
-                            <a
+                            <Link
                                 v-if="reviewsCount > 5"
                                 :href="`/hotels/${hotel.slug}/reviews`"
                                 class="text-xs text-gray-500 hover:text-gray-700 underline underline-offset-2"
                             >
                                 View all {{ reviewsCount }}
-                            </a>
+                            </Link>
                         </div>
                         <ReviewList
                             :reviews="reviews"

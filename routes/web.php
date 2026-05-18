@@ -56,7 +56,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('/pets/{pet}', [PetController::class, 'update'])->name('pets.update');
         Route::delete('/pets/{pet}', [PetController::class, 'destroy'])->name('pets.destroy');
 
-        Route::post('/hotels/{slug}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+        Route::post('/hotels/{slug}/reviews', [ReviewController::class, 'store'])->middleware('throttle:5,10')->name('reviews.store');
 
         Route::get('/hotels/{slug}/book', [BookingController::class, 'create'])->name('bookings.create');
         Route::post('/hotels/{slug}/bookings', [BookingController::class, 'store'])->name('bookings.store');

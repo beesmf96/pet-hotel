@@ -34,7 +34,14 @@ class BookingFactory extends Factory
 
     public function completed(): static
     {
-        return $this->state(['status' => 'completed']);
+        $checkIn = fake()->dateTimeBetween('-3 months', '-7 days');
+        $checkOut = fake()->dateTimeBetween($checkIn, '-1 day');
+
+        return $this->state([
+            'status' => 'completed',
+            'check_in' => $checkIn,
+            'check_out' => $checkOut,
+        ]);
     }
 
     public function confirmed(): static

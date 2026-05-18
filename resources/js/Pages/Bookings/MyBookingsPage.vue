@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from 'vue';
+import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import LeaveReviewModal from '@/Components/Hotels/LeaveReviewModal.vue';
+import { useFormatDate } from '@/composables/useFormatDate.js';
 
 defineProps({
     bookings: { type: Array, default: () => [] },
@@ -14,13 +16,7 @@ const statusConfig = {
     cancelled: { label: 'Cancelled', classes: 'bg-gray-100 text-gray-500' },
 };
 
-function formatDate(dateStr) {
-    return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    });
-}
+const { formatDate } = useFormatDate();
 
 function nights(checkIn, checkOut) {
     return Math.round((new Date(checkOut) - new Date(checkIn)) / 86400000);
@@ -45,12 +41,12 @@ function closeReview() {
 
         <div v-if="bookings.length === 0" class="bg-white rounded-xl shadow-sm border border-gray-200 p-10 text-center">
             <p class="text-gray-500 text-sm">You have no bookings yet.</p>
-            <a
+            <Link
                 href="/hotels"
                 class="inline-block mt-4 bg-gray-900 text-white text-sm px-5 py-2 rounded-lg hover:bg-gray-700"
             >
                 Find a Hotel
-            </a>
+            </Link>
         </div>
 
         <div v-else class="space-y-4">
@@ -59,7 +55,7 @@ function closeReview() {
                 :key="booking.id"
                 class="bg-white rounded-xl shadow-sm border border-gray-200 hover:border-gray-300 transition-colors"
             >
-                <a
+                <Link
                     :href="`/bookings/${booking.id}`"
                     class="block p-5"
                 >
@@ -83,7 +79,7 @@ function closeReview() {
                             <p class="text-sm font-semibold text-gray-900">${{ Number(booking.total_price).toFixed(2) }}</p>
                         </div>
                     </div>
-                </a>
+                </Link>
 
                 <!-- Leave a review prompt -->
                 <div

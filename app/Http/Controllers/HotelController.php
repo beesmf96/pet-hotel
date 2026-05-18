@@ -15,8 +15,11 @@ class HotelController extends Controller
             ->with(['facilities', 'photos', 'policy', 'pricing'])
             ->firstOrFail();
 
-        $reviewsCount = $hotel->reviews()->count();
-        $averageRating = $reviewsCount > 0 ? round($hotel->reviews()->avg('rating'), 1) : null;
+        $stats = $hotel->reviews()
+            ->selectRaw('COUNT(*) as count, AVG(rating) as avg_rating')
+            ->first();
+        $reviewsCount = (int) $stats->count;
+        $averageRating = $reviewsCount > 0 ? round((float) $stats->avg_rating, 1) : null;
 
         $reviews = $hotel->reviews()
             ->with('user:id,name')

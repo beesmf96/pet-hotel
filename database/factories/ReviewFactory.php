@@ -20,10 +20,12 @@ class ReviewFactory extends Factory
         return [
             'user_id' => User::factory(),
             'hotel_id' => PetHotel::factory(),
-            'booking_id' => Booking::factory()->completed(),
+            'booking_id' => fn (array $attrs) => Booking::factory()->completed()->create([
+                'user_id' => $attrs['user_id'],
+                'hotel_id' => $attrs['hotel_id'],
+            ]),
             'rating' => fake()->numberBetween(1, 5),
             'comment' => fake()->optional(0.8)->paragraph(),
-            'is_visible' => true,
         ];
     }
 

@@ -1,4 +1,6 @@
 <script setup>
+import { useFormatDate } from '@/composables/useFormatDate.js';
+
 defineProps({
     reviews: { type: Array, default: () => [] },
     averageRating: { type: Number, default: null },
@@ -9,13 +11,7 @@ function starType(rating, position) {
     return position <= rating ? 'filled' : 'empty';
 }
 
-function formatDate(dateStr) {
-    return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    });
-}
+const { formatDate } = useFormatDate();
 </script>
 
 <template>

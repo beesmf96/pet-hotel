@@ -33,7 +33,7 @@ class Booking extends Model
 
             if ($new === 'confirmed' && $original !== 'confirmed') {
                 self::adjustAvailability($booking, -1);
-            } elseif ($new === 'cancelled' && $original === 'confirmed') {
+            } elseif ($new === 'cancelled' && in_array($original, ['confirmed', 'completed'])) {
                 self::adjustAvailability($booking, 1);
             }
         });

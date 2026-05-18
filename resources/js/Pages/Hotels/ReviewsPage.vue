@@ -16,12 +16,12 @@ const props = defineProps({
         <template #header>
             <div>
                 <h1 class="text-xl font-semibold text-gray-900">Reviews — {{ hotel.name }}</h1>
-                <a
+                <Link
                     :href="`/hotels/${hotel.slug}`"
                     class="text-sm text-gray-500 hover:text-gray-700 mt-0.5 inline-block"
                 >
                     ← Back to hotel
-                </a>
+                </Link>
             </div>
         </template>
 

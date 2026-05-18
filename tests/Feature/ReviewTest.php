@@ -249,6 +249,64 @@ class ReviewTest extends TestCase
             ->assertSessionHasErrors('rating');
     }
 
+    public function test_user_cannot_submit_review_for_cancelled_booking(): void
+    {
+        $user = User::factory()->create();
+        $hotel = PetHotel::factory()->create();
+        $booking = Booking::factory()->create([
+            'user_id' => $user->id,
+            'hotel_id' => $hotel->id,
+            'status' => 'cancelled',
+        ]);
+
+        $this->actingAs($user)
+            ->post("/hotels/{$hotel->slug}/reviews", [
+                'booking_id' => $booking->id,
+                'rating' => 4,
+            ])
+            ->assertStatus(404);
+
+        $this->assertDatabaseCount('reviews', 0);
+    }
+
+    public function test_user_cannot_submit_review_for_booking_at_different_hotel(): void
+    {
+        $user = User::factory()->create();
+        $hotelA = PetHotel::factory()->create();
+        $hotelB = PetHotel::factory()->create();
+        $booking = Booking::factory()->completed()->create([
+            'user_id' => $user->id,
+            'hotel_id' => $hotelA->id,
+        ]);
+
+        $this->actingAs($user)
+            ->post("/hotels/{$hotelB->slug}/reviews", [
+                'booking_id' => $booking->id,
+                'rating' => 5,
+            ])
+            ->assertStatus(404);
+
+        $this->assertDatabaseCount('reviews', 0);
+    }
+
+    public function test_comment_must_not_exceed_1000_characters(): void
+    {
+        $user = User::factory()->create();
+        $hotel = PetHotel::factory()->create();
+        $booking = Booking::factory()->completed()->create([
+            'user_id' => $user->id,
+            'hotel_id' => $hotel->id,
+        ]);
+
+        $this->actingAs($user)
+            ->post("/hotels/{$hotel->slug}/reviews", [
+                'booking_id' => $booking->id,
+                'rating' => 4,
+                'comment' => str_repeat('a', 1001),
+            ])
+            ->assertSessionHasErrors('comment');
+    }
+
     // ── My Bookings shows has_review ──────────────────────────────────────────
 
     public function test_my_bookings_includes_has_review_flag(): void

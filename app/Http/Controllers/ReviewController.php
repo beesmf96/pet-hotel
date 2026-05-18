@@ -28,8 +28,11 @@ class ReviewController extends Controller
                 'created_at' => $r->created_at->toDateString(),
             ]);
 
-        $count = $hotel->reviews()->count();
-        $avg = $count > 0 ? round($hotel->reviews()->avg('rating'), 1) : null;
+        $stats = $hotel->reviews()
+            ->selectRaw('COUNT(*) as count, AVG(rating) as avg_rating')
+            ->first();
+        $count = (int) $stats->count;
+        $avg = $count > 0 ? round((float) $stats->avg_rating, 1) : null;
 
         return Inertia::render('Hotels/ReviewsPage', [
             'hotel' => ['name' => $hotel->name, 'slug' => $hotel->slug],
@@ -56,7 +59,6 @@ class ReviewController extends Controller
             'booking_id' => $booking->id,
             'rating' => $request->rating,
             'comment' => $request->comment,
-            'is_visible' => true,
         ]);
 
         return back()->with('success', 'Your review has been submitted.');
