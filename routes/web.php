@@ -12,6 +12,7 @@ use App\Http\Controllers\HotelAvailabilityController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\HotelSearchController;
 use App\Http\Controllers\PetController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,7 @@ Route::get('/', fn () => view('welcome'));
 Route::get('/hotels', [HotelSearchController::class, 'index'])->name('hotels.index');
 Route::get('/hotels/{slug}', [HotelController::class, 'show'])->name('hotels.show');
 Route::get('/hotels/{slug}/availability', [HotelAvailabilityController::class, 'index'])->name('hotels.availability');
+Route::get('/hotels/{slug}/reviews', [ReviewController::class, 'index'])->name('reviews.index');
 
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
@@ -53,6 +55,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/pets', [PetController::class, 'store'])->name('pets.store');
         Route::patch('/pets/{pet}', [PetController::class, 'update'])->name('pets.update');
         Route::delete('/pets/{pet}', [PetController::class, 'destroy'])->name('pets.destroy');
+
+        Route::post('/hotels/{slug}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
         Route::get('/hotels/{slug}/book', [BookingController::class, 'create'])->name('bookings.create');
         Route::post('/hotels/{slug}/bookings', [BookingController::class, 'store'])->name('bookings.store');

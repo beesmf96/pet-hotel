@@ -73,7 +73,7 @@ class BookingController extends Controller
     public function index(): Response
     {
         $bookings = auth()->user()->bookings()
-            ->with(['hotel', 'pet'])
+            ->with(['hotel', 'pet', 'review'])
             ->latest()
             ->get()
             ->map(fn (Booking $b) => [
@@ -84,6 +84,7 @@ class BookingController extends Controller
                 'check_out' => $b->check_out->toDateString(),
                 'status' => $b->status,
                 'total_price' => $b->total_price,
+                'has_review' => $b->review !== null,
             ]);
 
         return Inertia::render('Bookings/MyBookingsPage', [

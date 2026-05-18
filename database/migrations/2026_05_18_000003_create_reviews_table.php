@@ -8,22 +8,22 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('bookings', function (Blueprint $table) {
+        Schema::create('reviews', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('hotel_id')->constrained('pet_hotels')->cascadeOnDelete();
-            $table->foreignId('pet_id')->constrained()->cascadeOnDelete();
-            $table->date('check_in');
-            $table->date('check_out');
-            $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed'])->default('pending');
-            $table->text('notes')->nullable();
-            $table->decimal('total_price', 10, 2);
+            $table->foreignId('booking_id')->constrained()->cascadeOnDelete();
+            $table->tinyInteger('rating'); // 1–5
+            $table->text('comment')->nullable();
+            $table->boolean('is_visible')->default(true);
             $table->timestamps();
+
+            $table->unique('booking_id'); // one review per booking
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('bookings');
+        Schema::dropIfExists('reviews');
     }
 };

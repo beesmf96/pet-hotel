@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Models;
+
+use Database\Factories\ReviewFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+#[Fillable(['user_id', 'hotel_id', 'booking_id', 'rating', 'comment', 'is_visible'])]
+class Review extends Model
+{
+    /** @use HasFactory<ReviewFactory> */
+    use HasFactory;
+
+    protected $casts = [
+        'rating' => 'integer',
+        'is_visible' => 'boolean',
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function hotel(): BelongsTo
+    {
+        return $this->belongsTo(PetHotel::class, 'hotel_id');
+    }
+
+    public function booking(): BelongsTo
+    {
+        return $this->belongsTo(Booking::class);
+    }
+}

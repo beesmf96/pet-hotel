@@ -1,13 +1,14 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import AvailabilityCalendar from '@/Components/Hotels/AvailabilityCalendar.vue';
+import ReviewList from '@/Components/Hotels/ReviewList.vue';
 import { ref, computed } from 'vue';
 
 const props = defineProps({
-    hotel: {
-        type: Object,
-        required: true,
-    },
+    hotel: { type: Object, required: true },
+    reviews: { type: Array, default: () => [] },
+    reviewsCount: { type: Number, default: 0 },
+    averageRating: { type: Number, default: null },
 });
 
 const facilityLabels = {
@@ -185,10 +186,23 @@ function nextPhoto() {
                     <!-- Availability Calendar -->
                     <AvailabilityCalendar :hotel-slug="hotel.slug" />
 
-                    <!-- Ratings placeholder — feeds from Module 7 -->
+                    <!-- Reviews -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h2 class="text-base font-semibold text-gray-900 mb-2">Ratings</h2>
-                        <p class="text-sm text-gray-400 italic">Reviews coming soon.</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-base font-semibold text-gray-900">Reviews</h2>
+                            <a
+                                v-if="reviewsCount > 5"
+                                :href="`/hotels/${hotel.slug}/reviews`"
+                                class="text-xs text-gray-500 hover:text-gray-700 underline underline-offset-2"
+                            >
+                                View all {{ reviewsCount }}
+                            </a>
+                        </div>
+                        <ReviewList
+                            :reviews="reviews"
+                            :average-rating="averageRating"
+                            :reviews-count="reviewsCount"
+                        />
                     </div>
                 </div>
             </div>

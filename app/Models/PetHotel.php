@@ -39,4 +39,9 @@ class PetHotel extends Model
     {
         return $this->hasMany(Booking::class, 'hotel_id');
     }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class, 'hotel_id')->where('is_visible', true);
+    }
 }
