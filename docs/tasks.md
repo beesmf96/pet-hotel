@@ -234,10 +234,10 @@
 
 **Goal:** At-a-glance stats on the Filament dashboard.
 
-- [ ] `BookingsTodayWidget` — stat widget: count of bookings with check-in today
-- [ ] `PendingBookingsWidget` — stat widget: count of bookings with status = pending
-- [ ] `NewUsersThisWeekWidget` — stat widget: users created in the last 7 days
-- [ ] Register all three widgets in `AdminPanelProvider`
+- [x] `BookingsTodayWidget` — stat widget: count of bookings with check-in today
+- [x] `PendingBookingsWidget` — stat widget: count of bookings with status = pending
+- [x] `NewUsersThisWeekWidget` — stat widget: users created in the last 7 days
+- [x] Register all three widgets in `AdminPanelProvider`
 
 ---
 
