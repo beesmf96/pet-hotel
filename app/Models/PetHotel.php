@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[Fillable(['name', 'slug', 'description', 'address', 'city', 'lat', 'lng', 'cover_photo'])]
+#[Fillable(['name', 'slug', 'description', 'address', 'city', 'lat', 'lng', 'cover_photo', 'is_active'])]
 class PetHotel extends Model
 {
     /** @use HasFactory<PetHotelFactory> */

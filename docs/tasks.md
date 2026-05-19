@@ -200,11 +200,11 @@
 
 **Goal:** Full CRUD for pet hotels from the admin panel.
 
-- [ ] Generate `HotelResource` with table (name, city, status) and form
-- [ ] Form includes: name, description, address, city, price fields
-- [ ] Form includes repeater or relation manager for photos
-- [ ] Form includes repeater or relation manager for policies
-- [ ] Form includes repeater or relation manager for pricing tiers
+- [x] Generate `HotelResource` with table (name, city, status) and form
+- [x] Form includes: name, description, address, city, price fields
+- [x] Form includes repeater or relation manager for photos
+- [x] Form includes repeater or relation manager for policies
+- [x] Form includes repeater or relation manager for pricing tiers
 
 ---
 
