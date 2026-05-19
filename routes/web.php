@@ -17,7 +17,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => view('welcome'));
+Route::get('/', fn () => redirect()->route('hotels.index'));
 Route::get('/hotels', [HotelSearchController::class, 'index'])->name('hotels.index');
 Route::get('/hotels/{slug}', [HotelController::class, 'show'])->name('hotels.show');
 Route::get('/hotels/{slug}/availability', [HotelAvailabilityController::class, 'index'])->name('hotels.availability');

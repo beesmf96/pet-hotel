@@ -26,7 +26,8 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
+            ->domain('admin.pet-hotel.local')
+            ->path('')
             ->login()
             ->colors([
                 'primary' => Color::Amber,

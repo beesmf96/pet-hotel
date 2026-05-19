@@ -22,6 +22,12 @@
 - [x] Update `.env.docker`: `MAIL_MAILER=smtp`, `MAIL_HOST=mailpit`, `MAIL_PORT=1025`
 - [x] Fix missing CSRF meta tag in `resources/views/app.blade.php` (caused 419 on logout)
 
+### Infrastructure Patch (2026-05-20 — admin subdomain)
+- [x] Add nginx virtual host `admin.pet-hotel.local` → Laravel app (PHP-FPM, same pattern as `web.conf`)
+- [x] Configure Filament `AdminPanelProvider` with `->domain('admin.pet-hotel.local')->path('')`
+- [x] Redirect root route `/` to `/hotels` (removes default Laravel welcome page)
+- [x] Update `CLAUDE.md` and `README.md` to document new host entries and admin URL
+
 ### Laravel Project Bootstrap
 - [x] Scaffold Laravel project inside repo root (Laravel 13)
 - [x] Install frontend deps: `bun install` (Vite + Vue 3 + `@inertiajs/vue3` + `@vitejs/plugin-vue`)

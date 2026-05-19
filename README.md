@@ -34,6 +34,7 @@ Add these entries to your hosts file — `/etc/hosts` on Linux/Mac, `C:\Windows\
 
 ```
 127.0.0.1  web.pet-hotel.local
+127.0.0.1  admin.pet-hotel.local
 127.0.0.1  mailpit.local
 ```
 
@@ -69,7 +70,7 @@ docker compose exec --user appuser app php artisan migrate --seed
 ### 7. Open the app
 
 - **App**: http://web.pet-hotel.local
-- **Admin panel**: http://web.pet-hotel.local/admin
+- **Admin panel**: http://admin.pet-hotel.local
 - **Mailpit** (email UI): http://mailpit.local
 
 ---

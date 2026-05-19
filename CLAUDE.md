@@ -32,11 +32,13 @@ docker compose exec --user appuser app composer <cmd>             # Run composer
 ```
 
 App is served at `http://web.pet-hotel.local` (nginx port 80) when running in Docker.
+Admin panel is at `http://admin.pet-hotel.local`.
 Mailpit web UI (email catcher) is at `http://mailpit.local`.
 
 > **Host machine setup** — add to `/etc/hosts` (Linux/Mac) or `C:\Windows\System32\drivers\etc\hosts` (Windows):
 > ```
 > 127.0.0.1  web.pet-hotel.local
+> 127.0.0.1  admin.pet-hotel.local
 > 127.0.0.1  mailpit.local
 > ```
 
@@ -112,13 +114,14 @@ Inertia.js bridges Laravel and Vue: Laravel returns `Inertia::render('PageName',
 - Queue driver: Redis. Run `php artisan queue:work` or use `composer dev`
 
 ### Admin panel (Filament v4)
-- Route: `/admin`, configured in `app/Providers/Filament/AdminPanelProvider.php`
+- Route: `http://admin.pet-hotel.local`, configured in `app/Providers/Filament/AdminPanelProvider.php`
+- Served via its own nginx virtual host (`docker/nginx/conf.d/admin.conf`) with `->domain('admin.pet-hotel.local')->path('')`
 - Auto-discovers Resources/Pages/Widgets from the `app/Filament/` directory
 - Filament has its own auth stack (separate from Sanctum SPA auth)
 
 ### Authentication
 - **Customer-facing**: Laravel Sanctum (cookie-based SPA auth), to be wired up in Module 1
-- **Admin panel**: Filament's built-in auth at `/admin/login`
+- **Admin panel**: Filament's built-in auth at `http://admin.pet-hotel.local/login`
 
 ### Database
 - PostgreSQL 16 (port `5432`). Credentials in `.env` / `.env.docker`
