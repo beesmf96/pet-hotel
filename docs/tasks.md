@@ -13,6 +13,15 @@
 - [x] Create `.env.docker` example file
 - [x] Verify all services spin up: `docker compose up -d`
 
+### Infrastructure Patch (2026-05-20)
+- [x] Add `mailpit` service (`axllent/mailpit`) for local email catching
+- [x] Replace single `docker/nginx/default.conf` with `docker/nginx/conf.d/` directory
+- [x] Add nginx virtual host `web.pet-hotel.local` → Laravel app
+- [x] Add nginx virtual host `mailpit.local` → Mailpit web UI (WebSocket-aware proxy)
+- [x] Switch nginx port binding `8080 → 80`
+- [x] Update `.env.docker`: `MAIL_MAILER=smtp`, `MAIL_HOST=mailpit`, `MAIL_PORT=1025`
+- [x] Fix missing CSRF meta tag in `resources/views/app.blade.php` (caused 419 on logout)
+
 ### Laravel Project Bootstrap
 - [x] Scaffold Laravel project inside repo root (Laravel 13)
 - [x] Install frontend deps: `bun install` (Vite + Vue 3 + `@inertiajs/vue3` + `@vitejs/plugin-vue`)
