@@ -31,7 +31,14 @@ docker compose exec --user appuser app vendor/bin/pint            # Run Pint for
 docker compose exec --user appuser app composer <cmd>             # Run composer in container
 ```
 
-App is served at `http://localhost:8080` (nginx) when running in Docker.
+App is served at `http://web.pet-hotel.local` (nginx port 80) when running in Docker.
+Mailpit web UI (email catcher) is at `http://mailpit.local`.
+
+> **Host machine setup** — add to `/etc/hosts` (Linux/Mac) or `C:\Windows\System32\drivers\etc\hosts` (Windows):
+> ```
+> 127.0.0.1  web.pet-hotel.local
+> 127.0.0.1  mailpit.local
+> ```
 
 > **Important:** Always pass `--user appuser` to `docker compose exec`. Docker Compose v5 does not inherit the service's `user:` setting for exec commands — without it, exec runs as root and creates root-owned files on the host that can't be edited directly.
 
@@ -85,7 +92,7 @@ Once configured, run `bun run lint` after any frontend change.
 ## Architecture
 
 ### Request flow
-Browser → Nginx (`:8080`) → PHP-FPM (`app` container) → Laravel
+Browser → Nginx (`:80`, virtual hosts) → PHP-FPM (`app` container) → Laravel
 
 Inertia.js bridges Laravel and Vue: Laravel returns `Inertia::render('PageName', $props)` instead of a Blade view, and the Vue SPA picks it up without a full page reload.
 
