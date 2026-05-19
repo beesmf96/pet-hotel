@@ -26,40 +26,51 @@ cd pet-hotel
 cp .env.docker .env
 ```
 
-The `.env.docker` file is pre-configured for Docker (PostgreSQL host `postgres`, Redis host `redis`, app URL `http://localhost:8080`).
+The `.env.docker` file is pre-configured for Docker (PostgreSQL host `postgres`, Redis host `redis`, app URL `http://web.pet-hotel.local`, Mailpit for email).
 
-### 3. Build and start the containers
+### 3. Add local hostnames
+
+Add these entries to your hosts file — `/etc/hosts` on Linux/Mac, `C:\Windows\System32\drivers\etc\hosts` on Windows:
+
+```
+127.0.0.1  web.pet-hotel.local
+127.0.0.1  mailpit.local
+```
+
+### 4. Build and start the containers
 
 ```bash
 docker compose up -d
 ```
 
-This starts four services:
+This starts five services:
 
-| Container           | Description              | Port   |
-|---------------------|--------------------------|--------|
-| `pet_hotel_app`     | PHP-FPM (Laravel)        | —      |
-| `pet_hotel_nginx`   | Nginx web server         | 8080   |
-| `pet_hotel_postgres`| PostgreSQL 16            | 5432   |
-| `pet_hotel_redis`   | Redis 7                  | 6379   |
-| `pet_hotel_queue`   | Laravel queue worker     | —      |
+| Container             | Description              | Host port |
+|-----------------------|--------------------------|-----------|
+| `pet_hotel_app`       | PHP-FPM (Laravel)        | —         |
+| `pet_hotel_nginx`     | Nginx web server         | 80        |
+| `pet_hotel_postgres`  | PostgreSQL 16            | 5432      |
+| `pet_hotel_redis`     | Redis 7                  | 6379      |
+| `pet_hotel_queue`     | Laravel queue worker     | —         |
+| `pet_hotel_mailpit`   | Mailpit email catcher    | —         |
 
-### 4. Generate the application key
-
-```bash
-docker compose exec app php artisan key:generate
-```
-
-### 5. Run migrations and seed the database
+### 5. Generate the application key
 
 ```bash
-docker compose exec app php artisan migrate --seed
+docker compose exec --user appuser app php artisan key:generate
 ```
 
-### 6. Open the app
+### 6. Run migrations and seed the database
 
-- **App**: http://localhost:8080
-- **Admin panel**: http://localhost:8080/admin
+```bash
+docker compose exec --user appuser app php artisan migrate --seed
+```
+
+### 7. Open the app
+
+- **App**: http://web.pet-hotel.local
+- **Admin panel**: http://web.pet-hotel.local/admin
+- **Mailpit** (email UI): http://mailpit.local
 
 ---
 
@@ -71,7 +82,7 @@ For active frontend development, start the `node` container (Bun + Vite dev serv
 docker compose --profile dev up -d
 ```
 
-Vite will be available at http://localhost:5173. The app served at `:8080` will automatically use the hot-reload assets.
+Vite will be available at http://localhost:5173. The app served at `web.pet-hotel.local` will automatically use the hot-reload assets.
 
 ---
 
@@ -88,19 +99,19 @@ docker compose down -v        # Stop and also wipe all data volumes
 ### Run artisan commands
 
 ```bash
-docker compose exec app php artisan <command>
+docker compose exec --user appuser app php artisan <command>
 ```
 
 ### Run tests
 
 ```bash
-docker compose exec app php artisan test
+docker compose exec --user appuser app php artisan test
 ```
 
 ### Fix PHP code style (Laravel Pint)
 
 ```bash
-docker compose exec app vendor/bin/pint
+docker compose exec --user appuser app vendor/bin/pint
 ```
 
 ### Lint frontend
@@ -112,7 +123,7 @@ bun run lint
 ### Wipe and re-seed the database
 
 ```bash
-docker compose exec app php artisan migrate:fresh --seed
+docker compose exec --user appuser app php artisan migrate:fresh --seed
 ```
 
 ---
@@ -142,4 +153,4 @@ docs/
 
 **Database connection refused on first boot** — PostgreSQL takes a few seconds to initialize. The `app` container waits for a health check, but if you hit an error immediately after `up -d`, wait 10 seconds and retry.
 
-**Port conflicts** — If `:8080`, `:5432`, or `:6379` are in use on your machine, edit the `ports` mappings in `docker-compose.yml` before starting.
+**Port conflicts** — If `:80`, `:5432`, or `:6379` are in use on your machine, edit the `ports` mappings in `docker-compose.yml` before starting.
