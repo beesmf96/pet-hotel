@@ -223,10 +223,10 @@
 
 **Goal:** Read-only user list with pets, and review moderation.
 
-- [ ] Generate `UserResource` — read-only table (name, email, created_at)
-- [ ] Add relation manager to show pets per user
-- [ ] Generate `ReviewResource` — table with rating, body, visibility toggle
-- [ ] Add `Toggle Visibility` action (flips `is_visible`)
+- [x] Generate `UserResource` — read-only table (name, email, created_at)
+- [x] Add relation manager to show pets per user
+- [x] Generate `ReviewResource` — table with rating, body, visibility toggle
+- [x] Add `Toggle Visibility` action (flips `is_visible`)
 
 ---
 
