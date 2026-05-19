@@ -212,10 +212,10 @@
 
 **Goal:** Let admins view, filter, confirm, and cancel bookings.
 
-- [ ] Generate `BookingResource` with table (pet, hotel, dates, status)
-- [ ] Filter by status (pending / confirmed / cancelled)
-- [ ] Add `Confirm` action button (sets status → confirmed, fires notification)
-- [ ] Add `Cancel` action button (sets status → cancelled, fires notification)
+- [x] Generate `BookingResource` with table (pet, hotel, dates, status)
+- [x] Filter by status (pending / confirmed / cancelled)
+- [x] Add `Confirm` action button (sets status → confirmed, fires notification)
+- [x] Add `Cancel` action button (sets status → cancelled, fires notification)
 
 ---
 
