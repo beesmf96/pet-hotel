@@ -11,13 +11,14 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HotelAvailabilityController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\HotelSearchController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect()->route('hotels.index'));
+Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/hotels', [HotelSearchController::class, 'index'])->name('hotels.index');
 Route::get('/hotels/{slug}', [HotelController::class, 'show'])->name('hotels.show');
 Route::get('/hotels/{slug}/availability', [HotelAvailabilityController::class, 'index'])->name('hotels.availability');

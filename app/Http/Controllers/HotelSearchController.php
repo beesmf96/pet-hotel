@@ -13,6 +13,7 @@ class HotelSearchController extends Controller
     public function index(Request $request): Response
     {
         $query = PetHotel::query()
+            ->where('is_active', true)
             ->with(['facilities'])
             ->addSelect([
                 'price_from' => PetHotelPricing::selectRaw('MIN(price_per_night)')

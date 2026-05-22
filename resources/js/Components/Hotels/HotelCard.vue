@@ -49,7 +49,7 @@ function visitHotel() {
             <h3 class="text-sm font-semibold text-gray-900 truncate">{{ hotel.name }}</h3>
             <p class="text-xs text-gray-500 mt-0.5 mb-3">{{ hotel.city }}</p>
 
-            <div v-if="hotel.facilities.length > 0" class="flex flex-wrap gap-1.5 mb-3">
+            <div v-if="hotel.facilities?.length > 0" class="flex flex-wrap gap-1.5 mb-3">
                 <span
                     v-for="facility in hotel.facilities.slice(0, 3)"
                     :key="facility.id"
@@ -73,7 +73,7 @@ function visitHotel() {
                 </div>
                 <div class="flex items-center gap-1 text-xs text-gray-400">
                     <span>⭐</span>
-                    <span>—</span>
+                    <span>{{ hotel.reviews_avg_rating ? Number(hotel.reviews_avg_rating).toFixed(1) : '—' }}</span>
                 </div>
             </div>
         </div>
