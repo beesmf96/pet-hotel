@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pet Hotel — Booking Flow</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f8f7f4;
+      color: #1a1a1a;
+      padding: 48px 24px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      letter-spacing: -0.5px;
+    }
+
+    header p {
+      margin-top: 8px;
+      color: #6b7280;
+      font-size: 1rem;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: #4b5563;
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    /* ── Timeline ───────────────────────────────────────────── */
+    .timeline {
+      max-width: 680px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 39px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #e5e7eb;
+    }
+
+    .step {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .step-icon {
+      width: 80px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .icon-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      border: 3px solid white;
+      box-shadow: 0 0 0 2px var(--ring);
+    }
+
+    .step-number {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #9ca3af;
+      margin-top: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .step-body {
+      flex: 1;
+      padding: 18px 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      border-left: 4px solid var(--accent);
+      background: white;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .step-body h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    .step-body p {
+      font-size: 0.875rem;
+      color: #4b5563;
+      line-height: 1.55;
+    }
+
+    .step-body .details {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      font-size: 0.75rem;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: var(--chip-bg);
+      color: var(--chip-color);
+      font-weight: 500;
+    }
+
+    /* colour themes */
+    .theme-blue  { --accent:#3b82f6; --ring:#bfdbfe; --bg:#eff6ff; --icon-bg:#dbeafe; --chip-bg:#dbeafe; --chip-color:#1d4ed8; }
+    .theme-indigo{ --accent:#6366f1; --ring:#c7d2fe; --bg:#eef2ff; --icon-bg:#e0e7ff; --chip-bg:#e0e7ff; --chip-color:#4338ca; }
+    .theme-violet{ --accent:#8b5cf6; --ring:#ddd6fe; --bg:#f5f3ff; --icon-bg:#ede9fe; --chip-bg:#ede9fe; --chip-color:#6d28d9; }
+    .theme-teal  { --accent:#14b8a6; --ring:#99f6e4; --bg:#f0fdfa; --icon-bg:#ccfbf1; --chip-bg:#ccfbf1; --chip-color:#0f766e; }
+    .theme-amber { --accent:#f59e0b; --ring:#fde68a; --bg:#fffbeb; --icon-bg:#fef3c7; --chip-bg:#fef3c7; --chip-color:#b45309; }
+    .theme-rose  { --accent:#f43f5e; --ring:#fecdd3; --bg:#fff1f2; --icon-bg:#ffe4e6; --chip-bg:#ffe4e6; --chip-color:#be123c; }
+    .theme-green { --accent:#22c55e; --ring:#bbf7d0; --bg:#f0fdf4; --icon-bg:#dcfce7; --chip-bg:#dcfce7; --chip-color:#15803d; }
+    .theme-gray  { --accent:#6b7280; --ring:#e5e7eb; --bg:#f9fafb; --icon-bg:#f3f4f6; --chip-bg:#f3f4f6; --chip-color:#374151; }
+
+    .icon-circle { background: var(--icon-bg); }
+
+    /* divider labels between actor groups */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 8px 0 24px 0;
+    }
+
+    .divider-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .divider-label.owner  { background: #dbeafe; color: #1d4ed8; }
+    .divider-label.system { background: #fef3c7; color: #b45309; }
+    .divider-label.admin  { background: #ffe4e6; color: #be123c; }
+
+    .divider-line { flex: 1; height: 1px; background: #e5e7eb; }
+
+    /* status badge */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .status-pending { background: #fef3c7; color: #b45309; }
+    .status-confirmed { background: #dcfce7; color: #15803d; }
+
+    .status-badge::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* outcome cards */
+    .outcomes {
+      max-width: 680px;
+      margin: 0 auto 0 auto;
+      padding-left: 104px;
+    }
+
+    .outcome-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .outcome-card {
+      padding: 16px 18px;
+      border-radius: 12px;
+      border: 2px solid;
+      background: white;
+    }
+
+    .outcome-card.confirmed { border-color: #22c55e; }
+    .outcome-card.cancelled { border-color: #f43f5e; }
+
+    .outcome-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+    .outcome-card p  { font-size: 0.82rem; color: #4b5563; line-height: 1.5; }
+    .outcome-card.confirmed h4 { color: #15803d; }
+    .outcome-card.cancelled h4 { color: #be123c; }
+
+    .outcome-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #9ca3af;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 520px) {
+      .outcome-grid { grid-template-columns: 1fr; }
+      .timeline::before { left: 19px; }
+      .step-icon { width: 44px; }
+      .step-number { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🐾 Pet Hotel Booking Flow</h1>
+    <p>Step-by-step journey from search to confirmation</p>
+  </header>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#3b82f6"></div>
+      Pet Owner actions
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#f59e0b"></div>
+      System (automated)
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#f43f5e"></div>
+      Hotel Admin actions
+    </div>
+  </div>
+
+  <div class="timeline">
+
+    <!-- ── OWNER SECTION ── -->
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-label owner">Pet Owner</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="step theme-blue">
+      <div class="step-icon">
+        <div class="icon-circle">🔍</div>
+        <div class="step-number">STEP 1</div>
+      </div>
+      <div class="step-body">
+        <h3>Search for a Pet Hotel</h3>
+        <p>Enter your city, check-in / check-out dates, and pet type to browse available hotels.</p>
+        <div class="details">
+          <span class="chip">City / location</span>
+          <span class="chip">Date range</span>
+          <span class="chip">Pet type</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step theme-indigo">
+      <div class="step-icon">
+        <div class="icon-circle">🏨</div>
+        <div class="step-number">STEP 2</div>
+      </div>
+      <div class="step-body">
+        <h3>Browse &amp; Filter Results</h3>
+        <p>Compare hotels by rating, price, and distance. Filter by pet type, facilities, or price range.</p>
+        <div class="details">
+          <span class="chip">Sort by rating / price</span>
+          <span class="chip">Filter sidebar</span>
+          <span class="chip">Hotel cards</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step theme-violet">
+      <div class="step-icon">
+        <div class="icon-circle">📋</div>
+        <div class="step-number">STEP 3</div>
+      </div>
+      <div class="step-body">
+        <h3>View Hotel Profile</h3>
+        <p>Read the hotel description, browse photos, check pricing per pet type, facilities, policies, and reviews. Check the availability calendar for your desired dates.</p>
+        <div class="details">
+          <span class="chip">Photo gallery</span>
+          <span class="chip">Pricing table</span>
+          <span class="chip">Facilities</span>
+          <span class="chip">Availability calendar</span>
+          <span class="chip">Reviews</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step theme-teal">
+      <div class="step-icon">
+        <div class="icon-circle">👤</div>
+        <div class="step-number">STEP 4</div>
+      </div>
+      <div class="step-body">
+        <h3>Sign In or Register</h3>
+        <p>A free account is required to book. Register with your email, or log in if you already have an account.</p>
+        <div class="details">
+          <span class="chip">Email + password</span>
+          <span class="chip">Email verification</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="step theme-blue">
+      <div class="step-icon">
+        <div class="icon-circle">📝</div>
+        <div class="step-number">STEP 5</div>
+      </div>
+      <div class="step-body">
+        <h3>Fill in the Booking Form</h3>
+        <p>Select which pet you're booking for, confirm your dates, add any special notes (e.g. diet, medication), and review the total price before submitting.</p>
+        <div class="details">
+          <span class="chip">Select pet profile</span>
+          <span class="chip">Check-in / check-out</span>
+          <span class="chip">Special notes</span>
+          <span class="chip">Price summary</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 6 -->
+    <div class="step theme-amber">
+      <div class="step-icon">
+        <div class="icon-circle">📤</div>
+        <div class="step-number">STEP 6</div>
+      </div>
+      <div class="step-body">
+        <h3>Submit Booking Request</h3>
+        <p>Tap <strong>Submit Request</strong>. Your booking is created instantly with a <strong>Pending</strong> status — it is not yet confirmed.</p>
+        <div class="status-badge status-pending">Pending</div>
+      </div>
+    </div>
+
+    <!-- ── SYSTEM SECTION ── -->
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-label system">System (automated)</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Step 7 -->
+    <div class="step theme-amber">
+      <div class="step-icon">
+        <div class="icon-circle">✉️</div>
+        <div class="step-number">STEP 7</div>
+      </div>
+      <div class="step-body">
+        <h3>Notification Emails Sent</h3>
+        <p>The system automatically emails you a booking receipt and notifies the hotel admin of the new request. No human action needed at this step.</p>
+        <div class="details">
+          <span class="chip">Booking receipt → you</span>
+          <span class="chip">New request alert → admin</span>
+          <span class="chip">In-app notification</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 8 -->
+    <div class="step theme-gray">
+      <div class="step-icon">
+        <div class="icon-circle">⏳</div>
+        <div class="step-number">STEP 8</div>
+      </div>
+      <div class="step-body">
+        <h3>Waiting for Review</h3>
+        <p>Your booking is in the queue. You can check its status any time under <strong>My Bookings</strong>. The hotel admin will review and act on your request manually.</p>
+        <div class="details">
+          <span class="chip">My Bookings page</span>
+          <span class="chip">Status: Pending</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ADMIN SECTION ── -->
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-label admin">Hotel Admin</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Step 9 -->
+    <div class="step theme-rose">
+      <div class="step-icon">
+        <div class="icon-circle">🛎️</div>
+        <div class="step-number">STEP 9</div>
+      </div>
+      <div class="step-body">
+        <h3>Admin Reviews the Request</h3>
+        <p>The hotel admin opens the admin panel, views the booking details (pet info, dates, notes), and manually decides to <strong>Confirm</strong> or <strong>Cancel</strong>.</p>
+        <div class="details">
+          <span class="chip">Admin panel</span>
+          <span class="chip">Booking list</span>
+          <span class="chip">Filter by Pending</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Outcome split -->
+  <div class="outcomes">
+    <div class="outcome-label">Admin Decision</div>
+    <div class="outcome-grid">
+
+      <div class="outcome-card confirmed">
+        <h4>✅ Confirmed</h4>
+        <p>Booking status changes to <strong>Confirmed</strong>. You receive a confirmation email and an in-app notification. Your stay is locked in!</p>
+      </div>
+
+      <div class="outcome-card cancelled">
+        <h4>❌ Declined / Cancelled</h4>
+        <p>Booking status changes to <strong>Cancelled</strong>. You receive a cancellation email explaining the outcome. You can search for another hotel.</p>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
