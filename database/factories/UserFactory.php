@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\PetHotel;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -41,5 +42,19 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_admin' => true,
+        ]);
+    }
+
+    public function hotelOwner(PetHotel $hotel): static
+    {
+        return $this->afterCreating(function (User $user) use ($hotel) {
+            $user->ownedHotels()->attach($hotel->id, ['role' => 'owner']);
+        });
     }
 }

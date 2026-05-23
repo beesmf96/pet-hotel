@@ -9,6 +9,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -22,7 +23,22 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return (bool) $this->is_admin;
+        if ($panel->getId() === 'admin') {
+            return (bool) $this->is_admin;
+        }
+
+        if ($panel->getId() === 'hotel-owner') {
+            return $this->ownedHotels()->exists();
+        }
+
+        return false;
+    }
+
+    public function ownedHotels(): BelongsToMany
+    {
+        return $this->belongsToMany(PetHotel::class, 'hotel_owner', 'user_id', 'hotel_id')
+            ->withPivot('role')
+            ->withTimestamps();
     }
 
     public function pets(): HasMany

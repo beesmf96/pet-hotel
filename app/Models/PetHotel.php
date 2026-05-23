@@ -6,6 +6,7 @@ use Database\Factories\PetHotelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -43,5 +44,12 @@ class PetHotel extends Model
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class, 'hotel_id')->where('is_visible', true);
+    }
+
+    public function owners(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'hotel_owner', 'hotel_id', 'user_id')
+            ->withPivot('role')
+            ->withTimestamps();
     }
 }

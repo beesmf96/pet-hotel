@@ -15,6 +15,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class NotificationTest extends TestCase
@@ -109,7 +110,7 @@ class NotificationTest extends TestCase
         $booking = Booking::factory()->for($user)->create();
 
         $user->notifications()->create([
-            'id' => \Illuminate\Support\Str::uuid(),
+            'id' => Str::uuid(),
             'type' => BookingRequested::class,
             'data' => [
                 'type' => 'booking_requested',
@@ -134,7 +135,7 @@ class NotificationTest extends TestCase
 
         for ($i = 0; $i < 12; $i++) {
             $user->notifications()->create([
-                'id' => \Illuminate\Support\Str::uuid(),
+                'id' => Str::uuid(),
                 'type' => BookingRequested::class,
                 'data' => ['type' => 'booking_requested', 'message' => "Notification $i", 'hotel_name' => 'H', 'url' => '/'],
                 'read_at' => null,
@@ -149,7 +150,7 @@ class NotificationTest extends TestCase
     public function test_user_can_mark_notification_as_read(): void
     {
         $user = User::factory()->create(['email_verified_at' => now()]);
-        $id = \Illuminate\Support\Str::uuid();
+        $id = Str::uuid();
 
         $user->notifications()->create([
             'id' => $id,
@@ -173,7 +174,7 @@ class NotificationTest extends TestCase
 
         for ($i = 0; $i < 3; $i++) {
             $user->notifications()->create([
-                'id' => \Illuminate\Support\Str::uuid(),
+                'id' => Str::uuid(),
                 'type' => BookingRequested::class,
                 'data' => ['type' => 'booking_requested', 'message' => "N$i", 'hotel_name' => 'H', 'url' => '/'],
                 'read_at' => null,
@@ -191,7 +192,7 @@ class NotificationTest extends TestCase
     {
         $owner = User::factory()->create(['email_verified_at' => now()]);
         $other = User::factory()->create(['email_verified_at' => now()]);
-        $id = \Illuminate\Support\Str::uuid();
+        $id = Str::uuid();
 
         $owner->notifications()->create([
             'id' => $id,
@@ -211,7 +212,7 @@ class NotificationTest extends TestCase
         $user = User::factory()->create(['email_verified_at' => now()]);
 
         $user->notifications()->create([
-            'id' => \Illuminate\Support\Str::uuid(),
+            'id' => Str::uuid(),
             'type' => BookingRequested::class,
             'data' => ['type' => 'booking_requested', 'message' => 'Test', 'hotel_name' => 'H', 'url' => '/'],
             'read_at' => null,

@@ -125,6 +125,7 @@ class HotelResource extends Resource
         return [
             RelationManagers\PhotosRelationManager::class,
             RelationManagers\PricingRelationManager::class,
+            RelationManagers\OwnersRelationManager::class,
         ];
     }
 

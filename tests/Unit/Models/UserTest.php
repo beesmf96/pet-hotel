@@ -2,8 +2,11 @@
 
 namespace Tests\Unit\Models;
 
+use App\Models\PetHotel;
 use App\Models\User;
+use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -88,5 +91,69 @@ class UserTest extends TestCase
 
         $this->assertNull($user->email_verified_at);
         $this->assertFalse($user->hasVerifiedEmail());
+    }
+
+    // ── ownedHotels relationship ──────────────────────────────────────────────
+
+    public function test_user_has_owned_hotels_relationship(): void
+    {
+        $user = User::factory()->create();
+
+        $this->assertInstanceOf(BelongsToMany::class, $user->ownedHotels());
+    }
+
+    public function test_owned_hotels_returns_only_assigned_hotels(): void
+    {
+        $hotel = PetHotel::factory()->create();
+        $other = PetHotel::factory()->create();
+        $user = User::factory()->hotelOwner($hotel)->create();
+
+        $this->assertCount(1, $user->ownedHotels);
+        $this->assertTrue($user->ownedHotels->contains($hotel));
+        $this->assertFalse($user->ownedHotels->contains($other));
+    }
+
+    // ── canAccessPanel ────────────────────────────────────────────────────────
+
+    public function test_admin_user_can_access_admin_panel(): void
+    {
+        $user = User::factory()->admin()->create();
+        $panel = Panel::make()->id('admin');
+
+        $this->assertTrue($user->canAccessPanel($panel));
+    }
+
+    public function test_admin_user_cannot_access_owner_panel_without_hotel(): void
+    {
+        $user = User::factory()->admin()->create();
+        $panel = Panel::make()->id('hotel-owner');
+
+        $this->assertFalse($user->canAccessPanel($panel));
+    }
+
+    public function test_hotel_owner_can_access_owner_panel(): void
+    {
+        $hotel = PetHotel::factory()->create();
+        $user = User::factory()->hotelOwner($hotel)->create();
+        $panel = Panel::make()->id('hotel-owner');
+
+        $this->assertTrue($user->canAccessPanel($panel));
+    }
+
+    public function test_hotel_owner_cannot_access_admin_panel(): void
+    {
+        $hotel = PetHotel::factory()->create();
+        $user = User::factory()->hotelOwner($hotel)->create();
+        $panel = Panel::make()->id('admin');
+
+        $this->assertFalse($user->canAccessPanel($panel));
+    }
+
+    public function test_regular_user_cannot_access_any_panel(): void
+    {
+        $user = User::factory()->create();
+
+        $this->assertFalse($user->canAccessPanel(Panel::make()->id('admin')));
+        $this->assertFalse($user->canAccessPanel(Panel::make()->id('hotel-owner')));
     }
 }
