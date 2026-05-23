@@ -188,17 +188,80 @@
 
     hr { border: none; border-top: 1px solid var(--border); margin: 36px 0; }
 
+    /* ── Mobile header ── */
+    .mobile-header {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 52px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      padding: 0 16px;
+      z-index: 200;
+      gap: 12px;
+    }
+
+    .mobile-header .logo-text {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .hamburger {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      margin-left: auto;
+      color: var(--text);
+      line-height: 0;
+    }
+
+    /* ── Overlay ── */
+    .nav-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 299;
+    }
+
+    .nav-overlay.open { display: block; }
+
     /* ── Responsive ── */
     @media (max-width: 768px) {
-      nav { display: none; }
-      main { margin-left: 0; padding: 24px 20px 60px; }
+      .mobile-header { display: flex; }
+
+      nav {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        z-index: 300;
+        top: 0;
+      }
+
+      nav.open { transform: translateX(0); }
+
+      main { margin-left: 0; padding: 80px 20px 60px; }
     }
   </style>
 </head>
 <body>
 
+<!-- Mobile top bar -->
+<header class="mobile-header">
+  <span class="logo-text">🐾 Pet Hotel</span>
+  <button class="hamburger" id="nav-toggle" aria-label="Open navigation">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+</header>
+
+<div class="nav-overlay" id="nav-overlay"></div>
+
 <!-- ══════════════════ SIDEBAR ══════════════════ -->
-<nav>
+<nav id="sidebar">
   <div class="logo">🐾 Pet Hotel<span>User Guide</span></div>
 
   <div class="part-label p1">Part 1 — Pet Owner</div>
@@ -662,6 +725,18 @@
 </main>
 
 <script>
+  // Mobile nav toggle
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('nav-overlay');
+  const toggle  = document.getElementById('nav-toggle');
+
+  function openNav()  { sidebar.classList.add('open');  overlay.classList.add('open'); }
+  function closeNav() { sidebar.classList.remove('open'); overlay.classList.remove('open'); }
+
+  toggle.addEventListener('click', openNav);
+  overlay.addEventListener('click', closeNav);
+  sidebar.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
+
   // Highlight active sidebar link based on scroll position
   const links = document.querySelectorAll('nav a');
   const headings = document.querySelectorAll('h2[id]');
