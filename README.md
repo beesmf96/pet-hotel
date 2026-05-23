@@ -35,6 +35,7 @@ Add these entries to your hosts file — `/etc/hosts` on Linux/Mac, `C:\Windows\
 ```
 127.0.0.1  web.pet-hotel.local
 127.0.0.1  admin.pet-hotel.local
+127.0.0.1  owner.pet-hotel.local
 127.0.0.1  mailpit.local
 ```
 
@@ -44,7 +45,7 @@ Add these entries to your hosts file — `/etc/hosts` on Linux/Mac, `C:\Windows\
 docker compose up -d
 ```
 
-This starts five services:
+This starts six services:
 
 | Container             | Description              | Host port |
 |-----------------------|--------------------------|-----------|
@@ -71,6 +72,7 @@ docker compose exec --user appuser app php artisan migrate --seed
 
 - **App**: http://web.pet-hotel.local
 - **Admin panel**: http://admin.pet-hotel.local
+- **Owner portal**: http://owner.pet-hotel.local
 - **Mailpit** (email UI): http://mailpit.local
 
 ---
@@ -115,10 +117,12 @@ docker compose exec --user appuser app php artisan test
 docker compose exec --user appuser app vendor/bin/pint
 ```
 
-### Lint frontend
+### Lint / format frontend
 
 ```bash
-bun run lint
+bun run lint        # Report ESLint violations
+bun run lint:fix    # Auto-fix ESLint violations
+bun run format      # Prettier format
 ```
 
 ### Wipe and re-seed the database
