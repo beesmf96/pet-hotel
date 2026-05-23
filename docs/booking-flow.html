@@ -178,9 +178,10 @@
       white-space: nowrap;
     }
 
-    .divider-label.owner  { background: #dbeafe; color: #1d4ed8; }
-    .divider-label.system { background: #fef3c7; color: #b45309; }
-    .divider-label.admin  { background: #ffe4e6; color: #be123c; }
+    .divider-label.owner       { background: #dbeafe; color: #1d4ed8; }
+    .divider-label.system      { background: #fef3c7; color: #b45309; }
+    .divider-label.hotel-owner { background: #ccfbf1; color: #0f766e; }
+    .divider-label.admin       { background: #ffe4e6; color: #be123c; }
 
     .divider-line { flex: 1; height: 1px; background: #e5e7eb; }
 
@@ -269,8 +270,12 @@
       System (automated)
     </div>
     <div class="legend-item">
+      <div class="legend-dot" style="background:#14b8a6"></div>
+      Hotel Owner actions
+    </div>
+    <div class="legend-item">
       <div class="legend-dot" style="background:#f43f5e"></div>
-      Hotel Admin actions
+      Superadmin (fallback)
     </div>
   </div>
 
@@ -398,10 +403,10 @@
       </div>
       <div class="step-body">
         <h3>Notification Emails Sent</h3>
-        <p>The system automatically emails you a booking receipt and notifies the hotel admin of the new request. No human action needed at this step.</p>
+        <p>The system automatically emails you a booking receipt and notifies the hotel owner of the new request. No human action needed at this step.</p>
         <div class="details">
           <span class="chip">Booking receipt → you</span>
-          <span class="chip">New request alert → admin</span>
+          <span class="chip">New request alert → hotel owner</span>
           <span class="chip">In-app notification</span>
         </div>
       </div>
@@ -423,26 +428,29 @@
       </div>
     </div>
 
-    <!-- ── ADMIN SECTION ── -->
+    <!-- ── HOTEL OWNER SECTION ── -->
     <div class="divider">
       <div class="divider-line"></div>
-      <div class="divider-label admin">Hotel Admin</div>
+      <div class="divider-label hotel-owner">Hotel Owner</div>
       <div class="divider-line"></div>
     </div>
 
     <!-- Step 9 -->
-    <div class="step theme-rose">
+    <div class="step theme-teal">
       <div class="step-icon">
         <div class="icon-circle">🛎️</div>
         <div class="step-number">STEP 9</div>
       </div>
       <div class="step-body">
-        <h3>Admin Reviews the Request</h3>
-        <p>The hotel admin opens the admin panel, views the booking details (pet info, dates, notes), and manually decides to <strong>Confirm</strong> or <strong>Cancel</strong>.</p>
+        <h3>Hotel Owner Reviews the Request</h3>
+        <p>The hotel owner logs in at <strong>owner.pet-hotel.local</strong>, sees only their hotel's pending bookings, and clicks <strong>Confirm</strong> or <strong>Decline</strong>. Tenant isolation ensures they can never view another hotel's bookings.</p>
         <div class="details">
-          <span class="chip">Admin panel</span>
-          <span class="chip">Booking list</span>
-          <span class="chip">Filter by Pending</span>
+          <span class="chip">owner.pet-hotel.local</span>
+          <span class="chip">Pending filter</span>
+          <span class="chip">Confirm / Decline actions</span>
+        </div>
+        <div style="margin-top:12px;font-size:0.78rem;color:#64748b;">
+          <strong style="color:#475569;">Fallback:</strong> Superadmin can also confirm or cancel any booking via <code style="font-size:0.75rem;background:#f1f5f9;padding:1px 5px;border-radius:4px;border:1px solid #e2e8f0">admin.pet-hotel.local</code>
         </div>
       </div>
     </div>
@@ -451,7 +459,7 @@
 
   <!-- Outcome split -->
   <div class="outcomes">
-    <div class="outcome-label">Admin Decision</div>
+    <div class="outcome-label">Hotel Owner Decision</div>
     <div class="outcome-grid">
 
       <div class="outcome-card confirmed">
