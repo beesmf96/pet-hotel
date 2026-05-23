@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pet Hotel — User Guide</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pet-owner: #2563eb;
+      --pet-owner-light: #eff6ff;
+      --admin: #d97706;
+      --admin-light: #fffbeb;
+      --hotel-owner: #0d9488;
+      --hotel-owner-light: #f0fdfa;
+      --sidebar-w: 280px;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --radius: 8px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--bg);
+      display: flex;
+    }
+
+    /* ── Sidebar ── */
+    nav {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0;
+      overflow-y: auto;
+      padding: 24px 0 40px;
+      flex-shrink: 0;
+    }
+
+    nav .logo {
+      padding: 0 20px 20px;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    nav .logo span { font-weight: 400; color: var(--muted); font-size: 13px; display: block; }
+
+    nav .part-label {
+      padding: 12px 20px 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    nav .part-label.p1 { color: var(--pet-owner); }
+    nav .part-label.p2 { color: var(--admin); }
+    nav .part-label.p3 { color: var(--hotel-owner); }
+
+    nav a {
+      display: block;
+      padding: 5px 20px 5px 28px;
+      font-size: 13.5px;
+      color: var(--muted);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+
+    nav a:hover { color: var(--text); background: var(--bg); }
+
+    nav a.active-p1 { color: var(--pet-owner); border-left-color: var(--pet-owner); background: var(--pet-owner-light); }
+    nav a.active-p2 { color: var(--admin); border-left-color: var(--admin); background: var(--admin-light); }
+    nav a.active-p3 { color: var(--hotel-owner); border-left-color: var(--hotel-owner); background: var(--hotel-owner-light); }
+
+    /* ── Main content ── */
+    main {
+      margin-left: var(--sidebar-w);
+      padding: 48px 56px 80px;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    /* Part banners */
+    .part-banner {
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin: 48px 0 36px;
+    }
+    .part-banner h1 { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+    .part-banner p { font-size: 14px; margin-top: 6px; opacity: .8; }
+
+    .banner-p1 { background: var(--pet-owner-light); color: var(--pet-owner); border: 1px solid #bfdbfe; }
+    .banner-p2 { background: var(--admin-light);      color: var(--admin);      border: 1px solid #fde68a; }
+    .banner-p3 { background: var(--hotel-owner-light);color: var(--hotel-owner);border: 1px solid #99f6e4; }
+
+    /* Section headings */
+    .section-heading {
+      margin: 40px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    h3 { margin: 28px 0 10px; font-size: 15px; font-weight: 600; color: var(--text); }
+
+    p { margin-bottom: 12px; }
+
+    /* Tables */
+    .tbl-wrap { overflow-x: auto; margin: 14px 0 20px; border-radius: var(--radius); border: 1px solid var(--border); }
+
+    table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+    thead { background: var(--bg); }
+    th { padding: 10px 14px; text-align: left; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); border-bottom: 1px solid var(--border); }
+    td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--bg); }
+
+    /* Callout boxes */
+    .note {
+      border-left: 4px solid #94a3b8;
+      background: #f1f5f9;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 12px 16px;
+      font-size: 13.5px;
+      margin: 14px 0;
+      color: var(--muted);
+    }
+    .note strong { color: var(--text); }
+
+    .warn {
+      border-left: 4px solid var(--hotel-owner);
+      background: var(--hotel-owner-light);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 12px 16px;
+      font-size: 13.5px;
+      margin: 14px 0;
+      color: #0f766e;
+    }
+
+    /* Ordered lists */
+    ol { padding-left: 22px; margin: 10px 0 14px; }
+    ol li { margin-bottom: 6px; }
+
+    /* Step badge */
+    .step { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: var(--text); color: #fff; border-radius: 50%; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+
+    /* Status badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-pending  { background: #fef3c7; color: #92400e; }
+    .badge-confirmed{ background: #d1fae5; color: #065f46; }
+    .badge-cancelled{ background: #fee2e2; color: #991b1b; }
+    .badge-completed{ background: #dbeafe; color: #1e40af; }
+
+    /* Route pill */
+    .route {
+      display: inline-block;
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 12.5px;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 8px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .route-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-right: 6px; }
+
+    code { font-family: "SF Mono", "Fira Code", monospace; font-size: 12.5px; background: #f1f5f9; border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 36px 0; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      nav { display: none; }
+      main { margin-left: 0; padding: 24px 20px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════ SIDEBAR ══════════════════ -->
+<nav>
+  <div class="logo">🐾 Pet Hotel<span>User Guide</span></div>
+
+  <div class="part-label p1">Part 1 — Pet Owner</div>
+  <a href="#p1-s1">1. Getting Started</a>
+  <a href="#p1-s2">2. Profile Management</a>
+  <a href="#p1-s3">3. Managing Your Pets</a>
+  <a href="#p1-s4">4. Browsing Hotels</a>
+  <a href="#p1-s5">5. Making a Booking</a>
+  <a href="#p1-s6">6. Managing Your Bookings</a>
+  <a href="#p1-s7">7. Leaving a Review</a>
+  <a href="#p1-s8">8. Notifications</a>
+
+  <div class="part-label p2">Part 2 — Admin</div>
+  <a href="#p2-s1">1. Accessing the Admin Panel</a>
+  <a href="#p2-s2">2. Dashboard</a>
+  <a href="#p2-s3">3. Managing Hotels</a>
+  <a href="#p2-s4">4. Managing Bookings</a>
+  <a href="#p2-s5">5. Managing Users</a>
+  <a href="#p2-s6">6. Managing Reviews</a>
+
+  <div class="part-label p3">Part 3 — Hotel Owner</div>
+  <a href="#p3-s1">1. Accessing the Owner Panel</a>
+  <a href="#p3-s2">2. Viewing Your Bookings</a>
+  <a href="#p3-s3">3. Confirming a Booking</a>
+  <a href="#p3-s4">4. Declining a Booking</a>
+</nav>
+
+<!-- ══════════════════ MAIN ══════════════════ -->
+<main>
+
+  <!-- ─────── PART 1 ─────── -->
+  <div class="part-banner banner-p1">
+    <h1>Part 1 — Pet Owner</h1>
+    <p>Everything you need to register, manage your pets, find hotels, and track your bookings.</p>
+  </div>
+
+  <!-- 1 Getting Started -->
+  <h2 class="section-heading" id="p1-s1">1. Getting Started</h2>
+
+  <h3>Register</h3>
+  <ol>
+    <li>Go to <code>/register</code>.</li>
+    <li>Fill in your <strong>name</strong>, <strong>email</strong>, and <strong>password</strong> (confirm password required).</li>
+    <li>Submit — you will be redirected to a verification notice.</li>
+  </ol>
+
+  <h3>Verify Your Email</h3>
+  <p>After registering you must verify your email before accessing protected pages.</p>
+  <ol>
+    <li>Open the verification link sent to your inbox.</li>
+    <li>If the email didn't arrive, go to <code>/email/verify</code> and click <strong>Resend Verification Email</strong>.</li>
+  </ol>
+
+  <h3>Log In</h3>
+  <ol>
+    <li>Go to <code>/login</code>.</li>
+    <li>Enter your <strong>email</strong> and <strong>password</strong>.</li>
+    <li>Tick <strong>Remember Me</strong> to stay logged in across browser sessions.</li>
+  </ol>
+
+  <h3>Forgot Password</h3>
+  <ol>
+    <li>Go to <code>/forgot-password</code>.</li>
+    <li>Enter your email — a reset link will be sent.</li>
+    <li>Follow the link to <code>/reset-password/{token}</code> and choose a new password.</li>
+  </ol>
+
+  <h3>Log Out</h3>
+  <p>Click the logout control in the navigation. Your session will be invalidated immediately.</p>
+
+  <hr />
+
+  <!-- 2 Profile -->
+  <h2 class="section-heading" id="p1-s2">2. Profile Management</h2>
+  <p><span class="route-label">Route</span><span class="route">/profile</span></p>
+  <p>You can update:</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Field</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Name</td><td>Required</td></tr>
+        <tr><td>Phone</td><td>Optional</td></tr>
+        <tr><td>Preferred Location</td><td>Optional — used to pre-fill hotel searches</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Your <strong>email</strong> is shown for reference but cannot be changed from this page.</p>
+
+  <hr />
+
+  <!-- 3 Pets -->
+  <h2 class="section-heading" id="p1-s3">3. Managing Your Pets</h2>
+  <p><span class="route-label">Route</span><span class="route">/pets</span></p>
+  <p>All your pets are listed here. Each pet card shows its photo (if uploaded), species, breed, age, and any special needs.</p>
+
+  <h3>Add a Pet</h3>
+  <p>Click <strong>Add Pet</strong> and fill in:</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Name</td><td>Yes</td><td></td></tr>
+        <tr><td>Species</td><td>Yes</td><td>Dog, Cat, Rabbit, Bird, Other</td></tr>
+        <tr><td>Breed</td><td>No</td><td></td></tr>
+        <tr><td>Age</td><td>No</td><td>In years</td></tr>
+        <tr><td>Special Needs</td><td>No</td><td>Dietary, medical, or behavioural notes</td></tr>
+        <tr><td>Photo</td><td>No</td><td>Image upload</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Edit a Pet</h3>
+  <p>Click the edit icon on any pet card. All fields can be changed, including replacing the photo.</p>
+
+  <h3>Delete a Pet</h3>
+  <p>Click the delete icon on the pet card and confirm. Deleting a pet does not affect past bookings that referenced it.</p>
+  <div class="note"><strong>Note:</strong> You must have at least one pet registered before you can create a booking.</div>
+
+  <hr />
+
+  <!-- 4 Browsing Hotels -->
+  <h2 class="section-heading" id="p1-s4">4. Browsing Hotels</h2>
+
+  <h3>Search <em style="font-weight:400;color:var(--muted)">(public — no login required)</em></h3>
+  <p><span class="route-label">Route</span><span class="route">/hotels</span></p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Filter</th><th>Options</th></tr></thead>
+      <tbody>
+        <tr><td>City</td><td>Free-text city name</td></tr>
+        <tr><td>Pet Type</td><td>Dog, Cat, Rabbit, Bird, Other</td></tr>
+        <tr><td>Price Range</td><td>Min and max price per night</td></tr>
+        <tr><td>Facilities</td><td>Grooming, Play Area, Vet Care, Swimming Pool, Training, Outdoor Walks, Webcam, 24h Care</td></tr>
+        <tr><td>Sort By</td><td>Newest, Price Low→High, Price High→Low, Distance</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Results are paginated (15 per page).</p>
+
+  <h3>Hotel Detail Page</h3>
+  <p><span class="route-label">Route</span><span class="route">/hotels/{slug}</span></p>
+  <p>Each hotel page shows: photo gallery, name, address, city, description, facilities, pricing by pet type, check-in/out policy, review summary, and the latest 5 reviews.</p>
+
+  <h3>Availability Calendar</h3>
+  <p>Accessible from the hotel detail page. Shows a month-by-month calendar with <strong>Available</strong>, <strong>Blocked</strong>, and <strong>Fully Booked</strong> dates. Navigate between months with the previous/next controls.</p>
+
+  <h3>All Reviews</h3>
+  <p><span class="route-label">Route</span><span class="route">/hotels/{slug}/reviews</span></p>
+  <p>Full paginated list of customer reviews (10 per page). Each review shows the star rating, written comment, reviewer name, and date posted.</p>
+
+  <hr />
+
+  <!-- 5 Making a Booking -->
+  <h2 class="section-heading" id="p1-s5">5. Making a Booking</h2>
+  <p><span class="route-label">Route</span><span class="route">/hotels/{slug}/book</span></p>
+  <ol>
+    <li>Navigate to a hotel and click <strong>Book Now</strong>.</li>
+    <li>Fill in the booking form:</li>
+  </ol>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Pet</td><td>Yes</td><td>Select from your registered pets</td></tr>
+        <tr><td>Check-in Date</td><td>Yes</td><td></td></tr>
+        <tr><td>Check-out Date</td><td>Yes</td><td>Must be after check-in</td></tr>
+        <tr><td>Notes / Special Requests</td><td>No</td><td>Any information for the hotel</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ol start="3">
+    <li>The <strong>total price</strong> is calculated automatically (nightly rate × number of nights) and shown before you confirm.</li>
+    <li>Submit — you will be redirected to the <strong>Booking Confirmation</strong> page.</li>
+  </ol>
+
+  <h3>Booking Confirmation Page</h3>
+  <p><span class="route-label">Route</span><span class="route">/bookings/{booking}/confirmation</span></p>
+  <p>Shows a summary of your booking details and a <span class="badge badge-pending">Pending</span> status badge, meaning the hotel has yet to confirm your stay.</p>
+
+  <hr />
+
+  <!-- 6 Managing Bookings -->
+  <h2 class="section-heading" id="p1-s6">6. Managing Your Bookings</h2>
+  <p><span class="route-label">Route</span><span class="route">/bookings</span></p>
+  <p>Lists all your bookings — past and upcoming — with hotel name, pet name, dates, nights, total price, and status.</p>
+
+  <h3>Booking Statuses</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-pending">Pending</span></td><td>Submitted, awaiting hotel confirmation</td></tr>
+        <tr><td><span class="badge badge-confirmed">Confirmed</span></td><td>Hotel has accepted your booking</td></tr>
+        <tr><td><span class="badge badge-completed">Completed</span></td><td>Stay is finished</td></tr>
+        <tr><td><span class="badge badge-cancelled">Cancelled</span></td><td>Booking was cancelled</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>View Booking Details</h3>
+  <p><span class="route-label">Route</span><span class="route">/bookings/{booking}</span></p>
+  <p>Click any booking to see the full details: hotel address, pet, dates, nights, status, notes, price, and creation time.</p>
+
+  <h3>Cancel a Booking</h3>
+  <p>On the booking detail page, a <strong>Cancel</strong> button appears when the booking status is <span class="badge badge-pending">Pending</span>. Confirm the cancellation to remove the booking. Confirmed or completed bookings cannot be cancelled from this screen.</p>
+
+  <hr />
+
+  <!-- 7 Reviews -->
+  <h2 class="section-heading" id="p1-s7">7. Leaving a Review</h2>
+  <p>After a booking reaches <span class="badge badge-completed">Completed</span> status, you can leave a review for that hotel.</p>
+  <ol>
+    <li>Go to <code>/bookings</code> and open the completed booking.</li>
+    <li>Click <strong>Leave a Review</strong> (only visible if the booking is completed and not yet reviewed).</li>
+    <li>Enter a <strong>star rating</strong> and a written <strong>comment</strong>.</li>
+    <li>Submit — the review is posted to the hotel's profile immediately (subject to admin visibility settings).</li>
+  </ol>
+  <p>Each completed booking can only be reviewed once. Reviews are rate-limited to 5 per 10 minutes.</p>
+
+  <hr />
+
+  <!-- 8 Notifications -->
+  <h2 class="section-heading" id="p1-s8">8. Notifications</h2>
+  <p>In-app notifications keep you informed about your booking activity.</p>
+
+  <h3>View Notifications</h3>
+  <p>Your latest 10 notifications are accessible from the notification bell in the navigation bar. Each notification shows: type and message, timestamp, and read/unread status.</p>
+  <p>You receive notifications when a booking is <strong>confirmed</strong> or <strong>cancelled</strong> by the hotel.</p>
+
+  <h3>Mark as Read</h3>
+  <ul style="padding-left:20px;margin:8px 0 14px">
+    <li>Click an individual notification to mark it read.</li>
+    <li>Use <strong>Mark All as Read</strong> to clear the unread count in one action.</li>
+  </ul>
+
+  <!-- ─────── PART 2 ─────── -->
+  <div class="part-banner banner-p2">
+    <h1>Part 2 — Admin</h1>
+    <p>Superadmin panel at <strong>admin.pet-hotel.local</strong> — full control over hotels, bookings, users, and reviews.</p>
+  </div>
+
+  <!-- 2.1 Accessing -->
+  <h2 class="section-heading" id="p2-s1">1. Accessing the Admin Panel</h2>
+  <p><span class="route-label">URL</span><span class="route">admin.pet-hotel.local</span></p>
+  <p>The admin panel uses a <strong>separate login</strong> from the customer-facing site. Log in at <code>/login</code> with an account that has admin privileges.</p>
+  <div class="note"><strong>Note:</strong> Regular customer accounts cannot access the admin panel even if they know the URL.</div>
+
+  <hr />
+
+  <!-- 2.2 Dashboard -->
+  <h2 class="section-heading" id="p2-s2">2. Dashboard</h2>
+  <p>The dashboard displays three live stat widgets at a glance:</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Widget</th><th>What It Shows</th></tr></thead>
+      <tbody>
+        <tr><td>Bookings Today</td><td>Number of bookings with a check-in date of today</td></tr>
+        <tr><td>Pending Bookings</td><td>Number of bookings currently awaiting confirmation</td></tr>
+        <tr><td>New Users This Week</td><td>Number of customer accounts created in the last 7 days</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr />
+
+  <!-- 2.3 Hotels -->
+  <h2 class="section-heading" id="p2-s3">3. Managing Hotels</h2>
+  <p><span class="route-label">Route</span><span class="route">/hotels</span></p>
+  <p>Full CRUD for hotel listings.</p>
+
+  <h3>Create / Edit a Hotel</h3>
+  <p><strong>Basic Information</strong></p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Name</td><td>Yes</td><td>Slug auto-generates on blur</td></tr>
+        <tr><td>Slug</td><td>Yes</td><td>URL-friendly identifier, must be unique</td></tr>
+        <tr><td>Description</td><td>No</td><td></td></tr>
+        <tr><td>Address</td><td>Yes</td><td></td></tr>
+        <tr><td>City</td><td>Yes</td><td></td></tr>
+        <tr><td>Active</td><td>—</td><td>Toggle on/off (defaults to active)</td></tr>
+        <tr><td>Latitude / Longitude</td><td>No</td><td>For distance-based sorting</td></tr>
+        <tr><td>Cover Photo</td><td>No</td><td>Main image shown in search results</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Policy</strong></p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Check-in Time</td><td>Yes</td><td></td></tr>
+        <tr><td>Check-out Time</td><td>Yes</td><td></td></tr>
+        <tr><td>Cancellation Policy</td><td>No</td><td>Free-text description</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Photos Tab</h3>
+  <p>Upload new photos, set sort order, drag-and-drop to reorder, and delete individual or bulk photos.</p>
+
+  <h3>Pricing Tab</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Field</th><th>Options</th></tr></thead>
+      <tbody>
+        <tr><td>Pet Type</td><td>Dog, Cat, Rabbit, Bird, Other</td></tr>
+        <tr><td>Price Per Night</td><td>Numeric, displayed in MYR</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Create one pricing row per pet type. Edit or delete rows at any time.</p>
+
+  <h3>Owners Tab</h3>
+  <p>Link user accounts to this hotel so they can log in at the owner portal.</p>
+  <ul style="padding-left:20px;margin:8px 0 14px">
+    <li>Click <strong>Attach</strong> and search by name or email to find a user</li>
+    <li>The user can now log in at <code>owner.pet-hotel.local</code> and manage that hotel's bookings</li>
+    <li>Click <strong>Detach</strong> on any row to remove a hotel owner's access</li>
+  </ul>
+  <div class="warn">A user must be attached to at least one hotel before they can log in to the owner panel.</div>
+
+  <hr />
+
+  <!-- 2.4 Bookings -->
+  <h2 class="section-heading" id="p2-s4">4. Managing Bookings</h2>
+  <p><span class="route-label">Route</span><span class="route">/bookings</span></p>
+  <p>All customer bookings across all hotels, sorted newest first.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Column</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>ID</td><td></td></tr>
+        <tr><td>Pet</td><td>Pet's name</td></tr>
+        <tr><td>Hotel</td><td>Hotel name</td></tr>
+        <tr><td>Customer</td><td>Customer's name (toggleable)</td></tr>
+        <tr><td>Check In / Check Out</td><td>Formatted dates</td></tr>
+        <tr><td>Total Price</td><td></td></tr>
+        <tr><td>Status</td><td>Colour-coded badge</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Confirm a Booking</h3>
+  <p>For any <span class="badge badge-pending">Pending</span> booking, click the green <strong>Confirm</strong> action. On confirm: status → <span class="badge badge-confirmed">Confirmed</span> and the customer receives a notification.</p>
+
+  <h3>Cancel a Booking</h3>
+  <p>For any non-cancelled booking, click the red <strong>Cancel</strong> action. On cancel: status → <span class="badge badge-cancelled">Cancelled</span> and the customer receives a notification.</p>
+
+  <hr />
+
+  <!-- 2.5 Users -->
+  <h2 class="section-heading" id="p2-s5">5. Managing Users</h2>
+  <p><span class="route-label">Route</span><span class="route">/users</span></p>
+  <p>A <strong>read-only</strong> view of all registered customer accounts, sorted by registration date.</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Column</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Name</td><td>Searchable</td></tr>
+        <tr><td>Email</td><td>Searchable</td></tr>
+        <tr><td>Phone</td><td>Toggleable (hidden by default)</td></tr>
+        <tr><td>Admin</td><td>Indicates if the account has admin access</td></tr>
+        <tr><td>Pets</td><td>Count of registered pets</td></tr>
+        <tr><td>Registered</td><td>Date</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><strong>Note:</strong> User accounts cannot be created, edited, or deleted from the admin panel — account management is self-service for customers.</div>
+
+  <hr />
+
+  <!-- 2.6 Reviews -->
+  <h2 class="section-heading" id="p2-s6">6. Managing Reviews</h2>
+  <p><span class="route-label">Route</span><span class="route">/reviews</span></p>
+  <p>All customer reviews across all hotels, sorted newest first.</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Column</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Customer</td><td>Searchable</td></tr>
+        <tr><td>Hotel</td><td>Searchable</td></tr>
+        <tr><td>Rating</td><td>Star display — green 4–5★, yellow 3★, red 1–2★</td></tr>
+        <tr><td>Comment</td><td>Truncated preview</td></tr>
+        <tr><td>Visible</td><td>Whether the review is publicly shown</td></tr>
+        <tr><td>Date</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Toggle Visibility</h3>
+  <p>Each review has a <strong>Show</strong> or <strong>Hide</strong> action — use this to moderate reviews without deleting them permanently.</p>
+
+  <h3>Delete Reviews</h3>
+  <p>Bulk-select rows and use <strong>Bulk Delete</strong> to permanently remove multiple reviews.</p>
+
+  <!-- ─────── PART 3 ─────── -->
+  <div class="part-banner banner-p3">
+    <h1>Part 3 — Hotel Owner</h1>
+    <p>Owner portal at <strong>owner.pet-hotel.local</strong> — view and action your hotel's bookings, fully isolated from other hotels.</p>
+  </div>
+
+  <!-- 3.1 Accessing -->
+  <h2 class="section-heading" id="p3-s1">1. Accessing the Hotel Owner Panel</h2>
+  <p><span class="route-label">URL</span><span class="route">owner.pet-hotel.local</span></p>
+  <p>The hotel owner panel is a <strong>separate site</strong> from both the customer-facing app and the admin panel. Log in with the email and password assigned to your account by the administrator.</p>
+  <div class="warn">If you see "No hotel assigned to your account", contact your administrator — your account needs to be linked to a hotel before you can proceed.</div>
+  <div class="note">Regular customer accounts and superadmin accounts cannot log in here.</div>
+
+  <hr />
+
+  <!-- 3.2 Viewing Bookings -->
+  <h2 class="section-heading" id="p3-s2">2. Viewing Your Bookings</h2>
+  <p>After logging in you are taken directly to the <strong>Bookings</strong> list — all bookings for your hotel, sorted newest first.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Column</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Guest</td><td>Customer's name</td></tr>
+        <tr><td>Pet</td><td>Pet's name</td></tr>
+        <tr><td>Check In</td><td>Date formatted dd MMM YYYY</td></tr>
+        <tr><td>Check Out</td><td>Date formatted dd MMM YYYY</td></tr>
+        <tr><td>Status</td><td>Colour-coded badge</td></tr>
+        <tr><td>Total Price</td><td>In MYR</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Filter by Status</h3>
+  <p>Use the <strong>Status</strong> filter to show only Pending, Confirmed, Cancelled, or Completed bookings.</p>
+  <div class="warn">You only ever see bookings for your hotel. Bookings from other hotels are never visible — this is enforced at the database level, not just the UI.</div>
+
+  <hr />
+
+  <!-- 3.3 Confirm -->
+  <h2 class="section-heading" id="p3-s3">3. Confirming a Booking</h2>
+  <p>For any booking with <span class="badge badge-pending">Pending</span> status, click the green <strong>Confirm</strong> row action.</p>
+  <p>A confirmation modal appears — click <strong>Confirm</strong> to proceed.</p>
+  <p>On confirm:</p>
+  <ul style="padding-left:20px;margin:8px 0 14px">
+    <li>Booking status changes to <span class="badge badge-confirmed">Confirmed</span></li>
+    <li>The customer receives an <strong>email</strong> and an <strong>in-app notification</strong> automatically</li>
+  </ul>
+
+  <hr />
+
+  <!-- 3.4 Decline -->
+  <h2 class="section-heading" id="p3-s4">4. Declining a Booking</h2>
+  <p>For any booking with <span class="badge badge-pending">Pending</span> status, click the red <strong>Decline</strong> row action.</p>
+  <p>A confirmation modal appears — click <strong>Decline</strong> to proceed.</p>
+  <p>On decline:</p>
+  <ul style="padding-left:20px;margin:8px 0 14px">
+    <li>Booking status changes to <span class="badge badge-cancelled">Cancelled</span></li>
+    <li>The customer receives an <strong>email</strong> and an <strong>in-app notification</strong> automatically</li>
+  </ul>
+  <div class="note">Only <span class="badge badge-pending">Pending</span> bookings show the Confirm and Decline actions. Confirmed, completed, or already-cancelled bookings cannot be actioned from the owner panel.</div>
+
+</main>
+
+<script>
+  // Highlight active sidebar link based on scroll position
+  const links = document.querySelectorAll('nav a');
+  const headings = document.querySelectorAll('h2[id]');
+
+  const partClass = id =>
+    id.startsWith('p1') ? 'active-p1' :
+    id.startsWith('p2') ? 'active-p2' : 'active-p3';
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active-p1', 'active-p2', 'active-p3'));
+        const active = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add(partClass(entry.target.id));
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  headings.forEach(h => observer.observe(h));
+</script>
+
+</body>
+</html>

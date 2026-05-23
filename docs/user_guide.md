@@ -24,6 +24,12 @@ This guide covers everything you can do on Pet Hotel, split by user type.
 5. [Managing Users](#5-managing-users)
 6. [Managing Reviews](#6-managing-reviews)
 
+**Part 3 — Hotel Owner**
+1. [Accessing the Hotel Owner Panel](#1-accessing-the-hotel-owner-panel)
+2. [Viewing Your Bookings](#2-viewing-your-bookings)
+3. [Confirming a Booking](#3-confirming-a-booking)
+4. [Declining a Booking](#4-declining-a-booking)
+
 ---
 
 # Part 1 — Pet Owner
@@ -446,3 +452,74 @@ Use this to moderate reviews without deleting them.
 ### Delete Reviews
 
 Bulk-select rows and use **Bulk Delete** to permanently remove multiple reviews. Individual view pages also support deletion.
+
+### Assign Hotel Owners
+
+Within the hotel edit page, the **Owners** tab lets you link a user account to that hotel as an owner:
+
+- Click **Attach** and search by name or email to find a user
+- The user can now log in at `owner.pet-hotel.local` and manage that hotel's bookings
+- Click **Detach** on any row to remove a hotel owner's access
+
+> A user must be attached to at least one hotel before they can log in to the owner panel.
+
+---
+
+# Part 3 — Hotel Owner
+
+## 1. Accessing the Hotel Owner Panel
+
+**URL**: `http://owner.pet-hotel.local`
+
+The hotel owner panel is a **separate site** from both the customer-facing app and the admin panel. It has its own login page.
+
+Log in with the email and password assigned to your account by the administrator. Regular customer accounts and admin accounts cannot access this panel.
+
+> If you see "No hotel assigned to your account", contact your administrator — your account needs to be linked to a hotel before you can proceed.
+
+---
+
+## 2. Viewing Your Bookings
+
+After logging in you are taken directly to the **Bookings** list — all bookings for your hotel, sorted newest first.
+
+### Table Columns
+
+| Column | Notes |
+|---|---|
+| Guest | Customer's name |
+| Pet | Pet's name |
+| Check In | Date formatted dd MMM YYYY |
+| Check Out | Date formatted dd MMM YYYY |
+| Status | Colour-coded badge |
+| Total Price | In MYR |
+
+### Filter by Status
+
+Use the **Status** filter to show only: Pending, Confirmed, Cancelled, or Completed bookings.
+
+> You only ever see bookings for your hotel. Bookings from other hotels are never visible.
+
+---
+
+## 3. Confirming a Booking
+
+For any booking with **Pending** status, click the green **Confirm** row action.
+
+A confirmation modal appears — click **Confirm** to proceed. On confirm:
+
+- Booking status changes to **Confirmed**
+- The customer receives an email and an in-app notification automatically
+
+---
+
+## 4. Declining a Booking
+
+For any booking with **Pending** status, click the red **Decline** row action.
+
+A confirmation modal appears — click **Decline** to proceed. On decline:
+
+- Booking status changes to **Cancelled**
+- The customer receives an email and an in-app notification automatically
+
+> Only **Pending** bookings can be confirmed or declined. Confirmed, completed, or already-cancelled bookings do not show these actions.
