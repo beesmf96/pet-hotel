@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import AvailabilityCalendar from '@/Components/Hotels/AvailabilityCalendar.vue';
+import HotelMap from '@/Components/Hotels/HotelMap.vue';
 import ReviewList from '@/Components/Hotels/ReviewList.vue';
 import { ref, computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
@@ -186,6 +187,26 @@ function nextPhoto() {
 
                     <!-- Availability Calendar -->
                     <AvailabilityCalendar :hotel-slug="hotel.slug" />
+
+                    <!-- Location -->
+                    <div v-if="hotel.lat != null && hotel.lng != null"
+                         class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-base font-semibold text-gray-900 mb-3">Location</h2>
+                        <HotelMap :lat="hotel.lat" :lng="hotel.lng" :name="hotel.name" class="mb-3" />
+                        <p class="text-sm text-gray-600">{{ hotel.address }}, {{ hotel.city }}</p>
+                        <a
+                            :href="`https://maps.google.com/?q=${hotel.lat},${hotel.lng}`"
+                            target="_blank"
+                            rel="noopener"
+                            class="mt-2 inline-flex items-center gap-1 text-xs text-blue-600 hover:underline"
+                        >
+                            Open in Google Maps ↗
+                        </a>
+                    </div>
+                    <div v-else class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-base font-semibold text-gray-900 mb-2">Location</h2>
+                        <p class="text-sm text-gray-600">{{ hotel.address }}, {{ hotel.city }}</p>
+                    </div>
 
                     <!-- Reviews -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

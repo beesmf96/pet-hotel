@@ -12,6 +12,7 @@ class HotelController extends Controller
     public function show(string $slug): Response
     {
         $hotel = PetHotel::where('slug', $slug)
+            ->where('is_active', true)
             ->with(['facilities', 'photos', 'policy', 'pricing'])
             ->firstOrFail();
 
