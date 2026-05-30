@@ -37,7 +37,7 @@ class AuthTest extends TestCase
     {
         $this->actingAs(User::factory()->create())
             ->get('/register')
-            ->assertRedirect('/dashboard');
+            ->assertRedirect('/bookings');
     }
 
     public function test_guest_can_register(): void
@@ -50,7 +50,7 @@ class AuthTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('users', ['email' => 'alice@example.com']);
-        $response->assertRedirect('/dashboard');
+        $response->assertRedirect('/bookings');
         $this->assertAuthenticated();
     }
 
@@ -116,7 +116,7 @@ class AuthTest extends TestCase
     {
         $this->actingAs(User::factory()->create())
             ->get('/login')
-            ->assertRedirect('/dashboard');
+            ->assertRedirect('/bookings');
     }
 
     public function test_user_can_login_with_correct_credentials(): void
@@ -126,7 +126,7 @@ class AuthTest extends TestCase
         $this->post('/login', [
             'email' => $user->email,
             'password' => 'password',
-        ])->assertRedirect('/dashboard');
+        ])->assertRedirect('/bookings');
 
         $this->assertAuthenticatedAs($user);
     }

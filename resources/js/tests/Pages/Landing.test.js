@@ -54,9 +54,9 @@ describe('Landing — guest state (unauthenticated)', () => {
         expect(signOutButtons).toHaveLength(0)
     })
 
-    it('does not show Dashboard link', () => {
+    it('does not show My Bookings link', () => {
         const w = mountLanding(null)
-        const links = w.findAll('a[href="/dashboard"]')
+        const links = w.findAll('a[href="/bookings"]')
         expect(links).toHaveLength(0)
     })
 
@@ -74,9 +74,9 @@ describe('Landing — authenticated state', () => {
         expect(w.text()).toContain('Jane')
     })
 
-    it('shows Dashboard link in nav', () => {
+    it('shows My Bookings link in nav', () => {
         const w = mountLanding(authUser)
-        const links = w.findAll('a[href="/dashboard"]')
+        const links = w.findAll('a[href="/bookings"]')
         expect(links.length).toBeGreaterThan(0)
     })
 

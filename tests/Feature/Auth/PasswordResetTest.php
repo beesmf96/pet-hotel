@@ -25,7 +25,7 @@ class PasswordResetTest extends TestCase
     {
         $this->actingAs(User::factory()->create())
             ->get('/forgot-password')
-            ->assertRedirect('/dashboard');
+            ->assertRedirect('/bookings');
     }
 
     public function test_user_can_request_password_reset_link(): void
@@ -74,7 +74,7 @@ class PasswordResetTest extends TestCase
     {
         $this->actingAs(User::factory()->create())
             ->get('/reset-password/some-token')
-            ->assertRedirect('/dashboard');
+            ->assertRedirect('/bookings');
     }
 
     public function test_user_can_reset_password_with_valid_token(): void

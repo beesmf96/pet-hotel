@@ -27,7 +27,7 @@ function handleSearch(params) {
             <div class="flex items-center gap-3">
                 <template v-if="user">
                     <span class="text-sm text-stone-700">{{ user.name }}</span>
-                    <a href="/dashboard" class="text-sm font-medium text-stone-700 hover:text-stone-900 transition">Dashboard</a>
+                    <a href="/bookings" class="text-sm font-medium text-stone-700 hover:text-stone-900 transition">My Bookings</a>
                     <button
                         class="text-sm font-medium bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full transition"
                         :disabled="logoutForm.processing"
@@ -128,7 +128,7 @@ function handleSearch(params) {
                 <div class="flex gap-6 text-sm">
                     <a href="/hotels" class="hover:text-white transition">Browse Hotels</a>
                     <template v-if="user">
-                        <a href="/dashboard" class="hover:text-white transition">Dashboard</a>
+                        <a href="/bookings" class="hover:text-white transition">My Bookings</a>
                         <button class="hover:text-white transition" :disabled="logoutForm.processing" @click="logoutForm.post('/logout')">Sign Out</button>
                     </template>
                     <template v-else>

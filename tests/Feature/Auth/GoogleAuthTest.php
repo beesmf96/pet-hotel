@@ -65,7 +65,7 @@ class GoogleAuthTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect('/dashboard');
+        $response->assertRedirect('/bookings');
     }
 
     public function test_new_google_user_has_verified_email_and_hashed_password(): void
@@ -100,7 +100,7 @@ class GoogleAuthTest extends TestCase
         ]);
 
         $this->assertAuthenticatedAs($existing->fresh());
-        $response->assertRedirect('/dashboard');
+        $response->assertRedirect('/bookings');
     }
 
     public function test_existing_user_by_email_does_not_create_duplicate(): void
@@ -133,7 +133,7 @@ class GoogleAuthTest extends TestCase
         $response = $this->get('/auth/google/callback');
 
         $this->assertAuthenticatedAs($existing);
-        $response->assertRedirect('/dashboard');
+        $response->assertRedirect('/bookings');
 
         // No duplicate created
         $this->assertSame(1, User::where('google_id', 'google-uid-5')->count());

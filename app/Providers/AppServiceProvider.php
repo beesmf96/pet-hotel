@@ -16,6 +16,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Authenticate::redirectUsing(fn ($request) => '/login');
-        RedirectIfAuthenticated::redirectUsing(fn ($request) => '/dashboard');
+        RedirectIfAuthenticated::redirectUsing(fn ($request) => '/bookings');
     }
 }
