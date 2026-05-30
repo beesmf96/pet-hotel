@@ -71,7 +71,10 @@ Before writing any code:
 
 **Components and pages**
 - Pages live in `resources/js/Pages/`. Reusable UI goes in `resources/js/Components/`.
-- Declare layout inline: `defineOptions({ layout: AppLayout })` for authenticated pages, `AuthLayout` for guest pages. For pages that render their own complete shell (e.g. a landing page with a custom nav and footer), use `defineOptions({ layout: null })` — omitting `defineOptions` entirely is not safe as it can apply an unexpected layout in some Inertia SSR modes.
+- Declare layout using one of two accepted patterns:
+  1. `defineOptions({ layout: AppLayout })` in `<script setup>` — Inertia-recommended
+  2. `<AppLayout>` as the root wrapper in `<template>` with `<template #header>` as a named slot — the existing convention in this codebase; match whichever pattern the surrounding pages use
+  - For pages that render their own complete shell (e.g. a landing page with a custom nav), use `defineOptions({ layout: null })`. Never omit layout entirely.
 - Use `<script setup>` for all new components.
 
 **State**

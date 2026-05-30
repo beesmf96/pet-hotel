@@ -86,7 +86,11 @@ Flag these as violations:
 - `window.location.href` used for navigation — must use Inertia `router.visit()` or `<Link>`.
   - Exception: external redirects (e.g. OAuth provider entrypoints like `/auth/google`) must use a plain `<a href>` so the browser does a full navigation. Inertia `<Link>` would issue an XHR and break the OAuth handshake.
 - A component that mixes `Options API` (`data()`, `methods:`) with `Composition API` (`setup()`) — pick one; new code uses `<script setup>`.
-- Page component does not declare its layout via `defineOptions({ layout: ... })`. Exception: `layout: null` is valid for pages that render their own full-page shell — the `defineOptions` call must still be present; the violation is omitting `defineOptions` entirely.
+- Page component declares no layout at all — every page must use one of the two accepted patterns:
+  1. `defineOptions({ layout: AppLayout })` in `<script setup>` (Inertia-recommended)
+  2. `<AppLayout>` as the root wrapper in `<template>`, with `<template #header>` as a named slot child (established convention in this codebase — both patterns are acceptable)
+  - `layout: null` is valid for pages that render their own full-page shell (e.g. `Landing.vue`) — the `defineOptions` call must still be present in that case.
+  - Do **not** flag pages that use the `<AppLayout>` wrapper pattern as missing `defineOptions`; the two patterns are equivalent here.
 - Inline `style=""` attribute used where a Tailwind class exists.
 - A new npm/bun package installed without noting it.
 
