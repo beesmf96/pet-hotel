@@ -6,7 +6,17 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    selectable: {
+        type: Boolean,
+        default: false,
+    },
+    modelValue: {
+        type: Object,
+        default: null,
+    },
 });
+
+const emit = defineEmits(['update:modelValue']);
 
 const today = new Date();
 const todayKey = today.toISOString().slice(0, 10);
@@ -17,6 +27,9 @@ const currentMonth = ref(today.getMonth()); // 0-indexed
 const loading = ref(false);
 const error = ref(null);
 const days = ref({});
+
+const checkIn = computed(() => props.modelValue?.checkIn ?? '');
+const checkOut = computed(() => props.modelValue?.checkOut ?? '');
 
 const monthLabel = computed(() =>
     new Date(currentYear.value, currentMonth.value, 1).toLocaleString('default', {
@@ -47,18 +60,64 @@ const calendarDays = computed(() => {
 
 function cellClass(cell) {
     const isToday = cell.date === todayKey;
-    const ring = isToday ? 'ring-2 ' : '';
+    const isSelectedEndpoint = props.selectable && (cell.date === checkIn.value || cell.date === checkOut.value);
+    const isInRange = props.selectable
+        && checkIn.value && checkOut.value
+        && cell.date > checkIn.value && cell.date < checkOut.value;
+    const isPast = props.selectable && cell.date < todayKey;
 
-    if (cell.status === 'blocked') {
+    // Priority 1: selected endpoint wins over everything
+    if (isSelectedEndpoint) {
+        return 'bg-gray-900 text-white ring-2 ring-gray-900 cursor-pointer';
+    }
+
+    // Priority 2: unavailable states (blocked/full/past) — not clickable
+    if (cell.status === 'blocked' || isPast) {
         return 'bg-gray-100 text-gray-300 cursor-not-allowed';
     }
     if (cell.status === 'full') {
         return 'bg-red-50 text-red-400 line-through cursor-not-allowed';
     }
-    if (cell.available_spots !== null && cell.available_spots <= 3) {
-        return ring + 'ring-orange-400 bg-orange-50 text-orange-700 font-medium';
+
+    // Priority 3: in-range highlight
+    if (isInRange) {
+        return 'bg-gray-100 text-gray-800' + (props.selectable ? ' cursor-pointer' : '');
     }
-    return ring + 'ring-green-400 bg-green-50 text-green-700 font-medium';
+
+    // Priority 4: availability status with today ring (today ring skipped when selected)
+    const ring = isToday ? 'ring-2 ' : '';
+
+    if (cell.available_spots !== null && cell.available_spots <= 3) {
+        return ring + 'ring-orange-400 bg-orange-50 text-orange-700 font-medium' + (props.selectable ? ' cursor-pointer' : '');
+    }
+    return ring + 'ring-green-400 bg-green-50 text-green-700 font-medium' + (props.selectable ? ' cursor-pointer' : '');
+}
+
+function handleCellClick(cell) {
+    if (!props.selectable) return;
+    if (!cell) return;
+    if (cell.status === 'blocked' || cell.status === 'full') return;
+    if (cell.date < todayKey) return;
+
+    const ci = checkIn.value;
+    const co = checkOut.value;
+
+    // Double-click on current checkIn: no-op
+    if (cell.date === ci && !co) return;
+
+    // Both set or no selection: start fresh with this date as checkIn
+    if (!ci || (ci && co)) {
+        emit('update:modelValue', { checkIn: cell.date, checkOut: '' });
+        return;
+    }
+
+    // checkIn set, no checkOut
+    if (cell.date > ci) {
+        emit('update:modelValue', { checkIn: ci, checkOut: cell.date });
+    } else {
+        // Clicked same or earlier date: reset with new checkIn
+        emit('update:modelValue', { checkIn: cell.date, checkOut: '' });
+    }
 }
 
 async function fetchMonth() {
@@ -146,6 +205,7 @@ onMounted(fetchMonth);
                 :key="i"
                 class="h-9 rounded-lg flex items-center justify-center text-sm"
                 :class="cell ? cellClass(cell) : ''"
+                @click="cell && handleCellClick(cell)"
             >
                 <span v-if="cell">{{ cell.day }}</span>
             </div>

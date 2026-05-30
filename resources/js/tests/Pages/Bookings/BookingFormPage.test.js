@@ -6,6 +6,10 @@ vi.mock('@/Layouts/AppLayout.vue', () => ({
     default: { template: '<div><slot /><slot name="header" /></div>' },
 }))
 
+vi.mock('@/Components/Hotels/AvailabilityCalendar.vue', () => ({
+    default: { template: '<div data-testid="availability-calendar" />' },
+}))
+
 const formState = reactive({
     pet_id: '',
     check_in: '',
@@ -37,6 +41,13 @@ function mountPage(pets = [], hotel = baseHotel) {
     formState.check_out = ''
     return mount(BookingFormPage, { props: { hotel, pets } })
 }
+
+describe('BookingFormPage — availability calendar', () => {
+    it('renders the availability calendar stub when pets are present', () => {
+        const w = mountPage([{ id: 1, name: 'Buddy', species: 'Dog' }])
+        expect(w.find('[data-testid="availability-calendar"]').exists()).toBe(true)
+    })
+})
 
 describe('BookingFormPage — no pets warning', () => {
     it('shows warning when pets array is empty', () => {
