@@ -128,19 +128,6 @@ Inertia.js bridges Laravel and Vue: Laravel returns `Inertia::render('PageName',
 - Migrations in `database/migrations/`, seeders in `database/seeders/`
 - A `database.sqlite` file exists for quick local runs without Docker (change `DB_CONNECTION=sqlite` in `.env`)
 
-## AI Review Agents
-
-We use Claude Code agents for PR review. Available agents:
-
-- `@agent-pr-reviewer` — full pre-merge review (run before opening PR)
-- `@agent-security-reviewer` — security spot check
-- `@agent-code-quality` — architecture review
-- `@agent-test-coverage` — test gap analysis
-- `@agent-secrets-scanner` — credential scan
-- `@agent-dependency-auditor` — package CVE check
-
-Recommended: run `@agent-pr-reviewer` before every merge.
-
 ## Skill routing
 
 When the user's request matches an available skill, invoke it via the Skill tool. When in doubt, invoke the skill.
