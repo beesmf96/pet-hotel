@@ -111,5 +111,5 @@ users      ──< notifications          (Laravel DB notifications)
 - Hotel owner Filament panel — only `BookingResource` exists
 - No `routes/api.php` / no API endpoints
 - No payment integration
-- Vitest coverage is minimal (2 files: `HotelMap.test.js`, `HotelProfilePage.test.js`)
+- Vitest coverage is minimal (3 files: `HotelMap.test.js`, `HotelProfilePage.test.js`, `Landing.test.js`)
 - Only Google OAuth is wired; no other Socialite providers configured.

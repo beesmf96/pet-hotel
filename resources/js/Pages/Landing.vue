@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { router, usePage } from '@inertiajs/vue3';
+import { router, usePage, useForm } from '@inertiajs/vue3';
 import SearchBar from '@/Components/Hotels/SearchBar.vue';
 import HotelCard from '@/Components/Hotels/HotelCard.vue';
 
@@ -8,8 +8,11 @@ const props = defineProps({
     featuredHotels: Array,
 });
 
+defineOptions({ layout: null });
+
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
+const logoutForm = useForm({});
 
 function handleSearch(params) {
     router.get('/hotels', params);
@@ -27,7 +30,8 @@ function handleSearch(params) {
                     <a href="/dashboard" class="text-sm font-medium text-stone-700 hover:text-stone-900 transition">Dashboard</a>
                     <button
                         class="text-sm font-medium bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full transition"
-                        @click="router.post('/logout')"
+                        :disabled="logoutForm.processing"
+                        @click="logoutForm.post('/logout')"
                     >Sign out</button>
                 </template>
                 <template v-else>
@@ -125,7 +129,7 @@ function handleSearch(params) {
                     <a href="/hotels" class="hover:text-white transition">Browse Hotels</a>
                     <template v-if="user">
                         <a href="/dashboard" class="hover:text-white transition">Dashboard</a>
-                        <button class="hover:text-white transition" @click="router.post('/logout')">Sign Out</button>
+                        <button class="hover:text-white transition" :disabled="logoutForm.processing" @click="logoutForm.post('/logout')">Sign Out</button>
                     </template>
                     <template v-else>
                         <a href="/login" class="hover:text-white transition">Sign In</a>

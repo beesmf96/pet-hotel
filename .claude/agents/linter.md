@@ -86,7 +86,7 @@ Flag these as violations:
 - `window.location.href` used for navigation — must use Inertia `router.visit()` or `<Link>`.
   - Exception: external redirects (e.g. OAuth provider entrypoints like `/auth/google`) must use a plain `<a href>` so the browser does a full navigation. Inertia `<Link>` would issue an XHR and break the OAuth handshake.
 - A component that mixes `Options API` (`data()`, `methods:`) with `Composition API` (`setup()`) — pick one; new code uses `<script setup>`.
-- Page component does not declare its layout via `defineOptions({ layout: ... })`.
+- Page component does not declare its layout via `defineOptions({ layout: ... })`. Exception: `layout: null` is valid for pages that render their own full-page shell — the `defineOptions` call must still be present; the violation is omitting `defineOptions` entirely.
 - Inline `style=""` attribute used where a Tailwind class exists.
 - A new npm/bun package installed without noting it.
 
