@@ -195,7 +195,7 @@ Every OAuth callback test file must cover:
 
 ## Vitest (Vue) tests
 
-Located in `resources/js/tests/`. Minimal coverage exists — only `HotelMap.test.js` and `HotelProfilePage.test.js`.
+Located in `resources/js/tests/`. Minimal coverage exists — only `HotelMap.test.js`, `HotelProfilePage.test.js`, and `Landing.test.js`.
 
 When a page component gains new conditional rendering branches driven by Inertia props (`v-if`/`v-else`), add a Vitest spec in `resources/js/tests/Pages/<PageName>.test.js` with one test per branch. PHP feature tests only verify that the server delivers the correct props — they do not exercise the Vue template. At minimum: mount the component with each prop variant, assert the expected elements are present, and assert the excluded elements are absent. Stub `usePage`, `router`, and any child components not under test.
 

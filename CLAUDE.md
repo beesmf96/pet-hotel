@@ -128,25 +128,17 @@ Inertia.js bridges Laravel and Vue: Laravel returns `Inertia::render('PageName',
 - Migrations in `database/migrations/`, seeders in `database/seeders/`
 - A `database.sqlite` file exists for quick local runs without Docker (change `DB_CONNECTION=sqlite` in `.env`)
 
-## Skill routing
+## Pipeline
+When asked to implement a plan, always run in order:
 
-When the user's request matches an available skill, invoke it via the Skill tool. When in doubt, invoke the skill.
+1. Create a new git branch: feature/{plan-name}
+2. @.claude/agents/coder.md
+3. @.claude/agents/tester.md
+4. @.claude/agents/linter.md
+5. @.claude/agents/reflector.md
+6. Commit all changes with a descriptive message
+7. Push branch to origin
+8. Open a PR to main with a summary of what was implemented
 
-Key routing rules:
-- Product ideas/brainstorming → invoke /office-hours
-- Strategy/scope → invoke /plan-ceo-review
-- Architecture → invoke /plan-eng-review
-- Design system/plan review → invoke /design-consultation or /plan-design-review
-- Full review pipeline → invoke /autoplan
-- Bugs/errors → invoke /investigate
-- QA/testing site behavior → invoke /qa or /qa-only
-- Code review/diff check → invoke /review
-- Visual polish → invoke /design-review
-- Ship/deploy/PR → invoke /ship or /land-and-deploy
-- Save progress → invoke /context-save
-- Resume context → invoke /context-restore
-
-## Pipeline Rules
-- Reflector reports gaps only, never fixes implementation
-- Always invoke Coder agent for any code changes
-- Never apply implementation fixes in the same session as Reflector
+Do not skip any step. Do not merge the PR. 
+Wait for human review and approval.
