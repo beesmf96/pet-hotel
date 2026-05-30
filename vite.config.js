@@ -28,6 +28,12 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         globals: true,
+        coverage: {
+            provider: 'v8',
+            reporter: ['text', 'html'],
+            include: ['resources/js/**/*.vue', 'resources/js/composables/**/*.js'],
+            exclude: ['resources/js/app.js', 'resources/js/bootstrap.js'],
+        },
     },
     server: {
         host: '0.0.0.0',
