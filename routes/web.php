@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -36,6 +37,9 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])->name('password.reset');
     Route::post('/reset-password', [ResetPasswordController::class, 'store'])->name('password.update');
+
+    Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->middleware('throttle:5,1')->name('auth.google');
+    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->middleware('throttle:5,1')->name('auth.google.callback');
 });
 
 Route::middleware('auth')->group(function () {

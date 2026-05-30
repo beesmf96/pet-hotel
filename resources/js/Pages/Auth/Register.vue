@@ -72,6 +72,20 @@ function submit() {
                 {{ form.processing ? 'Creating account...' : 'Create account' }}
             </button>
 
+            <div class="relative flex items-center">
+                <div class="flex-grow border-t border-gray-200"></div>
+                <span class="mx-3 text-xs text-gray-400 uppercase tracking-wide">or</span>
+                <div class="flex-grow border-t border-gray-200"></div>
+            </div>
+
+            <a
+                href="/auth/google"
+                class="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+                <img src="/images/google-logo.svg" alt="Google" class="w-[18px] h-[18px]" />
+                Continue with Google
+            </a>
+
             <p class="text-center text-sm text-gray-600">
                 Already have an account?
                 <a href="/login" class="font-medium text-gray-900 hover:underline">Sign in</a>

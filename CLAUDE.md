@@ -145,3 +145,8 @@ Key routing rules:
 - Ship/deploy/PR → invoke /ship or /land-and-deploy
 - Save progress → invoke /context-save
 - Resume context → invoke /context-restore
+
+## Pipeline Rules
+- Reflector reports gaps only, never fixes implementation
+- Always invoke Coder agent for any code changes
+- Never apply implementation fixes in the same session as Reflector

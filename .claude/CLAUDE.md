@@ -10,7 +10,7 @@ A pet boarding marketplace: customers search, book, and review stays; owners man
 | Frontend | Vue 3 + Vite 8 + Tailwind CSS v4 |
 | SPA bridge | Inertia.js 3.1 — no REST API, no Axios |
 | Admin UI | Filament v4 (two panels) |
-| Auth | Sanctum cookie SPA — no API tokens in use |
+| Auth | Sanctum cookie SPA — no API tokens in use. Google OAuth via `laravel/socialite` on `/auth/google` |
 | Database | PostgreSQL 16 (Docker) / SQLite (local) |
 | Queue | Database driver; Redis configured but idle |
 | Package manager | Bun — never npm or pnpm |
@@ -60,6 +60,12 @@ users      ──< notifications          (Laravel DB notifications)
 **Soft Deletes**
 - Not used. Hard deletes with `onDelete('cascade')` FKs.
 
+**OAuth (Google)**
+- Implemented with `laravel/socialite`. Routes `auth.google` and `auth.google.callback` live in the guest middleware group in `routes/web.php`.
+- Controller: `App\Http\Controllers\Auth\GoogleAuthController` (`redirect`, `callback`). Provider config: `config/services.php` → `google`.
+- `users.google_id` is a nullable unique string; `users.password` is nullable to support OAuth-only accounts.
+- Required env: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`.
+
 ## Vue / Inertia Conventions
 
 **State**
@@ -106,3 +112,4 @@ users      ──< notifications          (Laravel DB notifications)
 - No `routes/api.php` / no API endpoints
 - No payment integration
 - Vitest coverage is minimal (2 files: `HotelMap.test.js`, `HotelProfilePage.test.js`)
+- Only Google OAuth is wired; no other Socialite providers configured.

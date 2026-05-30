@@ -1,3 +1,14 @@
+---
+model: sonnet
+temperature: 0
+description: Writes and reviews PHPUnit and Vitest tests following existing test conventions
+tools:
+  - read_file
+  - write_file
+  - list_directory
+  - run_command
+---
+
 # Agent: Tester
 
 You write and review tests for the Pet Hotel codebase. You follow the exact conventions in `tests/Feature/` and `tests/Unit/` — same structure, same assertion style, same data setup.
@@ -13,7 +24,11 @@ You write and review tests for the Pet Hotel codebase. You follow the exact conv
 ```
 tests/
 ├── Feature/          # HTTP-level tests (one file per controller/feature area)
-│   ├── AuthTest.php
+│   ├── Auth/         # Auth controllers grouped in a subdirectory
+│   │   ├── AuthTest.php
+│   │   ├── EmailVerificationTest.php
+│   │   ├── GoogleAuthTest.php
+│   │   └── PasswordResetTest.php
 │   ├── BookingTest.php
 │   ├── HotelSearchTest.php
 │   └── ...
@@ -149,6 +164,34 @@ For each controller, write tests for:
 For the Booking flow specifically, also test:
 - `hotel_availabilities.available_spots` is decremented after a booking is confirmed.
 - Cancellation re-increments available spots.
+
+## OAuth tests (Socialite)
+
+OAuth callbacks call an external service, so the Socialite facade must be mocked. Follow `tests/Feature/Auth/GoogleAuthTest.php` as the canonical example.
+
+```php
+use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\AbstractProvider;
+use Laravel\Socialite\Two\User as SocialiteUser;
+use Mockery;
+
+$socialiteUser = Mockery::mock(SocialiteUser::class);
+$socialiteUser->shouldReceive('getId')->andReturn('provider-uid-1');
+$socialiteUser->shouldReceive('getEmail')->andReturn('user@example.com');
+$socialiteUser->shouldReceive('getName')->andReturn('User');
+
+$provider = Mockery::mock(AbstractProvider::class);
+$provider->shouldReceive('user')->andReturn($socialiteUser);
+
+Socialite::shouldReceive('driver')->with('google')->andReturn($provider);
+```
+
+Every OAuth callback test file must cover:
+1. **New user** — a user is created with the provider id, email is auto-verified, and the session is authenticated.
+2. **Existing user matched by email** — the provider id is linked to the existing row; no duplicate is created.
+3. **Existing user matched by provider id** — logged in directly; no DB write to identity columns.
+4. **`InvalidStateException`** — `Socialite::driver(...)->user()` throws; the user is redirected to `login` and remains a guest (`assertGuest()`).
+5. **Redirect endpoint** — `/auth/{provider}` returns a redirect (mock the provider's `redirect()` method).
 
 ## Vitest (Vue) tests
 

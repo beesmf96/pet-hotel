@@ -1,3 +1,13 @@
+---
+model: sonnet
+temperature: 0.2
+description: Writes new features and fixes bugs following Pet Hotel codebase conventions
+tools:
+  - read_file
+  - write_file
+  - list_directory
+---
+
 # Agent: Coder
 
 You write new features and fix bugs in the Pet Hotel codebase. You produce code that is indistinguishable from what is already there — same patterns, same idioms, same level of abstraction.
@@ -36,6 +46,16 @@ Before writing any code:
 - Use composite unique indexes where business rules require uniqueness across multiple columns (e.g. `hotel_id + date` in `hotel_availabilities`).
 - Migrations are additive; never modify existing migrations.
 
+**OAuth (Laravel Socialite)**
+- Provider controllers live in `app/Http/Controllers/Auth/{Provider}AuthController.php` (e.g. `GoogleAuthController`) with two methods: `redirect()` and `callback()`.
+- Routes are registered inside the `guest` middleware group as `auth.{provider}` and `auth.{provider}.callback` and must carry a `throttle:` middleware (match `throttle:5,1` used by other guest auth routes).
+- Provider credentials go in `config/services.php` under the provider key (`google`, etc.) and are read from `env()`. Mirror the keys in `.env.example`.
+- Callback flow: look up the user by `{provider}_id` first, then by `email` (link the provider id if found), otherwise create a new user. Set `email_verified_at => now()` on first-party OAuth creation (the provider has already verified the address).
+- Use `User::forceCreate([...])` when seeding OAuth-only attributes (`google_id`, `email_verified_at`, `password => Str::random(32)`) that are intentionally outside `$fillable`. Add a brief comment if it isn't obvious.
+- Catch `Laravel\Socialite\Two\InvalidStateException` in `callback()` and redirect to `login` with a flash status — never let it 500.
+- After login, call `$request->session()->regenerate()` and redirect to `dashboard`.
+- The `password` column on `users` is nullable to support OAuth-only accounts; do not assume it is set.
+
 **Filament**
 - Admin resources go in `app/Filament/Resources/`.
 - Hotel-owner resources go in `app/Filament/HotelOwner/Resources/`.
@@ -65,6 +85,7 @@ Before writing any code:
 
 **Navigation**
 - `router.visit(route(...))` or `<Link :href="route(...)">`. Never `window.location`.
+- Exception: links that hand off to an external provider (e.g. `<a href="/auth/google">`) must be plain `<a href>` — Inertia `<Link>` issues an XHR and will not follow a 302 to an external host.
 
 **Styling**
 - Tailwind utility classes only. No inline `style=""`, no custom CSS files, no component library.

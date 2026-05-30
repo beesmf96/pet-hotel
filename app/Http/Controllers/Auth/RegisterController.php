@@ -25,7 +25,7 @@ class RegisterController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user = User::create($data);
+        $user = User::forceCreate($data);
 
         event(new Registered($user));
 
