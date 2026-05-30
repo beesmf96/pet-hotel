@@ -82,6 +82,7 @@ Flag these as violations:
 Flag these as violations:
 - `ref()` used for a value that is always derived from props or another ref — should be `computed()`.
 - Direct `fetch()` or `axios` call — all HTTP must go through `useForm()` or `router.visit()`.
+- `router.post()`, `router.patch()`, or `router.delete()` called directly for form submissions — all HTTP mutations must go through `useForm()`. Exception: `router.get()` for pure navigation (no body, no side-effects) is acceptable.
 - `window.location.href` used for navigation — must use Inertia `router.visit()` or `<Link>`.
   - Exception: external redirects (e.g. OAuth provider entrypoints like `/auth/google`) must use a plain `<a href>` so the browser does a full navigation. Inertia `<Link>` would issue an XHR and break the OAuth handshake.
 - A component that mixes `Options API` (`data()`, `methods:`) with `Composition API` (`setup()`) — pick one; new code uses `<script setup>`.

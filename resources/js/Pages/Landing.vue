@@ -1,11 +1,15 @@
 <script setup>
-import { router } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import { router, usePage } from '@inertiajs/vue3';
 import SearchBar from '@/Components/Hotels/SearchBar.vue';
 import HotelCard from '@/Components/Hotels/HotelCard.vue';
 
 const props = defineProps({
     featuredHotels: Array,
 });
+
+const page = usePage();
+const user = computed(() => page.props.auth?.user);
 
 function handleSearch(params) {
     router.get('/hotels', params);
@@ -18,8 +22,18 @@ function handleSearch(params) {
         <nav class="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-6 py-5 sm:px-10">
             <span class="text-xl font-bold text-stone-900">🐾 PetHotel</span>
             <div class="flex items-center gap-3">
-                <a href="/login" class="text-sm font-medium text-stone-700 hover:text-stone-900 transition">Sign in</a>
-                <a href="/register" class="text-sm font-medium bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full transition">Register</a>
+                <template v-if="user">
+                    <span class="text-sm text-stone-700">{{ user.name }}</span>
+                    <a href="/dashboard" class="text-sm font-medium text-stone-700 hover:text-stone-900 transition">Dashboard</a>
+                    <button
+                        class="text-sm font-medium bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full transition"
+                        @click="router.post('/logout')"
+                    >Sign out</button>
+                </template>
+                <template v-else>
+                    <a href="/login" class="text-sm font-medium text-stone-700 hover:text-stone-900 transition">Sign in</a>
+                    <a href="/register" class="text-sm font-medium bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full transition">Register</a>
+                </template>
             </div>
         </nav>
 
@@ -109,8 +123,14 @@ function handleSearch(params) {
                 <span class="text-sm">© 2026 PetHotel. All rights reserved.</span>
                 <div class="flex gap-6 text-sm">
                     <a href="/hotels" class="hover:text-white transition">Browse Hotels</a>
-                    <a href="/login" class="hover:text-white transition">Sign In</a>
-                    <a href="/register" class="hover:text-white transition">Register</a>
+                    <template v-if="user">
+                        <a href="/dashboard" class="hover:text-white transition">Dashboard</a>
+                        <button class="hover:text-white transition" @click="router.post('/logout')">Sign Out</button>
+                    </template>
+                    <template v-else>
+                        <a href="/login" class="hover:text-white transition">Sign In</a>
+                        <a href="/register" class="hover:text-white transition">Register</a>
+                    </template>
                 </div>
             </div>
         </footer>

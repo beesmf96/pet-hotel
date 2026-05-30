@@ -60,4 +60,27 @@ class LandingPageTest extends TestCase
             ->assertOk()
             ->assertInertia(fn ($page) => $page->component('Landing'));
     }
+
+    public function test_guest_has_null_auth_user_in_shared_props(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Landing')
+                ->where('auth.user', null)
+            );
+    }
+
+    public function test_authenticated_user_has_auth_user_in_shared_props(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get('/')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Landing')
+                ->where('auth.user.id', $user->id)
+                ->where('auth.user.name', $user->name)
+            );
+    }
 }
