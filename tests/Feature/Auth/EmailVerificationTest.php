@@ -42,12 +42,12 @@ class EmailVerificationTest extends TestCase
 
         $this->actingAs($user)
             ->get($url)
-            ->assertRedirect('/dashboard');
+            ->assertRedirect('/bookings');
 
         $this->assertNotNull($user->fresh()->email_verified_at);
     }
 
-    public function test_already_verified_user_is_redirected_to_dashboard(): void
+    public function test_already_verified_user_is_redirected_to_bookings(): void
     {
         $user = User::factory()->create(); // email_verified_at is set by default
 
@@ -58,7 +58,7 @@ class EmailVerificationTest extends TestCase
 
         $this->actingAs($user)
             ->get($url)
-            ->assertRedirect('/dashboard');
+            ->assertRedirect('/bookings');
     }
 
     public function test_verification_fails_with_invalid_hash(): void
@@ -107,7 +107,7 @@ class EmailVerificationTest extends TestCase
 
         $this->actingAs($user)
             ->post('/email/verification-notification')
-            ->assertRedirect('/dashboard');
+            ->assertRedirect('/bookings');
     }
 
     public function test_guest_cannot_resend_verification(): void

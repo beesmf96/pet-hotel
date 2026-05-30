@@ -21,13 +21,13 @@ class EmailVerificationController extends Controller
     {
         $request->fulfill();
 
-        return redirect('/dashboard');
+        return redirect('/bookings');
     }
 
     public function resend(Request $request)
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return redirect('/dashboard');
+            return redirect('/bookings');
         }
 
         $request->user()->sendEmailVerificationNotification();
