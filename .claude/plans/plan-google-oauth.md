@@ -1,3 +1,11 @@
+---
+plan: google-oauth
+status: done
+branch: ~
+pr: ~
+implemented: 2026-05-30
+---
+
 # Google OAuth Login — Pet Owner (Customer)
 
 ## Context
