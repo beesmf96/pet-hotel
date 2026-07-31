@@ -82,8 +82,8 @@ class BookingTest extends TestCase
 
         $response = $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
             'pet_id' => $pet->id,
-            'check_in' => '2026-06-01',
-            'check_out' => '2026-06-04',
+            'check_in' => $this->futureDate(30),
+            'check_out' => $this->futureDate(33),
             'notes' => 'Needs medication at 8am',
         ]);
 
@@ -110,8 +110,8 @@ class BookingTest extends TestCase
 
         $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
             'pet_id' => $pet->id,
-            'check_in' => '2026-07-10',
-            'check_out' => '2026-07-12',
+            'check_in' => $this->futureDate(30),
+            'check_out' => $this->futureDate(32),
         ]);
 
         $this->assertDatabaseHas('bookings', [
@@ -129,8 +129,8 @@ class BookingTest extends TestCase
 
         $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
             'pet_id' => $pet->id,
-            'check_in' => '2026-07-10',
-            'check_out' => '2026-07-12',
+            'check_in' => $this->futureDate(30),
+            'check_out' => $this->futureDate(32),
         ]);
 
         $this->assertDatabaseHas('bookings', ['total_price' => 0]);
@@ -145,8 +145,8 @@ class BookingTest extends TestCase
 
         $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
             'pet_id' => $foreignPet->id,
-            'check_in' => '2026-06-01',
-            'check_out' => '2026-06-03',
+            'check_in' => $this->futureDate(30),
+            'check_out' => $this->futureDate(32),
         ])->assertStatus(404);
     }
 
@@ -167,8 +167,8 @@ class BookingTest extends TestCase
 
         $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
             'pet_id' => $pet->id,
-            'check_in' => '2026-06-05',
-            'check_out' => '2026-06-03',
+            'check_in' => $this->futureDate(35),
+            'check_out' => $this->futureDate(33),
         ])->assertSessionHasErrors(['check_out']);
     }
 
@@ -341,6 +341,16 @@ class BookingTest extends TestCase
 
     // ── Helper ────────────────────────────────────────────────────────────────
 
+    /**
+     * Booking dates must stay in the future: StoreBookingRequest enforces
+     * `after_or_equal:today` on check_in, so hardcoded literals silently rot
+     * once that date passes.
+     */
+    private function futureDate(int $daysFromNow): string
+    {
+        return now()->addDays($daysFromNow)->toDateString();
+    }
+
     private function makeBooking(User $user, string $status = 'pending'): Booking
     {
         $hotel = PetHotel::factory()->create();
@@ -350,8 +360,8 @@ class BookingTest extends TestCase
             'user_id' => $user->id,
             'hotel_id' => $hotel->id,
             'pet_id' => $pet->id,
-            'check_in' => '2026-09-01',
-            'check_out' => '2026-09-03',
+            'check_in' => $this->futureDate(60),
+            'check_out' => $this->futureDate(62),
             'status' => $status,
             'total_price' => 100.00,
         ]);

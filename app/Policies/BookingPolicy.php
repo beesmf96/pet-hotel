@@ -9,7 +9,7 @@ class BookingPolicy
 {
     public function view(User $user, Booking $booking): bool
     {
-        return $user->id === $booking->user_id;
+        return $user->is_admin || $user->id === $booking->user_id;
     }
 
     public function cancel(User $user, Booking $booking): bool

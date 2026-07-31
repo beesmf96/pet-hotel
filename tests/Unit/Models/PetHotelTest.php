@@ -2,12 +2,17 @@
 
 namespace Tests\Unit\Models;
 
+use App\Models\Booking;
+use App\Models\HotelAvailability;
 use App\Models\PetHotel;
 use App\Models\PetHotelFacility;
 use App\Models\PetHotelPhoto;
 use App\Models\PetHotelPolicy;
 use App\Models\PetHotelPricing;
+use App\Models\Review;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -93,6 +98,44 @@ class PetHotelTest extends TestCase
         $this->assertNull($hotel->cover_photo);
     }
 
+    public function test_pet_hotel_has_many_bookings(): void
+    {
+        $hotel = $this->makeHotel();
+        Booking::factory()->for($hotel, 'hotel')->create();
+
+        $this->assertInstanceOf(HasMany::class, $hotel->bookings());
+        $this->assertCount(1, $hotel->bookings);
+    }
+
+    public function test_pet_hotel_has_many_reviews(): void
+    {
+        $hotel = $this->makeHotel();
+        Review::factory()->create(['hotel_id' => $hotel->id]);
+
+        $this->assertInstanceOf(HasMany::class, $hotel->reviews());
+        $this->assertCount(1, $hotel->reviews);
+    }
+
+    public function test_reviews_relation_excludes_hidden_reviews(): void
+    {
+        $hotel = $this->makeHotel();
+        Review::factory()->create(['hotel_id' => $hotel->id]);
+        Review::factory()->hidden()->create(['hotel_id' => $hotel->id]);
+
+        $this->assertCount(1, $hotel->reviews);
+    }
+
+    public function test_pet_hotel_belongs_to_many_owners_with_role_pivot(): void
+    {
+        $hotel = $this->makeHotel();
+        $owner = User::factory()->create();
+        $hotel->owners()->attach($owner, ['role' => 'manager']);
+
+        $this->assertInstanceOf(BelongsToMany::class, $hotel->owners());
+        $this->assertCount(1, $hotel->owners);
+        $this->assertEquals('manager', $hotel->owners->first()->pivot->role);
+    }
+
     // ── PetHotelFacility ─────────────────────────────────────────────────────
 
     public function test_facility_belongs_to_hotel(): void
@@ -144,5 +187,37 @@ class PetHotelTest extends TestCase
 
         $this->assertInstanceOf(BelongsTo::class, $pricing->hotel());
         $this->assertEquals($hotel->id, $pricing->hotel->id);
+    }
+
+    // ── HotelAvailability ────────────────────────────────────────────────────
+
+    public function test_availability_belongs_to_hotel(): void
+    {
+        $hotel = $this->makeHotel();
+        $availability = HotelAvailability::create([
+            'hotel_id' => $hotel->id,
+            'date' => now()->addDay()->toDateString(),
+            'available_spots' => 5,
+            'is_blocked' => false,
+        ]);
+
+        $this->assertInstanceOf(BelongsTo::class, $availability->hotel());
+        $this->assertEquals($hotel->id, $availability->hotel->id);
+    }
+
+    public function test_availability_casts_spots_and_blocked_flag(): void
+    {
+        $hotel = $this->makeHotel();
+        $availability = HotelAvailability::create([
+            'hotel_id' => $hotel->id,
+            'date' => now()->addDay()->toDateString(),
+            'available_spots' => '3',
+            'is_blocked' => 1,
+        ]);
+
+        $fresh = $availability->fresh();
+
+        $this->assertSame(3, $fresh->available_spots);
+        $this->assertTrue($fresh->is_blocked);
     }
 }

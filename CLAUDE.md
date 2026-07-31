@@ -21,6 +21,10 @@ vendor/bin/pint       # PHP formatter
 docker compose up -d                    # app, nginx, postgres, redis
 docker compose --profile dev up -d      # + the Bun/Vite node container
 docker compose exec --user appuser app <cmd>
+
+# Backend coverage (pcov ships in the image, disabled unless you opt in)
+docker compose exec --user appuser app \
+  php -d pcov.enabled=1 vendor/bin/phpunit --coverage-text
 ```
 
 > **Always pass `--user appuser` to `docker compose exec`.** Compose v5 does not inherit the service's `user:` setting for exec, so without it commands run as root and leave root-owned files on the host that you cannot edit.
@@ -41,6 +45,22 @@ Add to `/etc/hosts` (or `C:\Windows\System32\drivers\etc\hosts`):
 1. Tests exist for the new behaviour, and `composer test` passes
 2. `vendor/bin/pint`
 3. For frontend changes, `bun run lint`
+
+## CI
+
+`.github/workflows/ci.yml` runs on every PR to `main` and every push to `main`:
+
+- **Backend** — `vendor/bin/pint --test`, then PHPUnit with pcov coverage
+- **Frontend** — `bun run lint`, then `bun run test --run`
+
+The backend job fails if line coverage drops below `MIN_COVERAGE` (currently `95`,
+set at the top of the workflow). Raise that floor as coverage improves; don't lower
+it to turn a build green. Reproduce the gate locally with:
+
+```bash
+docker compose exec --user appuser app \
+  php -d pcov.enabled=1 vendor/bin/phpunit --coverage-text
+```
 
 ## Shipping work
 
