@@ -1,22 +1,26 @@
-# Pet Hotel — Agent Reference
+# Pet Hotel — Stack & Domain Reference
 
-A pet boarding marketplace: customers search, book, and review stays; owners manage listings via a Filament panel. Infrastructure and booking flow are complete; some features are stubs.
+Customers search, book, and review pet boarding stays; hotel owners manage listings through a Filament panel.
+
+Code conventions live in `.claude/agents/coder.md`, `tester.md`, and `linter.md` — this file does not repeat them.
 
 ## Stack
 
 | Layer | Detail |
 |-------|--------|
 | PHP framework | Laravel 13.8 |
-| Frontend | Vue 3 + Vite 8 + Tailwind CSS v4 |
-| SPA bridge | Inertia.js 3.1 — no REST API, no Axios |
-| Admin UI | Filament v4 (two panels) |
-| Auth | Sanctum cookie SPA — no API tokens in use. Google OAuth via `laravel/socialite` on `/auth/google` |
-| Database | PostgreSQL 16 (Docker) / SQLite (local) |
-| Queue | Database driver; Redis configured but idle |
+| Frontend | Vue 3 + Vite 8 + Tailwind CSS v4 (no `tailwind.config.js`) |
+| SPA bridge | Inertia.js 3.1 |
+| Admin UI | Filament v4 — two panels |
+| Auth | Sanctum cookie SPA + Google OAuth (`laravel/socialite`) |
+| Database | PostgreSQL 16 (Docker) / SQLite (local, and all tests) |
+| Queue | Redis (`QUEUE_CONNECTION=redis` in `.env` and `.env.docker`) |
+| Maps | Leaflet — no other mapping library |
 | Package manager | Bun — never npm or pnpm |
-| Formatter | Laravel Pint — no pint.json, uses framework defaults |
-| Test runner (PHP) | PHPUnit 12 |
-| Test runner (JS) | Vitest 4 |
+| Formatters | Laravel Pint (PHP, framework defaults) · ESLint + Prettier (JS/Vue) |
+| Test runners | PHPUnit 12 · Vitest 4 |
+
+No component library, no TypeScript, no Pinia/Vuex, no `routes/api.php`.
 
 ## Domain Model
 
@@ -34,82 +38,25 @@ bookings   ──1 reviews
 users      ──< notifications          (Laravel DB notifications)
 ```
 
-## PHP Conventions
+Hard deletes with cascading FKs throughout — soft deletes are not used.
 
-**Models**
-- Use PHP 8.3 promoted-property / attribute syntax for `$fillable`/`$casts` where applicable.
-- `$table` is only declared when non-standard (`PetHotelPricing` → `pet_hotel_pricing`).
-- Availability side-effects live in `Booking::booted()` only — on `updating`, spots are adjusted; on `updated`, notification jobs fire. Never replicate this in controllers or services.
+## Non-obvious behaviour
 
-**Authorization**
-- Policies (`BookingPolicy`, `PetPolicy`) for resource-level access. Call `$this->authorize()` in controllers.
-- Implicit ownership (user edits own profile/pets) is acceptable without a policy, but ownership must be asserted explicitly — never rely on route binding alone.
+**Availability side-effects live in `Booking::booted()` only** — spots adjust on `updating`, notification jobs fire on `updated`. Never replicate this in a controller, service, or job.
 
-**Validation**
-- All non-trivial POST/PATCH use Form Request classes in `app/Http/Requests/`.
-- Zero validation logic in controllers.
+**Two Filament panels.** Admin at `admin.pet-hotel.local` requires `is_admin`; hotel owner at `owner.pet-hotel.local` requires `ownedHotels()->exists()`. Resources auto-discover from `app/Filament/Resources/` and `app/Filament/HotelOwner/Resources/` respectively. Colour tokens: amber (admin), teal (owner).
 
-**Controllers**
-- Always return `Inertia::render('PageName', $props)`, `redirect()`, or `back()`.
-- Never `response()->json()` for customer-facing routes.
-- Eager-load every relationship the page needs — N+1 queries are bugs.
+**Two JSON endpoints exist and are intentional**, despite the general "Inertia only, never `response()->json()`" rule. Both are XHR-backed widgets, not page loads:
+- `hotels.availability` → `HotelAvailabilityController@index`, feeds `AvailabilityCalendar.vue`
+- `notifications.*` → `NotificationController` (`index`, `markRead`, `markAllRead`)
 
-**Dates**
-- Use Carbon. Cast date columns (`check_in`, `check_out`, `date`) to `'date'` or `'datetime'` in `$casts`. No raw string comparison with dates.
+Any *other* customer-facing JSON response is a violation.
 
-**Soft Deletes**
-- Not used. Hard deletes with `onDelete('cascade')` FKs.
+**OAuth.** `users.google_id` is nullable-unique and `users.password` is nullable, so OAuth-only accounts have no password — never assume one is set. Config in `config/services.php` → `google`; requires `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`.
 
-**OAuth (Google)**
-- Implemented with `laravel/socialite`. Routes `auth.google` and `auth.google.callback` live in the guest middleware group in `routes/web.php`.
-- Controller: `App\Http\Controllers\Auth\GoogleAuthController` (`redirect`, `callback`). Provider config: `config/services.php` → `google`.
-- `users.google_id` is a nullable unique string; `users.password` is nullable to support OAuth-only accounts.
-- Required env: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`.
+## Not yet built
 
-## Vue / Inertia Conventions
-
-**State**
-- No Pinia or Vuex. All state is Inertia page props or local `ref()`/`reactive()`. Derived state is always a `computed()`.
-
-**Forms**
-- Always `useForm()` from `@inertiajs/vue3`. Never `fetch` or `axios` directly.
-
-**Navigation**
-- `router.visit()` or `<Link>` from Inertia. Never `window.location`.
-
-**Layouts**
-- Declared inline via `defineOptions({ layout: AppLayout })` in `<script setup>`.
-- `AppLayout` for authenticated pages, `AuthLayout` for guest pages.
-
-**Language**
-- Plain JavaScript — no TypeScript anywhere.
-
-**UI**
-- No component library (no shadcn, no Headless UI). All UI is custom Tailwind utility classes.
-- Tailwind CSS v4 with no `tailwind.config.js`.
-- Leaflet for maps (`HotelMap.vue`). No other mapping lib.
-
-## Filament Conventions
-
-- **Admin panel** at `admin.pet-hotel.local` — requires `is_admin = true`.
-- **Hotel owner panel** at `owner.pet-hotel.local` — requires `ownedHotels()->exists()`.
-- Resources auto-discovered from `app/Filament/Resources/` (admin) and `app/Filament/HotelOwner/Resources/` (owner).
-- No custom themes — amber (admin) and teal (owner) colour tokens only.
-
-## Testing Conventions
-
-- Feature tests: `RefreshDatabase` + in-memory SQLite (never PostgreSQL in tests).
-- All test data via model factories. Seeders are not used in tests.
-- Auth context: `actingAs(User::factory()->create())`.
-- Isolate side-effects: `Queue::fake()` and `Mail::fake()` whenever dispatching jobs or mail.
-- Inertia assertions: `assertInertia(fn ($page) => $page->component('...')->has('prop'))`.
-
-## What Is Not Yet Built
-
-- `HotelAvailabilityController` — stub, not wired
-- `NotificationController` — partial
-- Hotel owner Filament panel — only `BookingResource` exists
-- No `routes/api.php` / no API endpoints
 - No payment integration
-- Vitest coverage is minimal (3 files: `HotelMap.test.js`, `HotelProfilePage.test.js`, `Landing.test.js`)
-- Only Google OAuth is wired; no other Socialite providers configured.
+- No API layer (`routes/api.php` does not exist)
+- Hotel-owner Filament panel has only `BookingResource`
+- Google is the only Socialite provider configured
