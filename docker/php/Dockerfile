@@ -30,6 +30,10 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 
 RUN pecl install redis && docker-php-ext-enable redis
 
+# Code coverage driver for PHPUnit. Loaded but inert (pcov.enabled=0 in
+# local.ini); turn it on per-run with `php -d pcov.enabled=1 vendor/bin/phpunit`.
+RUN pecl install pcov && docker-php-ext-enable pcov
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 ARG UID=1000

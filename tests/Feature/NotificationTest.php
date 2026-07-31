@@ -51,6 +51,73 @@ class NotificationTest extends TestCase
         $this->assertEquals(['mail', 'database'], $notification->via(new User));
     }
 
+    public function test_booking_requested_mail_describes_the_stay(): void
+    {
+        $hotel = PetHotel::factory()->create(['name' => 'Happy Paws']);
+        $user = User::factory()->create(['name' => 'Ada']);
+        $booking = Booking::factory()->for($user)->for($hotel, 'hotel')->create([
+            'total_price' => 150.00,
+        ]);
+
+        $mail = (new BookingRequested($booking))->toMail($user);
+        $lines = implode(' ', $mail->introLines);
+
+        $this->assertSame('Booking Request Received — Happy Paws', $mail->subject);
+        $this->assertSame('Hi Ada,', $mail->greeting);
+        $this->assertSame('View Booking', $mail->actionText);
+        $this->assertSame(route('bookings.show', $booking), $mail->actionUrl);
+        $this->assertStringContainsString('Happy Paws', $lines);
+        $this->assertStringContainsString($booking->check_in->format('D, d M Y'), $lines);
+        $this->assertStringContainsString($booking->check_out->format('D, d M Y'), $lines);
+        $this->assertStringContainsString('$150.00', $lines);
+    }
+
+    public function test_booking_requested_database_payload_describes_the_booking(): void
+    {
+        $hotel = PetHotel::factory()->create(['name' => 'Happy Paws']);
+        $user = User::factory()->create();
+        $booking = Booking::factory()->for($user)->for($hotel, 'hotel')->create();
+
+        $payload = (new BookingRequested($booking))->toDatabase($user);
+
+        $this->assertSame('booking_requested', $payload['type']);
+        $this->assertSame($booking->id, $payload['booking_id']);
+        $this->assertSame('Happy Paws', $payload['hotel_name']);
+        $this->assertStringContainsString('Happy Paws', $payload['message']);
+        $this->assertSame(route('bookings.show', $booking), $payload['url']);
+    }
+
+    // ── Job handling ──────────────────────────────────────────────────────────
+
+    public function test_request_notification_job_notifies_the_booking_user(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create();
+        $booking = Booking::factory()->for($user)->create();
+
+        (new SendBookingRequestNotification($booking))->handle();
+
+        Notification::assertSentTo(
+            $user,
+            BookingRequested::class,
+            fn (BookingRequested $notification) => $notification->booking->is($booking),
+        );
+    }
+
+    public function test_request_notification_job_writes_a_database_notification(): void
+    {
+        $user = User::factory()->create();
+        $booking = Booking::factory()->for($user)->create();
+
+        (new SendBookingRequestNotification($booking))->handle();
+
+        $this->assertDatabaseHas('notifications', [
+            'notifiable_id' => $user->id,
+            'type' => BookingRequested::class,
+        ]);
+    }
+
     // ── Job dispatching ───────────────────────────────────────────────────────
 
     public function test_booking_creation_dispatches_request_notification_job(): void
@@ -65,8 +132,8 @@ class NotificationTest extends TestCase
 
         $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
             'pet_id' => $pet->id,
-            'check_in' => '2026-06-01',
-            'check_out' => '2026-06-04',
+            'check_in' => now()->addDays(30)->toDateString(),
+            'check_out' => now()->addDays(33)->toDateString(),
             'notes' => '',
         ]);
 

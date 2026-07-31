@@ -12,6 +12,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
@@ -38,7 +39,7 @@ class HotelResource extends Resource
                     Forms\Components\TextInput::make('name')
                         ->required()
                         ->live(onBlur: true)
-                        ->afterStateUpdated(fn (Forms\Set $set, ?string $state) => $set('slug', Str::slug($state ?? '')))
+                        ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state ?? '')))
                         ->columnSpan(1),
                     Forms\Components\TextInput::make('slug')
                         ->required()

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['user_id', 'hotel_id', 'booking_id', 'rating', 'comment'])]
+#[Fillable(['user_id', 'hotel_id', 'booking_id', 'rating', 'comment', 'is_visible'])]
 class Review extends Model
 {
     /** @use HasFactory<ReviewFactory> */

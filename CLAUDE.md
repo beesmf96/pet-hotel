@@ -21,6 +21,10 @@ vendor/bin/pint       # PHP formatter
 docker compose up -d                    # app, nginx, postgres, redis
 docker compose --profile dev up -d      # + the Bun/Vite node container
 docker compose exec --user appuser app <cmd>
+
+# Backend coverage (pcov ships in the image, disabled unless you opt in)
+docker compose exec --user appuser app \
+  php -d pcov.enabled=1 vendor/bin/phpunit --coverage-text
 ```
 
 > **Always pass `--user appuser` to `docker compose exec`.** Compose v5 does not inherit the service's `user:` setting for exec, so without it commands run as root and leave root-owned files on the host that you cannot edit.
