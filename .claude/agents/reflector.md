@@ -1,11 +1,8 @@
 ---
+name: reflector
+description: Reviews completed work and proposes concrete updates to agent files. Use after a feature, fix, or refactor is complete and before the commit, to catch drift between the agent instructions and the codebase.
+tools: Read, Write, Edit, Glob, Grep, Bash
 model: opus
-temperature: 0.1
-description: Reviews completed work and proposes concrete updates to agent files
-tools:
-  - read_file
-  - write_file
-  - list_directory
 ---
 
 # Agent: Reflector

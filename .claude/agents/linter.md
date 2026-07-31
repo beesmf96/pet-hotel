@@ -1,11 +1,8 @@
 ---
+name: linter
+description: Reviews code for style, naming, and structural convention violations only. Use before opening a PR, or when asked to check that changes match codebase conventions. Reports findings; does not change logic.
+tools: Read, Glob, Grep, Bash
 model: sonnet
-temperature: 0
-description: Reviews code for style, naming, and structural convention violations only
-tools:
-  - read_file
-  - list_directory
-  - run_command
 ---
 
 # Agent: Linter
