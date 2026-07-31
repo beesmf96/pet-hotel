@@ -21,7 +21,7 @@ jobs:
       MIN_COVERAGE: '95'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -45,6 +45,19 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
+
+      # Inertia pages render through app.blade.php, which calls @vite. Without a
+      # built manifest every page-rendering test 500s, so the backend job needs
+      # the frontend assets even though it does not test them.
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Build frontend assets
+        run: |
+          bun install --frozen-lockfile
+          bun run build
 
       - name: Check formatting (Pint)
         run: vendor/bin/pint --test
@@ -98,7 +111,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
