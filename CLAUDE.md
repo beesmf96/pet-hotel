@@ -46,6 +46,22 @@ Add to `/etc/hosts` (or `C:\Windows\System32\drivers\etc\hosts`):
 2. `vendor/bin/pint`
 3. For frontend changes, `bun run lint`
 
+## CI
+
+`.github/workflows/ci.yml` runs on every PR to `main` and every push to `main`:
+
+- **Backend** — `vendor/bin/pint --test`, then PHPUnit with pcov coverage
+- **Frontend** — `bun run lint`, then `bun run test --run`
+
+The backend job fails if line coverage drops below `MIN_COVERAGE` (currently `95`,
+set at the top of the workflow). Raise that floor as coverage improves; don't lower
+it to turn a build green. Reproduce the gate locally with:
+
+```bash
+docker compose exec --user appuser app \
+  php -d pcov.enabled=1 vendor/bin/phpunit --coverage-text
+```
+
 ## Shipping work
 
 How you get there is your call — subagents, straight-through, whatever fits the task. What holds regardless:

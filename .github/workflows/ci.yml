@@ -1,0 +1,115 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (PHPUnit + coverage)
+    runs-on: ubuntu-latest
+
+    env:
+      # Line coverage floor. Raise this as coverage improves; never lower it to
+      # make a red build pass.
+      MIN_COVERAGE: '95'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_sqlite, sqlite3, mbstring, intl, bcmath, gd, zip, exif, pcntl
+          coverage: pcov
+          tools: composer:v2
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/composer/files
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Check formatting (Pint)
+        run: vendor/bin/pint --test
+
+      - name: Run tests with coverage
+        run: |
+          php artisan config:clear
+          php -d pcov.enabled=1 vendor/bin/phpunit \
+            --coverage-text \
+            --coverage-clover=build/logs/clover.xml
+
+      - name: Enforce coverage threshold
+        run: |
+          php -r '
+            $min = (float) getenv("MIN_COVERAGE");
+            $path = "build/logs/clover.xml";
+
+            if (! is_file($path)) {
+                fwrite(STDERR, "No coverage report at {$path}.\n");
+                exit(1);
+            }
+
+            $metrics = simplexml_load_file($path)->project->metrics;
+            $statements = (int) $metrics["statements"];
+            $covered = (int) $metrics["coveredstatements"];
+
+            if ($statements === 0) {
+                fwrite(STDERR, "Coverage report contains no statements.\n");
+                exit(1);
+            }
+
+            $pct = $covered / $statements * 100;
+            printf("Line coverage: %.2f%% (%d/%d). Minimum: %.2f%%.\n", $pct, $covered, $statements, $min);
+
+            if ($pct < $min) {
+                fwrite(STDERR, sprintf("FAIL: coverage is %.2f%% below the %.2f%% floor.\n", $min - $pct, $min));
+                exit(1);
+            }
+          '
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-clover
+          path: build/logs/clover.xml
+          if-no-files-found: ignore
+
+  frontend:
+    name: Frontend (ESLint + Vitest)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Test
+        run: bun run test --run
