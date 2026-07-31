@@ -15,6 +15,8 @@ use App\Models\PetHotelPricing;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -182,6 +184,106 @@ class HotelResourceTest extends TestCase
         ])
             ->assertSuccessful()
             ->assertCanSeeTableRecords($photos);
+    }
+
+    /**
+     * FileUpload has no explicit ->disk(), so it writes to Filament's default
+     * filesystem disk — which falls through to `filesystems.default` ('local' in
+     * tests). Faking a hardcoded 'public' would silently assert against a disk
+     * nothing was ever written to.
+     */
+    private function fakeUploadDisk(): string
+    {
+        $disk = config('filesystems.default');
+        Storage::fake($disk);
+
+        return $disk;
+    }
+
+    public function test_photos_relation_manager_creates_a_photo(): void
+    {
+        $disk = $this->fakeUploadDisk();
+
+        $hotel = PetHotel::factory()->create();
+
+        Livewire::test(PhotosRelationManager::class, [
+            'ownerRecord' => $hotel,
+            'pageClass' => EditHotel::class,
+        ])
+            ->callTableAction('create', data: [
+                'url' => [UploadedFile::fake()->image('kennel.jpg')],
+                'sort_order' => 3,
+            ])
+            ->assertHasNoTableActionErrors();
+
+        $photo = PetHotelPhoto::where('hotel_id', $hotel->id)->sole();
+
+        $this->assertSame(3, (int) $photo->sort_order);
+        Storage::disk($disk)->assertExists($photo->url);
+    }
+
+    public function test_photos_relation_manager_edits_sort_order(): void
+    {
+        $this->fakeUploadDisk();
+
+        $hotel = PetHotel::factory()->create();
+        $photo = PetHotelPhoto::create([
+            'hotel_id' => $hotel->id,
+            'url' => 'a.jpg',
+            'sort_order' => 0,
+        ]);
+
+        Livewire::test(PhotosRelationManager::class, [
+            'ownerRecord' => $hotel,
+            'pageClass' => EditHotel::class,
+        ])
+            ->callTableAction('edit', $photo, data: [
+                'url' => ['a.jpg'],
+                'sort_order' => 7,
+            ])
+            ->assertHasNoTableActionErrors();
+
+        $this->assertSame(7, (int) $photo->fresh()->sort_order);
+    }
+
+    public function test_photos_relation_manager_reorders_photos(): void
+    {
+        $hotel = PetHotel::factory()->create();
+        $photos = collect(['a.jpg', 'b.jpg'])->map(fn ($url, $i) => PetHotelPhoto::create([
+            'hotel_id' => $hotel->id,
+            'url' => $url,
+            'sort_order' => $i,
+        ]));
+
+        Livewire::test(PhotosRelationManager::class, [
+            'ownerRecord' => $hotel,
+            'pageClass' => EditHotel::class,
+        ])
+            ->call('reorderTable', [$photos[1]->getKey(), $photos[0]->getKey()])
+            ->assertSuccessful();
+
+        // Filament writes 1-based positions in the order the keys were passed.
+        $this->assertSame(1, (int) $photos[1]->fresh()->sort_order);
+        $this->assertSame(2, (int) $photos[0]->fresh()->sort_order);
+    }
+
+    public function test_photos_relation_manager_deletes_a_photo(): void
+    {
+        $hotel = PetHotel::factory()->create();
+        $photo = PetHotelPhoto::create([
+            'hotel_id' => $hotel->id,
+            'url' => 'a.jpg',
+            'sort_order' => 0,
+        ]);
+
+        Livewire::test(PhotosRelationManager::class, [
+            'ownerRecord' => $hotel,
+            'pageClass' => EditHotel::class,
+        ])
+            ->callTableAction('delete', $photo)
+            ->assertHasNoTableActionErrors();
+
+        $this->assertDatabaseMissing('pet_hotel_photos', ['id' => $photo->id]);
     }
 
     public function test_pricing_relation_manager_lists_pricing(): void
