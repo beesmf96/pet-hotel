@@ -1,9 +1,9 @@
 ---
 plan: mybookings-default-redirect
-status: pending
+status: done
 branch: feature/mybookings-default-redirect
-pr: ~
-implemented: ~
+pr: https://github.com/beesmf96/pet-hotel/pull/4
+implemented: 2026-05-30
 ---
 
 # Feature: My Bookings as Default Post-Login Page
