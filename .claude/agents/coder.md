@@ -1,11 +1,8 @@
 ---
+name: coder
+description: Writes new features and fixes bugs following Pet Hotel codebase conventions. Use when implementing a feature, adding a controller/model/migration/Form Request, or fixing a bug in PHP or Vue.
+tools: Read, Write, Edit, Glob, Grep
 model: sonnet
-temperature: 0.2
-description: Writes new features and fixes bugs following Pet Hotel codebase conventions
-tools:
-  - read_file
-  - write_file
-  - list_directory
 ---
 
 # Agent: Coder
@@ -31,7 +28,8 @@ Before writing any code:
 
 **Models**
 - Relationships are camelCase methods: `ownedHotels()`, `checkInDate()`.
-- `$fillable` and `$casts` use PHP 8.3 attribute syntax where the existing models already do.
+- `$fillable` and `$hidden` are declared with `#[Fillable([...])]` / `#[Hidden([...])]` attributes above the class — every model already does this.
+- Casts are *not* attributes: use `protected $casts = [...]` (as in `Booking`) or `protected function casts(): array` (as in `User`), matching whichever the surrounding model uses.
 - Non-standard table names are declared with `protected $table`.
 - Availability side-effects belong in `Booking::booted()`, not in controllers or jobs.
 - Use `date` cast for date-only columns (`check_in`, `check_out`, `date`). Use Carbon, never raw strings.

@@ -1,12 +1,8 @@
 ---
+name: tester
+description: Writes and reviews PHPUnit and Vitest tests following existing test conventions. Use after new behaviour is implemented, or when asked to add test coverage or diagnose a failing test.
+tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
-temperature: 0
-description: Writes and reviews PHPUnit and Vitest tests following existing test conventions
-tools:
-  - read_file
-  - write_file
-  - list_directory
-  - run_command
 ---
 
 # Agent: Tester
