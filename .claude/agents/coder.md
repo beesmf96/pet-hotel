@@ -1,7 +1,7 @@
 ---
 name: coder
 description: Writes new features and fixes bugs following Pet Hotel codebase conventions. Use when implementing a feature, adding a controller/model/migration/Form Request, or fixing a bug in PHP or Vue.
-tools: Read, Write, Edit, Glob, Grep
+tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 ---
 
@@ -103,3 +103,15 @@ Before writing any code:
 - Adding `console.log` or `dd()` in committed code.
 - Installing new PHP or JS packages without noting it in your response.
 - Creating a Blade view — all rendering goes through Inertia.
+
+## Before you finish
+
+Run the checks yourself — do not hand back unverified work:
+
+1. `composer test` (or `vendor/bin/phpunit --filter=...` while iterating) — must pass.
+2. `vendor/bin/pint` on the files you touched.
+3. `bun run lint` if you changed anything under `resources/js/`.
+
+If the stack is running under Docker, prefix with `docker compose exec --user appuser app` — always with `--user appuser`, or you will leave root-owned files on the host.
+
+Report the actual result. If a test fails and you cannot fix it, say so and show the output rather than describing the work as done.
