@@ -15,12 +15,16 @@ class GoogleAuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function mockSocialiteUser(string $id, string $email, string $name): SocialiteUser
+    private function mockSocialiteUser(string $id, string $email, string $name, bool $emailVerified = true): SocialiteUser
     {
         $socialiteUser = Mockery::mock(SocialiteUser::class);
         $socialiteUser->shouldReceive('getId')->andReturn($id);
         $socialiteUser->shouldReceive('getEmail')->andReturn($email);
         $socialiteUser->shouldReceive('getName')->andReturn($name);
+
+        // The controller reads the OIDC `email_verified` claim off the raw payload,
+        // which Socialite exposes as the public $user array rather than a getter.
+        $socialiteUser->user = ['email_verified' => $emailVerified];
 
         return $socialiteUser;
     }
@@ -116,6 +120,45 @@ class GoogleAuthTest extends TestCase
         $this->get('/auth/google/callback');
 
         $this->assertSame(1, User::where('email', 'dup@example.com')->count());
+    }
+
+    public function test_unverified_provider_email_does_not_adopt_existing_account(): void
+    {
+        $existing = User::factory()->create([
+            'email' => 'victim@example.com',
+            'google_id' => null,
+        ]);
+
+        $googleUser = $this->mockSocialiteUser(
+            'attacker-uid', 'victim@example.com', 'Attacker', emailVerified: false
+        );
+        $this->mockSocialiteDriver($googleUser);
+
+        $response = $this->get('/auth/google/callback');
+
+        $this->assertGuest();
+        $response->assertRedirect('/login');
+        $this->assertNull($existing->fresh()->google_id);
+    }
+
+    public function test_missing_email_verified_claim_is_treated_as_unverified(): void
+    {
+        $existing = User::factory()->create([
+            'email' => 'noclaim@example.com',
+            'google_id' => null,
+        ]);
+
+        $googleUser = Mockery::mock(SocialiteUser::class);
+        $googleUser->shouldReceive('getId')->andReturn('uid-no-claim');
+        $googleUser->shouldReceive('getEmail')->andReturn('noclaim@example.com');
+        $googleUser->shouldReceive('getName')->andReturn('No Claim');
+        $googleUser->user = [];
+        $this->mockSocialiteDriver($googleUser);
+
+        $this->get('/auth/google/callback')->assertRedirect('/login');
+
+        $this->assertGuest();
+        $this->assertNull($existing->fresh()->google_id);
     }
 
     // ── Callback: existing user by google_id ─────────────────────────────────

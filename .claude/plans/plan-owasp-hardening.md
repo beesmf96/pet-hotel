@@ -1,7 +1,7 @@
 ---
 plan: owasp-hardening
-status: draft
-branch: ~
+status: in-progress
+branch: feature/owasp-hardening
 pr: ~
 implemented: ~
 ---
@@ -53,8 +53,8 @@ Severity is "risk once publicly deployed", not "risk today on localhost".
 Two of the `symfony/routing` ones (CVE-2026-45065, CVE-2026-48784) are URL
 generation bypasses — directly relevant to a public app.
 
-- [ ] `composer update` and re-audit
-- [ ] Confirm nothing breaks — the 315-test suite is the safety net here
+- [x] `composer update` and re-audit — **clean, 0 advisories**
+- [x] Confirm nothing breaks — 323 tests pass
 
 **Maps to:** A06 Vulnerable and Outdated Components
 
@@ -67,11 +67,11 @@ assets. There is no CSP, HSTS, `X-Frame-Options`, `X-Content-Type-Options`, or
 Consequence: the admin and owner Filament panels are clickjackable, and there is
 no defence-in-depth against XSS.
 
-- [ ] Add `X-Frame-Options: DENY` (or CSP `frame-ancestors 'none'`)
-- [ ] Add `X-Content-Type-Options: nosniff`
-- [ ] Add `Referrer-Policy: strict-origin-when-cross-origin`
-- [ ] Add HSTS — **only after** HTTPS is confirmed working, it is hard to walk back
-- [ ] Scope a CSP. Inertia + Vite makes this fiddly; start `Report-Only`
+- [x] Add `X-Frame-Options: DENY`
+- [x] Add `X-Content-Type-Options: nosniff`
+- [x] Add `Referrer-Policy: strict-origin-when-cross-origin`
+- [x] Add HSTS — gated on `$request->isSecure()`, so it stays inert until TLS is live
+- [ ] **STILL OPEN** — Scope a CSP. Inertia + Vite makes this fiddly; start `Report-Only`
 
 Worth deciding whether these live in nginx or in Laravel middleware. Middleware
 travels with the app if the deployment target isn't this nginx config.
@@ -105,9 +105,8 @@ Two consequences: unlimited reset-token guessing on `password.update`, and
 `ForgotPasswordController:26-28` returns a different response for known vs unknown
 emails, so `password.email` is an unthrottled **user enumeration oracle**.
 
-- [ ] Add `throttle:5,1` to both routes
-- [ ] Consider always returning the generic success message regardless of whether
-      the email exists
+- [x] Add `throttle:5,1` to both routes
+- [x] Always return the generic success message regardless of whether the email exists
 
 **Maps to:** A07 Identification and Authentication Failures
 
@@ -122,8 +121,9 @@ It becomes an account-takeover path the moment a second Socialite provider is ad
 that doesn't (the docs already flag "Google is the only provider configured" as a
 known limitation). Cheap to fix now, easy to forget later.
 
-- [ ] Check the `email_verified` claim before linking to an existing account
-- [ ] Or require the user to be logged in to link a provider
+- [x] Check the `email_verified` claim before linking to an existing account.
+      An absent claim counts as unverified. Requiring a logged-in session to link
+      a provider — the other option listed — is now unnecessary.
 
 **Maps to:** A07 Identification and Authentication Failures
 
@@ -136,8 +136,8 @@ No live secrets are exposed today: `APP_KEY` is empty and `DB_PASSWORD=secret` i
 local value. The risk is the trap it sets — the file *looks* ignored, so a real
 secret added to it later gets committed silently.
 
-- [ ] Either `git rm --cached .env.docker`, or drop it from `.gitignore` so its
-      tracked status is honest
+- [x] Dropped from `.gitignore`. README:26 says `cp .env.docker .env`, so it is an
+      intentional tracked template — the ignore entry was the bug, not the tracking.
 
 **Maps to:** A05 Security Misconfiguration
 
@@ -173,18 +173,35 @@ Worth recording so nobody "fixes" it later:
   by default.
 - **A03 CSRF — covered.** All state-changing routes are in the `web` group.
 - **File uploads** are validated with `image` and `max:2048`.
-- **JS dependency advisories are not shipped.** `bun audit` reports 16 vulns
-  (1 critical, 10 high), but every affected package — `shell-quote` via
-  `concurrently`, `vite`, `jsdom`, `undici` — is a `devDependency`. None reach a
-  production bundle. Worth fixing for build-machine hygiene, not deploy-blocking.
+- **JS dependency advisories were build-tooling only.** The initial audit note here
+  claimed *every* JS advisory sat in `devDependencies`. That was wrong:
+  `bun audit --prod` reported 3 (`postcss` via `vue`/`vite`, plus `vite` itself),
+  because `@vitejs/plugin-vue` was declared under `dependencies`. They were still
+  build-time issues rather than browser-bundle ones, but the "all dev" claim did
+  not hold. Both were addressed:
+  - `bun update` cleared all 3 — `bun audit --prod` is now clean
+  - `@vitejs/plugin-vue` moved to `devDependencies`, where `vite` already lived,
+    so `bun audit --prod` is a meaningful CI gate rather than a misleading one
+
+  The full tree still carries advisories in `concurrently`, `jsdom`, and `undici`.
+  Those are genuinely dev-only and are reported non-blocking in CI.
 
 ## Suggested order
 
-1. `composer update` + re-audit — highest risk, and the test suite de-risks it
-2. Production env config (`APP_DEBUG`, `SESSION_SECURE_COOKIE`, `APP_KEY`)
-3. Security headers
-4. Password reset throttling + enumeration
-5. OAuth `email_verified`, `.env.docker`, logging
+1. ~~`composer update` + re-audit~~ — **done**
+2. Production env config (`APP_DEBUG`, `SESSION_SECURE_COOKIE`, `APP_KEY`) —
+   **partly done.** `.env.example` now documents both, but the actual production
+   values are the deployer's to set; nothing in the repo can enforce them.
+3. ~~Security headers~~ — **done** except CSP
+4. ~~Password reset throttling + enumeration~~ — **done**
+5. ~~OAuth `email_verified`, `.env.docker`~~ — **done.** Security logging still open.
+
+### Still outstanding after this branch
+
+- **CSP** — needs working out against the real Vite asset pipeline
+- **Security event logging** (A09)
+- **Production env values** — deployment-side, not code
+- `SESSION_ENCRYPT` and `SESSION_SAME_SITE` review
 
 1-2 are deploy blockers. 3-4 should land before real users. 5 is follow-up.
 
@@ -192,9 +209,9 @@ Worth recording so nobody "fixes" it later:
 
 The audit above is a snapshot; dependency risk regenerates continuously.
 
-- [ ] Add `composer audit` and `bun audit` to `.github/workflows/ci.yml`
-- [ ] Decide whether they block or just warn — `bun audit` is currently all-dev
-      noise, so blocking on it would be false-positive heavy from day one
+- [x] Added a `Security (dependency audit)` job to `.github/workflows/ci.yml`
+- [x] Decided: `composer audit` and `bun audit --prod` block; full `bun audit` runs
+      `continue-on-error`
 - [ ] Consider Dependabot for automated bumps
 
 ## Open Questions

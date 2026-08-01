@@ -106,6 +106,47 @@ jobs:
           path: build/logs/clover.xml
           if-no-files-found: ignore
 
+  security:
+    name: Security (dependency audit)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      # Blocking. Every advisory found in the 2026-08 audit was in the production
+      # tree, so there is no dev-only noise to tolerate here.
+      - name: Audit PHP dependencies
+        run: composer audit
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install JS dependencies
+        run: bun install --frozen-lockfile
+
+      # Blocking, but scoped to production dependencies. The full tree carries
+      # advisories in build tooling (vite, jsdom, concurrently) that never reach
+      # a browser bundle; gating on those would be false-positive heavy from day
+      # one and would train people to ignore this job.
+      - name: Audit JS production dependencies
+        run: bun audit --prod
+
+      # Informational only — surfaces build-tooling advisories without failing.
+      - name: Audit all JS dependencies (advisory)
+        continue-on-error: true
+        run: bun audit
+
   frontend:
     name: Frontend (ESLint + Vitest)
     runs-on: ubuntu-latest
