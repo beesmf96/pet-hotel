@@ -2,7 +2,7 @@
 plan: owasp-hardening
 status: in-progress
 branch: feature/owasp-hardening
-pr: https://github.com/beesmf96/pet-hotel/pull/10
+pr: https://github.com/beesmf96/pet-hotel/pull/10, https://github.com/beesmf96/pet-hotel/pull/11
 implemented: ~
 ---
 
@@ -71,7 +71,9 @@ no defence-in-depth against XSS.
 - [x] Add `X-Content-Type-Options: nosniff`
 - [x] Add `Referrer-Policy: strict-origin-when-cross-origin`
 - [x] Add HSTS — gated on `$request->isSecure()`, so it stays inert until TLS is live
-- [ ] **STILL OPEN** — Scope a CSP. Inertia + Vite makes this fiddly; start `Report-Only`
+- [x] Scope a CSP — shipped in **report-only** mode (`CSP_MODE=report`), so browsers
+      report violations without blocking. Switching to enforcing is an env change,
+      not a code change. See "CSP rollout" below.
 
 Worth deciding whether these live in nginx or in Laravel middleware. Middleware
 travels with the app if the deployment target isn't this nginx config.
@@ -192,16 +194,50 @@ Worth recording so nobody "fixes" it later:
 2. Production env config (`APP_DEBUG`, `SESSION_SECURE_COOKIE`, `APP_KEY`) —
    **partly done.** `.env.example` now documents both, but the actual production
    values are the deployer's to set; nothing in the repo can enforce them.
-3. ~~Security headers~~ — **done** except CSP
+3. ~~Security headers~~ — **done**, CSP shipped report-only
 4. ~~Password reset throttling + enumeration~~ — **done**
 5. ~~OAuth `email_verified`, `.env.docker`~~ — **done.** Security logging still open.
 
-### Still outstanding after this branch
+### Still outstanding
 
-- **CSP** — needs working out against the real Vite asset pipeline
+- **Flip CSP to enforcing** once report data is clean — see below
 - **Security event logging** (A09)
 - **Production env values** — deployment-side, not code
 - `SESSION_ENCRYPT` and `SESSION_SAME_SITE` review
+
+## CSP rollout
+
+Shipped report-only. The policy is built per-request in `SecurityHeaders`, and
+violations POST to `/csp-report`, which logs them — without a report-uri they
+would only appear in each individual visitor's devtools console and be lost.
+
+Current policy, from the customer-facing host:
+
+```
+default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';
+object-src 'none'; img-src 'self' data: blob: https://*.tile.openstreetmap.org;
+font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self';
+connect-src 'self'; report-uri /csp-report
+```
+
+Three deliberate relaxations, each scoped rather than global:
+
+- `style-src 'unsafe-inline'` — Vue emits component styles as inline `<style>`
+  blocks. Removing this needs nonces or hashes.
+- `'unsafe-eval' 'unsafe-inline'` on **the two Filament hostnames only** — Alpine
+  evaluates expression strings at runtime. The customer-facing SPA keeps
+  `script-src 'self'`, which is the tight form.
+- The Vite dev server origin, gated on `app()->environment('local')` *and* the hot
+  file. The environment check is not redundant: `public/hot` is build output, and
+  a stale one in a deploy artifact would otherwise quietly widen the live policy.
+
+### To finish the rollout
+
+- [ ] Deploy with `CSP_MODE=report` and leave it through real traffic
+- [ ] Watch `storage/logs` for `CSP violation`
+- [ ] Widen `SecurityHeaders::contentSecurityPolicy()` for legitimate sources only
+- [ ] When reports are clean, set `CSP_MODE=enforce`
+- [ ] Revisit `style-src 'unsafe-inline'` — the weakest part of the policy
 
 1-2 are deploy blockers. 3-4 should land before real users. 5 is follow-up.
 

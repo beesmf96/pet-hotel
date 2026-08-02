@@ -3,7 +3,10 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Filament\Facades\Filament;
+use Filament\Panel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Vite;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -17,9 +20,8 @@ use Symfony\Component\HttpFoundation\Response;
  * - HSTS, which is emitted only over HTTPS (see below). Sending it over plain
  *   HTTP is ignored by browsers anyway, and committing to it before TLS is
  *   confirmed working is painful to walk back — the max-age sticks in browsers.
- * - A full Content-Security-Policy. Inertia + Vite need a policy worked out
- *   against the real asset pipeline; a wrong one silently breaks the SPA. That
- *   is tracked separately in .claude/plans/plan-owasp-hardening.md.
+ *
+ * The Content-Security-Policy defaults to report-only mode; see config/security.php.
  */
 class SecurityHeaders
 {
@@ -42,6 +44,119 @@ class SecurityHeaders
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
+        if ($header = $this->cspHeaderName()) {
+            $response->headers->set($header, $this->contentSecurityPolicy($request));
+        }
+
         return $response;
+    }
+
+    /**
+     * Report-Only tells the browser to check the policy and report violations
+     * without blocking anything, so a wrong policy cannot break the site.
+     */
+    private function cspHeaderName(): ?string
+    {
+        return match (config('security.csp.mode')) {
+            'enforce' => 'Content-Security-Policy',
+            'report' => 'Content-Security-Policy-Report-Only',
+            default => null,
+        };
+    }
+
+    private function contentSecurityPolicy(Request $request): string
+    {
+        $directives = [
+            'default-src' => ["'self'"],
+
+            // Blocks <base href> hijacking and restricts where forms may post,
+            // both of which survive an otherwise-contained script injection.
+            'base-uri' => ["'self'"],
+            'form-action' => ["'self'"],
+
+            // Same intent as the X-Frame-Options header above; CSP is the modern
+            // spelling and both are sent for older browsers.
+            'frame-ancestors' => ["'none'"],
+            'object-src' => ["'none'"],
+
+            // data: covers inline SVG icons; blob: covers client-side previews of
+            // a pet photo before upload. The OSM host serves Leaflet map tiles —
+            // see HotelMap.vue.
+            'img-src' => ["'self'", 'data:', 'blob:', 'https://*.tile.openstreetmap.org'],
+            'font-src' => ["'self'", 'data:'],
+
+            // Vue injects component styles as inline <style> blocks, so this
+            // cannot be tightened without moving to nonces or hashes.
+            'style-src' => ["'self'", "'unsafe-inline'"],
+
+            'script-src' => ["'self'"],
+            'connect-src' => ["'self'"],
+        ];
+
+        // Filament drives its UI with Alpine, which evaluates expression strings
+        // at runtime — that is exactly what 'unsafe-eval' permits. The panels sit
+        // on their own hostnames, so the customer-facing SPA keeps the tighter
+        // policy instead of inheriting this relaxation.
+        if ($this->isFilamentHost($request)) {
+            $directives['script-src'][] = "'unsafe-eval'";
+            $directives['script-src'][] = "'unsafe-inline'";
+        }
+
+        // With `bun run dev`, assets and the hot-reload websocket come from the
+        // Vite dev server rather than this origin. Without these the policy would
+        // report a flood of violations that say nothing about production.
+        //
+        // Gated on the local environment as well as the hot file: public/hot is
+        // build output, and a stale one shipped in a deploy artifact would
+        // otherwise quietly widen the live policy to include 'unsafe-inline' and
+        // a localhost origin.
+        if (app()->environment('local') && Vite::isRunningHot() && ($origin = $this->viteDevServerOrigin())) {
+            $directives['script-src'][] = $origin;
+            $directives['script-src'][] = "'unsafe-inline'";
+            $directives['style-src'][] = $origin;
+            $directives['connect-src'][] = $origin;
+            $directives['connect-src'][] = str_replace(['http://', 'https://'], ['ws://', 'wss://'], $origin);
+        }
+
+        // The Filament and Vite branches above can both contribute 'unsafe-inline'.
+        $policy = collect($directives)
+            ->map(fn (array $sources, string $name) => $name.' '.implode(' ', array_unique($sources)))
+            ->values()
+            ->all();
+
+        if ($reportUri = config('security.csp.report_uri')) {
+            $policy[] = 'report-uri '.$reportUri;
+        }
+
+        return implode('; ', $policy);
+    }
+
+    private function isFilamentHost(Request $request): bool
+    {
+        return collect(Filament::getPanels())
+            ->contains(fn (Panel $panel) => $panel->getDomains() !== []
+                && in_array($request->getHost(), $panel->getDomains(), true));
+    }
+
+    /**
+     * The hot file holds the dev server URL Vite is actually serving from, which
+     * is not always the documented default once ports collide.
+     */
+    private function viteDevServerOrigin(): ?string
+    {
+        $hotFile = public_path('hot');
+
+        if (! is_file($hotFile)) {
+            return null;
+        }
+
+        $url = trim((string) file_get_contents($hotFile));
+        $parts = parse_url($url);
+
+        if (! isset($parts['scheme'], $parts['host'])) {
+            return null;
+        }
+
+        return $parts['scheme'].'://'.$parts['host'].(isset($parts['port']) ? ':'.$parts['port'] : '');
     }
 }

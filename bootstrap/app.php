@@ -22,6 +22,9 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
+
+        // Browsers post CSP violation reports without a session or a token.
+        $middleware->validateCsrfTokens(except: ['csp-report']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
