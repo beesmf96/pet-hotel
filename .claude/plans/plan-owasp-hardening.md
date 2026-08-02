@@ -2,7 +2,7 @@
 plan: owasp-hardening
 status: in-progress
 branch: feature/owasp-hardening
-pr: https://github.com/beesmf96/pet-hotel/pull/10
+pr: https://github.com/beesmf96/pet-hotel/pull/10, https://github.com/beesmf96/pet-hotel/pull/11
 implemented: ~
 ---
 
