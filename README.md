@@ -2,6 +2,11 @@
 
 A booking platform for pet boarding. Built with Laravel 13 · Vue 3 · Inertia.js · Filament v4 · PostgreSQL · Redis.
 
+> **Deploying to a public host?** Work through
+> [`docs/deployment-checklist.md`](docs/deployment-checklist.md) first. It covers the
+> settings that live on the server and so cannot be caught by tests or CI —
+> `APP_DEBUG=false` above all.
+
 ---
 
 ## Prerequisites
