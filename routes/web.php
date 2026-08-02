@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\CspReportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HotelAvailabilityController;
 use App\Http\Controllers\HotelController;
@@ -18,6 +19,12 @@ use App\Http\Controllers\PetController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+
+// Posted by browsers, not by our frontend, so it sits outside the auth groups
+// and is exempt from CSRF (see bootstrap/app.php). Throttled because it is an
+// unauthenticated public write path into the log.
+Route::post('/csp-report', CspReportController::class)
+    ->middleware('throttle:60,1')->name('csp.report');
 
 Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/hotels', [HotelSearchController::class, 'index'])->name('hotels.index');

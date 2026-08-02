@@ -37,4 +37,74 @@ class SecurityHeadersTest extends TestCase
         $this->get('https://web.pet-hotel.local/')
             ->assertHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
     }
+
+    // ── Content Security Policy ───────────────────────────────────────────────
+
+    /**
+     * Report-only is the default because an over-tight policy fails silently —
+     * a blank map or a dead button, with no error page. This mode has the browser
+     * report violations without acting on them.
+     */
+    public function test_csp_defaults_to_report_only(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertHeaderMissing('Content-Security-Policy');
+        $this->assertNotNull($response->headers->get('Content-Security-Policy-Report-Only'));
+    }
+
+    public function test_csp_switches_to_enforcing_without_a_code_change(): void
+    {
+        config(['security.csp.mode' => 'enforce']);
+
+        $this->get('/')
+            ->assertHeaderMissing('Content-Security-Policy-Report-Only')
+            ->assertHeader('Content-Security-Policy');
+    }
+
+    public function test_csp_can_be_disabled(): void
+    {
+        config(['security.csp.mode' => 'off']);
+
+        $this->get('/')
+            ->assertHeaderMissing('Content-Security-Policy')
+            ->assertHeaderMissing('Content-Security-Policy-Report-Only');
+    }
+
+    public function test_policy_allows_the_sources_the_app_actually_uses(): void
+    {
+        $policy = $this->get('/')->headers->get('Content-Security-Policy-Report-Only');
+
+        // Leaflet tiles in HotelMap.vue would silently blank the map without this.
+        $this->assertStringContainsString('https://*.tile.openstreetmap.org', $policy);
+        // Vue emits component styles as inline <style> blocks.
+        $this->assertStringContainsString("style-src 'self' 'unsafe-inline'", $policy);
+        $this->assertStringContainsString("frame-ancestors 'none'", $policy);
+        $this->assertStringContainsString("object-src 'none'", $policy);
+        $this->assertStringContainsString('report-uri /csp-report', $policy);
+    }
+
+    public function test_customer_facing_pages_do_not_allow_unsafe_script_sources(): void
+    {
+        $policy = $this->get('/')->headers->get('Content-Security-Policy-Report-Only');
+
+        $scriptSrc = collect(explode(';', $policy))
+            ->map(fn (string $directive) => trim($directive))
+            ->first(fn (string $d) => str_starts_with($d, 'script-src'));
+
+        $this->assertSame("script-src 'self'", $scriptSrc);
+    }
+
+    /**
+     * Filament drives its UI with Alpine, which evaluates expressions at runtime.
+     * The panels live on their own hostnames so this relaxation stays off the
+     * customer-facing app rather than being applied globally.
+     */
+    public function test_filament_hosts_get_the_relaxation_alpine_requires(): void
+    {
+        $policy = $this->get('http://admin.pet-hotel.local/admin/login')
+            ->headers->get('Content-Security-Policy-Report-Only');
+
+        $this->assertStringContainsString("'unsafe-eval'", $policy);
+    }
 }
