@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\InvalidStateException;
 
@@ -32,6 +33,18 @@ class GoogleAuthController extends Controller
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if ($user) {
+                // Only adopt an existing password account if the provider says it
+                // verified the address. Without this check, any provider that lets
+                // a user claim an unverified email hands them that account. Google
+                // does verify, so this is a guard against the second provider —
+                // not a live hole today.
+                if (! $this->providerVerifiedEmail($googleUser)) {
+                    return redirect()->route('login')->with(
+                        'status',
+                        'That email is already registered. Please sign in with your password first.'
+                    );
+                }
+
                 $user->update(['google_id' => $googleUser->getId()]);
             } else {
                 $user = User::forceCreate([
@@ -48,5 +61,15 @@ class GoogleAuthController extends Controller
         $request->session()->regenerate();
 
         return redirect()->route('bookings.index');
+    }
+
+    /**
+     * Socialite does not expose the OIDC `email_verified` claim as a first-class
+     * property, so it has to be read out of the raw user payload. Absent claim is
+     * treated as unverified.
+     */
+    private function providerVerifiedEmail(SocialiteUser $googleUser): bool
+    {
+        return (bool) ($googleUser->user['email_verified'] ?? false);
     }
 }

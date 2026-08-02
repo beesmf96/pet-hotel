@@ -40,14 +40,67 @@ class PasswordResetTest extends TestCase
         Notification::assertSentTo($user, ResetPassword::class);
     }
 
-    public function test_reset_link_not_sent_for_unknown_email(): void
+    /**
+     * An unknown address must be indistinguishable from a known one, or the
+     * endpoint becomes a user-enumeration oracle. No mail is sent either way.
+     */
+    public function test_unknown_email_gets_the_same_response_as_a_known_one(): void
     {
         Notification::fake();
 
-        $this->post('/forgot-password', ['email' => 'nobody@example.com'])
-            ->assertSessionHasErrors('email');
+        $known = User::factory()->create();
 
-        Notification::assertNothingSent();
+        $knownResponse = $this->post('/forgot-password', ['email' => $known->email]);
+        $unknownResponse = $this->post('/forgot-password', ['email' => 'nobody@example.com']);
+
+        $knownResponse->assertSessionHas('status');
+        $unknownResponse->assertSessionHas('status');
+        $unknownResponse->assertSessionHasNoErrors();
+
+        $this->assertSame(
+            session()->get('status'),
+            $knownResponse->getSession()->get('status'),
+        );
+
+        Notification::assertNothingSentTo(
+            User::factory()->make(['email' => 'nobody@example.com'])
+        );
+    }
+
+    /**
+     * Without a limit these two routes are an unmetered reset-token guessing
+     * surface, and the only unauthenticated POSTs in the app lacking one.
+     */
+    public function test_forgot_password_is_rate_limited(): void
+    {
+        Notification::fake();
+
+        foreach (range(1, 5) as $i) {
+            $this->post('/forgot-password', ['email' => 'nobody@example.com'])
+                ->assertSessionHasNoErrors();
+        }
+
+        $this->post('/forgot-password', ['email' => 'nobody@example.com'])
+            ->assertStatus(429);
+    }
+
+    public function test_reset_password_is_rate_limited(): void
+    {
+        foreach (range(1, 5) as $i) {
+            $this->post('/reset-password', [
+                'token' => 'bad-token',
+                'email' => 'nobody@example.com',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+            ]);
+        }
+
+        $this->post('/reset-password', [
+            'token' => 'bad-token',
+            'email' => 'nobody@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ])->assertStatus(429);
     }
 
     public function test_forgot_password_requires_email(): void

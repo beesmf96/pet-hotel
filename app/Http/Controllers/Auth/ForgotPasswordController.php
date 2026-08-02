@@ -17,14 +17,19 @@ class ForgotPasswordController extends Controller
         ]);
     }
 
+    /**
+     * Always reports the same outcome whether or not the address is registered.
+     *
+     * Surfacing Password::INVALID_USER (or RESET_THROTTLED, which also only fires
+     * for real accounts) turns this endpoint into a user-enumeration oracle: an
+     * attacker learns which emails hold accounts by diffing the responses.
+     */
     public function store(Request $request)
     {
         $request->validate(['email' => 'required|email']);
 
-        $status = Password::sendResetLink($request->only('email'));
+        Password::sendResetLink($request->only('email'));
 
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with('status', __($status))
-            : back()->withErrors(['email' => __($status)]);
+        return back()->with('status', __(Password::RESET_LINK_SENT));
     }
 }
