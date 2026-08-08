@@ -22,8 +22,7 @@ class HotelOwnerPanelProvider extends PanelProvider
     {
         return $panel
             ->id('hotel-owner')
-            ->domain('owner.pet-hotel.local')
-            ->path('')
+            ->path('owner')
             ->login()
             ->colors([
                 'primary' => Color::Teal,
