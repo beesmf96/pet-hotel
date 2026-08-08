@@ -208,13 +208,6 @@ class SecurityHeaders
             return null;
         }
 
-        $url = trim((string) file_get_contents($hotFile));
-        $parts = parse_url($url);
-
-        if (! isset($parts['scheme'], $parts['host'])) {
-            return null;
-        }
-
-        return $parts['scheme'].'://'.$parts['host'].(isset($parts['port']) ? ':'.$parts['port'] : '');
+        return $this->originOf(trim((string) file_get_contents($hotFile)));
     }
 }
