@@ -38,8 +38,8 @@ function visitHotel() {
         @click="visitHotel"
     >
         <img
-            v-if="hotel.cover_photo"
-            :src="hotel.cover_photo"
+            v-if="hotel.cover_photo_url"
+            :src="hotel.cover_photo_url"
             :alt="hotel.name"
             class="w-full h-44 object-cover"
         />

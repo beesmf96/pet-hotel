@@ -25,7 +25,7 @@ const makeHotels = (count, lastPage = 1) => ({
         name: `Hotel ${i + 1}`,
         slug: `hotel-${i + 1}`,
         city: 'Singapore',
-        cover_photo: null,
+        cover_photo_url: null,
         facilities: [],
         price_from: null,
         reviews_avg_rating: null,
