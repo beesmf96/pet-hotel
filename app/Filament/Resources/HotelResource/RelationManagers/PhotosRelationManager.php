@@ -24,6 +24,8 @@ class PhotosRelationManager extends RelationManager
             Forms\Components\FileUpload::make('url')
                 ->label('Photo')
                 ->image()
+                ->disk(config('filesystems.photos'))
+                ->visibility('public')
                 ->required()
                 ->columnSpanFull(),
             Forms\Components\TextInput::make('sort_order')

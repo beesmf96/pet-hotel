@@ -17,6 +17,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Upload Disk
+    |--------------------------------------------------------------------------
+    |
+    | Where user-uploaded images go — pet photos, hotel cover photos, hotel
+    | gallery photos. Everything that writes an upload and everything that
+    | builds a URL for one reads this, so the two can never drift onto
+    | different disks.
+    |
+    | Local development leaves this on "public". Any deployment on ephemeral
+    | containers must point it at "s3", or uploads are lost on every deploy.
+    |
+    */
+
+    'photos' => env('PHOTO_DISK', 'public'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Filesystem Disks
     |--------------------------------------------------------------------------
     |
@@ -56,6 +73,9 @@ return [
             'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            // Uploads are served straight to browsers by URL, so objects have to
+            // be readable without a signed request.
+            'visibility' => 'public',
             'throw' => false,
             'report' => false,
         ],
