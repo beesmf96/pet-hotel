@@ -12,20 +12,20 @@ const baseHotel = {
     name: 'Paws Inn',
     slug: 'paws-inn',
     city: 'Singapore',
-    cover_photo: null,
+    cover_photo_url: null,
     facilities: [],
     price_from: null,
     reviews_avg_rating: null,
 }
 
 describe('HotelCard — cover photo', () => {
-    it('shows img when hotel.cover_photo is set', () => {
-        const hotel = { ...baseHotel, cover_photo: '/storage/paws.jpg' }
+    it('shows img when hotel.cover_photo_url is set', () => {
+        const hotel = { ...baseHotel, cover_photo_url: 'https://cdn.example.com/paws.jpg' }
         const w = mount(HotelCard, { props: { hotel } })
         expect(w.find('img').exists()).toBe(true)
     })
 
-    it('shows 🏨 placeholder when hotel.cover_photo is null', () => {
+    it('shows 🏨 placeholder when hotel.cover_photo_url is null', () => {
         const w = mount(HotelCard, { props: { hotel: baseHotel } })
         expect(w.find('img').exists()).toBe(false)
         expect(w.text()).toContain('🏨')

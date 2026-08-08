@@ -40,7 +40,9 @@ class PhotosRelationManager extends RelationManager
         return $table
             ->reorderable('sort_order')
             ->columns([
-                ImageColumn::make('url')->label('Photo'),
+                // The resolved attribute, not the raw column — an uploaded photo
+                // stores a path, which renders as a broken thumbnail.
+                ImageColumn::make('photo_url')->label('Photo'),
                 TextColumn::make('sort_order')->label('Order')->sortable(),
             ])
             ->headerActions([
