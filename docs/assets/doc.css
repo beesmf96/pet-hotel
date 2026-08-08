@@ -1,0 +1,189 @@
+/* Shared styling for generated documentation pages. Hand-maintained;
+   docs/build.php only writes HTML. */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --pet-owner: #2563eb;
+  --hotel-owner: #0d9488;
+  --admin: #d97706;
+  --text: #1e293b;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --code-bg: #f1f5f9;
+  --radius: 8px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* ---------- index page ---------- */
+
+body.index {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.container { max-width: 600px; width: 100%; }
+
+.header { text-align: center; margin-bottom: 2.5rem; }
+.logo { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.header h1 { font-size: 1.75rem; font-weight: 700; color: var(--text); border: 0; padding: 0; }
+.subtitle { color: var(--muted); margin-top: 0.25rem; }
+
+.docs { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.doc-card {
+  display: block;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.doc-card:hover { border-color: #94a3b8; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
+
+.doc-title { font-weight: 600; font-size: 1rem; margin-bottom: 0.2rem; }
+.doc-desc { color: var(--muted); font-size: 0.875rem; }
+
+.badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 99px;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.badge-blue { background: #eff6ff; color: var(--pet-owner); }
+.badge-teal { background: #f0fdfa; color: var(--hotel-owner); }
+.badge-amber { background: #fffbeb; color: var(--admin); }
+.badge-slate { background: #f1f5f9; color: var(--muted); }
+
+.footer { text-align: center; margin-top: 2rem; color: var(--muted); font-size: 0.8rem; }
+
+/* ---------- article pages ---------- */
+
+body.doc { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
+
+.backlink {
+  display: inline-block;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  margin-bottom: 2rem;
+}
+
+.backlink:hover { color: var(--text); }
+
+.doc h1 { font-size: 2rem; font-weight: 700; margin-bottom: 1.5rem; line-height: 1.3; }
+
+.doc h2 {
+  font-size: 1.35rem;
+  margin-top: 2.75rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.doc h3 { font-size: 1.1rem; margin-top: 1.75rem; margin-bottom: 0.5rem; }
+.doc h4 { font-size: 0.95rem; margin-top: 1.25rem; margin-bottom: 0.4rem; color: var(--muted); }
+
+.doc p { margin-bottom: 1rem; }
+.doc ul, .doc ol { margin: 0 0 1rem 1.35rem; }
+.doc li { margin-bottom: 0.3rem; }
+.doc li > ul, .doc li > ol { margin-top: 0.3rem; }
+
+.doc a { color: var(--pet-owner); }
+
+.doc strong { font-weight: 600; }
+
+.doc hr { border: 0; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+
+.doc blockquote {
+  border-left: 3px solid var(--border);
+  padding: 0.25rem 0 0.25rem 1rem;
+  margin: 0 0 1rem;
+  color: var(--muted);
+}
+
+.doc blockquote p:last-child { margin-bottom: 0; }
+
+.doc code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  background: var(--code-bg);
+  padding: 0.12em 0.38em;
+  border-radius: 4px;
+}
+
+.doc pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.doc pre code { background: none; padding: 0; font-size: 0.83rem; }
+
+.table-wrap { overflow-x: auto; margin-bottom: 1.25rem; }
+
+.doc table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9rem;
+  background: var(--card);
+}
+
+.doc th, .doc td {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.doc th { background: var(--code-bg); font-weight: 600; }
+
+.doc input[type="checkbox"] { margin-right: 0.4rem; }
+
+/* Heading anchors — visible on hover only. */
+
+.heading-permalink {
+  float: left;
+  margin-left: -0.85em;
+  padding-right: 0.25em;
+  text-decoration: none;
+  color: var(--border);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+h1:hover > .heading-permalink,
+h2:hover > .heading-permalink,
+h3:hover > .heading-permalink,
+h4:hover > .heading-permalink { opacity: 1; }
+
+@media print {
+  body.doc { max-width: none; padding: 0; }
+  .backlink { display: none; }
+  .doc h2 { page-break-after: avoid; }
+  .doc table, .doc pre { page-break-inside: avoid; }
+}

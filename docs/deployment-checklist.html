@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pet Hotel — Deployment Checklist</title>
+  <link rel="stylesheet" href="assets/doc.css" />
+</head>
+<body class="doc">
+<a class="backlink" href="index.html">&larr; All docs</a>
+<h1><a id="deployment-checklist" href="#content-deployment-checklist" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Deployment Checklist</h1>
+<p>Everything that has to be true before Pet Hotel is reachable from the public
+internet, and that <strong>cannot be enforced from the repository</strong>.</p>
+<p>The application code was audited against the OWASP Top 10 on 2026-08-01 and the
+code-side fixes are merged (PRs #10 and #11; findings in
+<code>.claude/plans/plan-owasp-hardening.md</code>). What remains below is configuration set
+on the host. No test, lint, or CI job can catch a mistake here — that is the whole
+reason this file exists.</p>
+<hr />
+<h2><a id="1-blockers--do-not-go-live-without-these" href="#content-1-blockers--do-not-go-live-without-these" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>1. Blockers — do not go live without these</h2>
+<h3><a id="appdebugfalse" href="#content-appdebugfalse" class="heading-permalink" aria-hidden="true" title="Permalink">#</a><code>APP_DEBUG=false</code></h3>
+<p><strong>The single most dangerous setting in this list.</strong></p>
+<p>With debug on, any unhandled exception renders a full stack trace to whoever
+triggered it — including environment variables and database credentials. An
+attacker does not need to find a vulnerability; they only need to cause an error.</p>
+<pre><code class="language-bash">APP_ENV=production
+APP_DEBUG=false
+</code></pre>
+<p>Both tracked env files (<code>.env.example</code>, <code>.env.docker</code>) ship <code>APP_DEBUG=true</code>,
+which is correct for local work. Production must override it.</p>
+<ul>
+<li><input disabled="" type="checkbox"> <code>APP_ENV=production</code></li>
+<li><input disabled="" type="checkbox"> <code>APP_DEBUG=false</code></li>
+<li><input disabled="" type="checkbox"> Trigger a deliberate 500 on the live site and confirm you get a generic
+error page, not a stack trace</li>
+</ul>
+<h3><a id="appkey" href="#content-appkey" class="heading-permalink" aria-hidden="true" title="Permalink">#</a><code>APP_KEY</code></h3>
+<p>Laravel encrypts session and cookie data with this. It is empty in both tracked
+env files.</p>
+<pre><code class="language-bash">php artisan key:generate
+</code></pre>
+<ul>
+<li><input disabled="" type="checkbox"> A real <code>APP_KEY</code> is set</li>
+<li><input disabled="" type="checkbox"> It is <strong>not</strong> the same value as any other environment</li>
+<li><input disabled="" type="checkbox"> It is backed up somewhere — rotating it invalidates every existing session
+and every encrypted column</li>
+</ul>
+<h3><a id="sessionsecurecookietrue" href="#content-sessionsecurecookietrue" class="heading-permalink" aria-hidden="true" title="Permalink">#</a><code>SESSION_SECURE_COOKIE=true</code></h3>
+<p><code>config/session.php</code> reads this with <strong>no default</strong>, so leaving it unset ships
+the session cookie without the <code>Secure</code> flag. The cookie then travels over plain
+HTTP if a connection is ever downgraded, exposing live sessions.</p>
+<pre><code class="language-bash">SESSION_SECURE_COOKIE=true
+</code></pre>
+<ul>
+<li><input disabled="" type="checkbox"> Set to <code>true</code> (requires working HTTPS first)</li>
+</ul>
+<h3><a id="https" href="#content-https" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>HTTPS</h3>
+<ul>
+<li><input disabled="" type="checkbox"> TLS certificate installed and valid</li>
+<li><input disabled="" type="checkbox"> Plain HTTP redirects to HTTPS</li>
+<li><input disabled="" type="checkbox"> Confirm the <code>Strict-Transport-Security</code> header appears — <code>SecurityHeaders</code>
+middleware emits it automatically once <code>$request-&gt;isSecure()</code> is true, and
+stays silent before then</li>
+</ul>
+<blockquote>
+<p>HSTS is hard to walk back: browsers cache <code>max-age=31536000</code> for a year. Only
+let it go live once the certificate is confirmed working.</p>
+</blockquote>
+<h3><a id="real-hostnames" href="#content-real-hostnames" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Real hostnames</h3>
+<p>The two Filament panels hardcode <code>.local</code> domains in
+<code>app/Providers/Filament/*PanelProvider.php</code>:</p>
+<pre><code class="language-php">-&gt;domain('admin.pet-hotel.local')
+-&gt;domain('owner.pet-hotel.local')
+</code></pre>
+<p>These will not resolve in production. They also feed the CSP host check in
+<code>SecurityHeaders::isFilamentHost()</code>, so a stale value means the panels get the
+customer-facing policy and Alpine breaks once CSP enforces.</p>
+<ul>
+<li><input disabled="" type="checkbox"> Panel domains updated to real hostnames</li>
+<li><input disabled="" type="checkbox"> <code>APP_URL</code> set to the real public URL</li>
+<li><input disabled="" type="checkbox"> <code>SESSION_DOMAIN</code> set so sessions are shared across the panel subdomains</li>
+<li><input disabled="" type="checkbox"> <code>GOOGLE_REDIRECT_URI</code> updated, and the same URL registered in the Google
+Cloud console — OAuth fails outright if these disagree</li>
+</ul>
+<hr />
+<h2><a id="2-should-be-done-before-real-users" href="#content-2-should-be-done-before-real-users" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>2. Should be done before real users</h2>
+<h3><a id="secrets" href="#content-secrets" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Secrets</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <code>DB_PASSWORD</code> is not <code>secret</code> (the local placeholder in <code>.env.docker</code>)</li>
+<li><input disabled="" type="checkbox"> <code>GOOGLE_CLIENT_SECRET</code> set from the Google Cloud console</li>
+<li><input disabled="" type="checkbox"> <code>REDIS_PASSWORD</code> set if Redis is network-reachable</li>
+<li><input disabled="" type="checkbox"> No production secret is committed. <code>.env</code> and <code>.env.production</code> are
+gitignored; <code>.env.docker</code> is deliberately <strong>not</strong> — it is a tracked
+template, so never put a real secret in it</li>
+</ul>
+<h3><a id="mail" href="#content-mail" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Mail</h3>
+<p><code>.env.example</code> defaults to <code>MAIL_MAILER=log</code>, which silently writes mail to a
+file instead of sending it. Password resets and booking notifications would
+appear to work while nobody receives anything.</p>
+<ul>
+<li><input disabled="" type="checkbox"> A real mail transport configured</li>
+<li><input disabled="" type="checkbox"> Send a live password reset and confirm it arrives</li>
+</ul>
+<h3><a id="queue" href="#content-queue" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Queue</h3>
+<p><code>SendBooking*Notification</code> jobs are dispatched to the queue.</p>
+<ul>
+<li><input disabled="" type="checkbox"> <code>QUEUE_CONNECTION=redis</code> and Redis reachable</li>
+<li><input disabled="" type="checkbox"> A queue worker runs under a supervisor and restarts on failure — without
+one, bookings succeed but no notification is ever sent</li>
+<li><input disabled="" type="checkbox"> Deploys run <code>php artisan queue:restart</code></li>
+</ul>
+<h3><a id="production-caches" href="#content-production-caches" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Production caches</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <code>php artisan config:cache</code></li>
+<li><input disabled="" type="checkbox"> <code>php artisan route:cache</code></li>
+<li><input disabled="" type="checkbox"> <code>php artisan view:cache</code></li>
+<li><input disabled="" type="checkbox"> <code>bun run build</code> — the built manifest must exist, or every Inertia page 500s</li>
+<li><input disabled="" type="checkbox"> <code>php artisan migrate --force</code></li>
+</ul>
+<h3><a id="storage" href="#content-storage" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Storage</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <code>php artisan storage:link</code> — pet photos 404 without it</li>
+<li><input disabled="" type="checkbox"> <code>storage/</code> and <code>bootstrap/cache/</code> writable by the web user</li>
+</ul>
+<hr />
+<h2><a id="3-content-security-policy-rollout" href="#content-3-content-security-policy-rollout" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>3. Content Security Policy rollout</h2>
+<p>The CSP ships in <strong>report-only</strong> mode (<code>CSP_MODE=report</code>), so browsers report
+violations without blocking anything. It protects nothing until enforced.</p>
+<ul>
+<li><input disabled="" type="checkbox"> Deploy with <code>CSP_MODE=report</code></li>
+<li><input disabled="" type="checkbox"> Let it run against real traffic — clicking around yourself will not hit
+every page</li>
+<li><input disabled="" type="checkbox"> Watch <code>storage/logs</code> for <code>CSP violation</code> entries</li>
+<li><input disabled="" type="checkbox"> Widen <code>SecurityHeaders::contentSecurityPolicy()</code> for legitimate sources only</li>
+<li><input disabled="" type="checkbox"> When the log is quiet, set <code>CSP_MODE=enforce</code></li>
+<li><input disabled="" type="checkbox"> Re-check the maps, both Filament panels, and photo upload afterwards</li>
+</ul>
+<p>Detail and the current policy: <code>.claude/plans/plan-owasp-hardening.md</code>.</p>
+<hr />
+<h2><a id="4-repository-settings" href="#content-4-repository-settings" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4. Repository settings</h2>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Branch protection on <code>main</code></strong>, requiring <code>Backend (PHPUnit + coverage)</code>,
+<code>Frontend (ESLint + Vitest)</code>, and <code>Security (dependency audit)</code></li>
+</ul>
+<p>Currently unprotected, so a red build can merge. PRs #9, #10, and #11 all could
+have. Needs admin rights on <code>beesmf96/pet-hotel</code>; see
+<code>.claude/plans/plan-backend-coverage-followups.md</code>.</p>
+<hr />
+<h2><a id="5-known-gaps" href="#content-5-known-gaps" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>5. Known gaps</h2>
+<p>Not blockers, but worth knowing you are accepting them:</p>
+<ul>
+<li><strong>No security event logging</strong> (OWASP A09) — failed logins, password resets, and
+admin actions are not recorded, so there is nothing to investigate with after an
+incident</li>
+<li><strong><code>style-src 'unsafe-inline'</code></strong> — the weakest part of the CSP. Vue emits
+component styles as inline blocks; removing it needs nonces or hashes</li>
+<li><strong>No payment integration</strong> — nothing to secure yet, but that changes the moment
+it lands</li>
+<li><strong><code>is_admin</code> is a boolean, not roles</strong> — fine at current scale</li>
+</ul>
+<hr />
+<h2><a id="post-deploy-verification" href="#content-post-deploy-verification" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Post-deploy verification</h2>
+<pre><code class="language-bash"># No stack traces
+curl -s https://YOUR_DOMAIN/nonexistent | grep -ci &quot;stack trace&quot;   # expect 0
+
+# Security headers present
+curl -sI https://YOUR_DOMAIN/ | grep -iE &quot;strict-transport|x-frame|content-security&quot;
+
+# Session cookie is Secure and HttpOnly
+curl -sI https://YOUR_DOMAIN/ | grep -i &quot;set-cookie&quot;
+</code></pre>
+<ul>
+<li><input disabled="" type="checkbox"> Register, verify email, book, and cancel — as a real user would</li>
+<li><input disabled="" type="checkbox"> Google sign-in works against the production redirect URI</li>
+<li><input disabled="" type="checkbox"> Both Filament panels load and are reachable only by authorised accounts</li>
+</ul>
+
+</body>
+</html>

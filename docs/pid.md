@@ -1,3 +1,10 @@
+---
+title: Project Initiation Document
+description: Background, objectives, scope, deliverables, milestones, risks, and acceptance criteria for the MVP.
+badges: Governance
+order: 10
+---
+
 # Project Initiation Document — Pet Hotel
 
 | Field | Value |
