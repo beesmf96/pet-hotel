@@ -78,7 +78,7 @@ each request — which keeps the MVP simple and avoids payment integration.
 
 **Administrator**
 
-- Filament admin panel at `admin.pet-hotel.local`, restricted to `is_admin` users
+- Filament admin panel at `/admin`, restricted to `is_admin` users
 - Hotel CRUD including photos, pricing tiers, policies, and owner assignment
 - Booking management — filter, confirm, cancel
 - Read-only user list with pets
@@ -87,7 +87,7 @@ each request — which keeps the MVP simple and avoids payment integration.
 
 **Hotel owner**
 
-- Filament panel at `owner.pet-hotel.local`, restricted to users who own a hotel
+- Filament panel at `/owner`, restricted to users who own a hotel
 - View own bookings, filter by status, confirm or decline
 
 **Platform**
