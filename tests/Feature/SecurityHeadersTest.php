@@ -23,7 +23,7 @@ class SecurityHeadersTest extends TestCase
      */
     public function test_headers_are_present_on_the_admin_panel(): void
     {
-        $this->get('http://admin.pet-hotel.local/admin/login')
+        $this->get('/admin/login')
             ->assertHeader('X-Frame-Options', 'DENY');
     }
 
@@ -84,6 +84,65 @@ class SecurityHeadersTest extends TestCase
         $this->assertStringContainsString('report-uri /csp-report', $policy);
     }
 
+    /**
+     * With uploads on a bucket, every pet and hotel photo comes from an origin
+     * 'self' does not cover.
+     */
+    public function test_an_off_origin_upload_bucket_is_allowed_as_an_image_source(): void
+    {
+        config([
+            'filesystems.photos' => 's3',
+            'filesystems.disks.s3.url' => 'https://pet-hotel-uploads.example.com/media',
+        ]);
+
+        $policy = $this->get('/')->headers->get('Content-Security-Policy-Report-Only');
+
+        $this->assertStringContainsString('https://pet-hotel-uploads.example.com', $policy);
+    }
+
+    public function test_the_bucket_endpoint_is_used_when_no_explicit_url_is_set(): void
+    {
+        config([
+            'filesystems.photos' => 's3',
+            'filesystems.disks.s3.url' => null,
+            'filesystems.disks.s3.endpoint' => 'https://fra1.digitaloceanspaces.com',
+        ]);
+
+        $policy = $this->get('/')->headers->get('Content-Security-Policy-Report-Only');
+
+        $this->assertStringContainsString('https://fra1.digitaloceanspaces.com', $policy);
+    }
+
+    /**
+     * The local "public" disk builds its URL from APP_URL, so it is already
+     * covered by 'self' and must not be repeated into the policy.
+     */
+    public function test_a_same_origin_upload_disk_adds_nothing_to_the_policy(): void
+    {
+        config(['filesystems.photos' => 'public']);
+
+        $policy = $this->get('/')->headers->get('Content-Security-Policy-Report-Only');
+
+        $imgSrc = collect(explode(';', $policy))
+            ->map(fn (string $directive) => trim($directive))
+            ->first(fn (string $d) => str_starts_with($d, 'img-src'));
+
+        $this->assertSame("img-src 'self' data: blob: https://*.tile.openstreetmap.org", $imgSrc);
+    }
+
+    public function test_an_unconfigured_bucket_leaves_the_policy_alone(): void
+    {
+        config([
+            'filesystems.photos' => 's3',
+            'filesystems.disks.s3.url' => null,
+            'filesystems.disks.s3.endpoint' => null,
+        ]);
+
+        $policy = $this->get('/')->headers->get('Content-Security-Policy-Report-Only');
+
+        $this->assertStringContainsString("img-src 'self' data: blob:", $policy);
+    }
+
     public function test_customer_facing_pages_do_not_allow_unsafe_script_sources(): void
     {
         $policy = $this->get('/')->headers->get('Content-Security-Policy-Report-Only');
@@ -97,14 +156,35 @@ class SecurityHeadersTest extends TestCase
 
     /**
      * Filament drives its UI with Alpine, which evaluates expressions at runtime.
-     * The panels live on their own hostnames so this relaxation stays off the
-     * customer-facing app rather than being applied globally.
+     * The panels live under their own path prefixes so this relaxation stays off
+     * the customer-facing app rather than being applied globally.
      */
-    public function test_filament_hosts_get_the_relaxation_alpine_requires(): void
+    public function test_filament_paths_get_the_relaxation_alpine_requires(): void
     {
-        $policy = $this->get('http://admin.pet-hotel.local/admin/login')
+        $policy = $this->get('/admin/login')
             ->headers->get('Content-Security-Policy-Report-Only');
 
         $this->assertStringContainsString("'unsafe-eval'", $policy);
+    }
+
+    public function test_the_hotel_owner_panel_gets_the_relaxation_too(): void
+    {
+        $policy = $this->get('/owner/login')
+            ->headers->get('Content-Security-Policy-Report-Only');
+
+        $this->assertStringContainsString("'unsafe-eval'", $policy);
+    }
+
+    /**
+     * The panels no longer have an origin of their own, so a path that merely
+     * begins with a panel's name — a hotel slug, say — must not inherit the
+     * relaxation the panels get.
+     */
+    public function test_a_slug_resembling_a_panel_path_keeps_the_tight_policy(): void
+    {
+        $policy = $this->get('/hotels/admin-kennels')
+            ->headers->get('Content-Security-Policy-Report-Only');
+
+        $this->assertStringNotContainsString("'unsafe-eval'", $policy);
     }
 }

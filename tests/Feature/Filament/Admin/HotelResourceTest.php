@@ -187,14 +187,13 @@ class HotelResourceTest extends TestCase
     }
 
     /**
-     * FileUpload has no explicit ->disk(), so it writes to Filament's default
-     * filesystem disk — which falls through to `filesystems.default` ('local' in
-     * tests). Faking a hardcoded 'public' would silently assert against a disk
-     * nothing was ever written to.
+     * The FileUpload fields are pinned to `filesystems.photos`, the one disk
+     * every upload in the app goes through, so that is what has to be faked —
+     * faking anything else asserts against a disk nothing was written to.
      */
     private function fakeUploadDisk(): string
     {
-        $disk = config('filesystems.default');
+        $disk = config('filesystems.photos');
         Storage::fake($disk);
 
         return $disk;

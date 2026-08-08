@@ -34,9 +34,7 @@ docker compose exec --user appuser app \
 ### Hosts file
 Add to `/etc/hosts` (or `C:\Windows\System32\drivers\etc\hosts`):
 ```
-127.0.0.1  web.pet-hotel.local      # app
-127.0.0.1  admin.pet-hotel.local    # Filament admin panel
-127.0.0.1  owner.pet-hotel.local    # Filament hotel-owner panel
+127.0.0.1  web.pet-hotel.local      # app — /admin and /owner serve the Filament panels
 127.0.0.1  mailpit.local            # caught email
 ```
 
