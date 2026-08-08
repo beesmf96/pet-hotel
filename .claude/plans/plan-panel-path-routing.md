@@ -2,7 +2,7 @@
 plan: panel-path-routing
 status: implemented
 branch: feature/panel-path-routing
-pr: ~
+pr: 15
 implemented: 2026-08-08
 ---
 
