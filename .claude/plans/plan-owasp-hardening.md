@@ -1,9 +1,10 @@
 ---
 plan: owasp-hardening
-status: in-progress
+status: done
 branch: feature/owasp-hardening
-pr: https://github.com/beesmf96/pet-hotel/pull/10, https://github.com/beesmf96/pet-hotel/pull/11
-implemented: ~
+pr: https://github.com/beesmf96/pet-hotel/pull/10, https://github.com/beesmf96/pet-hotel/pull/11, https://github.com/beesmf96/pet-hotel/pull/12
+implemented: 2026-08-02 (code-side findings only; deployment config and CSP
+  enforcement are the deployer's, tracked in docs/deployment-checklist.md)
 ---
 
 # OWASP Top 10 Hardening — Pre-Public-Deploy
@@ -200,10 +201,19 @@ Worth recording so nobody "fixes" it later:
 
 ### Still outstanding
 
-- **Flip CSP to enforcing** once report data is clean — see below
-- **Security event logging** (A09)
-- **Production env values** — deployment-side, not code
-- `SESSION_ENCRYPT` and `SESSION_SAME_SITE` review
+Nothing code-side. Every remaining item needs either a live deployment or is
+follow-up work outside this plan's scope:
+
+- **Production env values** (`APP_DEBUG`, `APP_KEY`, `SESSION_SECURE_COOKIE`,
+  `SESSION_ENCRYPT`, `SESSION_SAME_SITE`, real panel hostnames) — deployment-side.
+  Nothing in the repo can test or enforce these, so they moved to
+  `docs/deployment-checklist.md` (PR #12), which is now the tracking home.
+- **Flip CSP to enforcing** — needs report data from real traffic; see below and
+  checklist section 3.
+- **Security event logging** (A09) — genuinely unbuilt. Deferred, not resolved;
+  recorded under "Known gaps" in the checklist.
+- **`style-src 'unsafe-inline'`** — needs a nonce or hash migration for Vue's
+  inline component styles. Follow-up.
 
 ## CSP rollout
 
@@ -250,12 +260,16 @@ The audit above is a snapshot; dependency risk regenerates continuously.
       `continue-on-error`
 - [ ] Consider Dependabot for automated bumps
 
-## Open Questions
+## Open Questions — resolved
 
-- Headers in nginx or Laravel middleware? Depends on whether production uses this
-  compose stack or a managed host.
-- Is `composer update` (respecting constraints) enough, or do any of the 34 need a
-  major bump? Unknown until it is run.
-- Should the CI audit gate block? Leaning warn-only initially, matching the
-  deliberately-loose `MIN_COVERAGE=95` decision in
-  [[plan-backend-coverage-followups]].
+- **Headers in nginx or Laravel middleware?** Middleware. `SecurityHeaders` travels
+  with the app, so it holds on any deployment target rather than only the bundled
+  compose stack.
+- **Is `composer update` enough, or do any of the 34 need a major bump?** Enough —
+  a constraint-respecting update cleared all 34, with 323 tests still passing.
+- **Should the CI audit gate block?** Yes, but split rather than warn-only:
+  `composer audit` and `bun audit --prod` block; the full `bun audit` runs
+  `continue-on-error` because its remaining advisories are dev-only. This is
+  stricter than the leaning recorded here, and stricter than the deliberately-loose
+  `MIN_COVERAGE=95` in [[plan-backend-coverage-followups]] — affordable because
+  both blocking audits were already clean when the gate landed.
