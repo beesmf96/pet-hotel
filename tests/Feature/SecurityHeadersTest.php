@@ -23,7 +23,7 @@ class SecurityHeadersTest extends TestCase
      */
     public function test_headers_are_present_on_the_admin_panel(): void
     {
-        $this->get('http://admin.pet-hotel.local/admin/login')
+        $this->get('/admin/login')
             ->assertHeader('X-Frame-Options', 'DENY');
     }
 
@@ -156,14 +156,35 @@ class SecurityHeadersTest extends TestCase
 
     /**
      * Filament drives its UI with Alpine, which evaluates expressions at runtime.
-     * The panels live on their own hostnames so this relaxation stays off the
-     * customer-facing app rather than being applied globally.
+     * The panels live under their own path prefixes so this relaxation stays off
+     * the customer-facing app rather than being applied globally.
      */
-    public function test_filament_hosts_get_the_relaxation_alpine_requires(): void
+    public function test_filament_paths_get_the_relaxation_alpine_requires(): void
     {
-        $policy = $this->get('http://admin.pet-hotel.local/admin/login')
+        $policy = $this->get('/admin/login')
             ->headers->get('Content-Security-Policy-Report-Only');
 
         $this->assertStringContainsString("'unsafe-eval'", $policy);
+    }
+
+    public function test_the_hotel_owner_panel_gets_the_relaxation_too(): void
+    {
+        $policy = $this->get('/owner/login')
+            ->headers->get('Content-Security-Policy-Report-Only');
+
+        $this->assertStringContainsString("'unsafe-eval'", $policy);
+    }
+
+    /**
+     * The panels no longer have an origin of their own, so a path that merely
+     * begins with a panel's name — a hotel slug, say — must not inherit the
+     * relaxation the panels get.
+     */
+    public function test_a_slug_resembling_a_panel_path_keeps_the_tight_policy(): void
+    {
+        $policy = $this->get('/hotels/admin-kennels')
+            ->headers->get('Content-Security-Policy-Report-Only');
+
+        $this->assertStringNotContainsString("'unsafe-eval'", $policy);
     }
 }

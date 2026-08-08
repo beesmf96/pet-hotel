@@ -102,9 +102,9 @@ class SecurityHeaders
 
         // Filament drives its UI with Alpine, which evaluates expression strings
         // at runtime — that is exactly what 'unsafe-eval' permits. The panels sit
-        // on their own hostnames, so the customer-facing SPA keeps the tighter
-        // policy instead of inheriting this relaxation.
-        if ($this->isFilamentHost($request)) {
+        // under their own path prefixes, so the customer-facing SPA keeps the
+        // tighter policy instead of inheriting this relaxation.
+        if ($this->isFilamentRequest($request)) {
             $directives['script-src'][] = "'unsafe-eval'";
             $directives['script-src'][] = "'unsafe-inline'";
         }
@@ -138,11 +138,29 @@ class SecurityHeaders
         return implode('; ', $policy);
     }
 
-    private function isFilamentHost(Request $request): bool
+    /**
+     * Both panels are routed by path on the app's single domain, so this cannot
+     * key off the hostname. The domain check is still honoured for the day a
+     * custom domain makes subdomain panels worthwhile again.
+     *
+     * Matching is anchored rather than a substring test: a hotel slug such as
+     * /hotels/admin-kennels must not pull the panel relaxation onto a
+     * customer-facing page.
+     */
+    private function isFilamentRequest(Request $request): bool
     {
         return collect(Filament::getPanels())
-            ->contains(fn (Panel $panel) => $panel->getDomains() !== []
-                && in_array($request->getHost(), $panel->getDomains(), true));
+            ->contains(function (Panel $panel) use ($request): bool {
+                $domains = $panel->getDomains();
+
+                if ($domains !== [] && ! in_array($request->getHost(), $domains, true)) {
+                    return false;
+                }
+
+                $path = trim($panel->getPath(), '/');
+
+                return $path === '' || $request->is($path, $path.'/*');
+            });
     }
 
     /**
@@ -190,13 +208,6 @@ class SecurityHeaders
             return null;
         }
 
-        $url = trim((string) file_get_contents($hotFile));
-        $parts = parse_url($url);
-
-        if (! isset($parts['scheme'], $parts['host'])) {
-            return null;
-        }
-
-        return $parts['scheme'].'://'.$parts['host'].(isset($parts['port']) ? ':'.$parts['port'] : '');
+        return $this->originOf(trim((string) file_get_contents($hotFile)));
     }
 }
