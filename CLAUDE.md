@@ -38,6 +38,21 @@ Add to `/etc/hosts` (or `C:\Windows\System32\drivers\etc\hosts`):
 127.0.0.1  mailpit.local            # caught email
 ```
 
+## Queue worker
+
+Booking notifications (`app/Jobs/SendBooking*Notification.php`) are queued, and
+they are the only thing that tells a customer their booking was requested,
+confirmed, or cancelled. **Without a running worker, bookings still succeed and
+no one is ever notified** — there is no error anywhere to tell you.
+
+```bash
+php artisan queue:work
+```
+
+Docker starts one as the `queue` service. Any hosted deployment needs it
+configured as its own long-running process alongside the web process; on Laravel
+Cloud that is a worker in the dashboard, not something the repo can declare.
+
 ## After any implementation task
 
 1. Tests exist for the new behaviour, and `composer test` passes

@@ -70,7 +70,11 @@ return [
             'queue' => env('REDIS_QUEUE', 'default'),
             'retry_after' => (int) env('REDIS_QUEUE_RETRY_AFTER', 90),
             'block_for' => null,
-            'after_commit' => false,
+            // Notification jobs are dispatched from Booking::booted()'s updated
+            // hook, which fires inside whatever transaction the caller opened. A
+            // worker is a separate process and can pick the job up before that
+            // transaction commits, reading a booking that does not exist yet.
+            'after_commit' => true,
         ],
 
         'deferred' => [
