@@ -46,6 +46,8 @@ Hard deletes with cascading FKs throughout — soft deletes are not used.
 
 **Two Filament panels.** Admin at `admin.pet-hotel.local` requires `is_admin`; hotel owner at `owner.pet-hotel.local` requires `ownedHotels()->exists()`. Resources auto-discover from `app/Filament/Resources/` and `app/Filament/HotelOwner/Resources/` respectively. Colour tokens: amber (admin), teal (owner).
 
+**All uploads go through `config('filesystems.photos')`** — pet photos in `PetController`, and both Filament `FileUpload` fields. Never name a disk literally at an upload site, and never build an upload's URL from a different disk than the one it was written to. `PHOTO_DISK` selects it; it must be `s3` on ephemeral hosting or uploads are lost on deploy. `SecurityHeaders` reads the same config to allow the bucket in the CSP `img-src`.
+
 **Two JSON endpoints exist and are intentional**, despite the general "Inertia only, never `response()->json()`" rule. Both are XHR-backed widgets, not page loads:
 - `hotels.availability` → `HotelAvailabilityController@index`, feeds `AvailabilityCalendar.vue`
 - `notifications.*` → `NotificationController` (`index`, `markRead`, `markAllRead`)

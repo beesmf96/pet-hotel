@@ -12,6 +12,16 @@ use Inertia\Response;
 
 class PetController extends Controller
 {
+    /**
+     * Reading this in one place is the point: writes and URL generation used to
+     * name their disks separately, which held together only because both
+     * resolved to the same /storage path. On a bucket they would not.
+     */
+    private function disk(): string
+    {
+        return config('filesystems.photos');
+    }
+
     public function index(): Response
     {
         return Inertia::render('Pets', [
@@ -22,7 +32,7 @@ class PetController extends Controller
                 'breed' => $pet->breed,
                 'age' => $pet->age,
                 'special_needs' => $pet->special_needs,
-                'photo_url' => $pet->photo ? Storage::url($pet->photo) : null,
+                'photo_url' => $pet->photo ? Storage::disk($this->disk())->url($pet->photo) : null,
             ]),
         ]);
     }
@@ -32,7 +42,7 @@ class PetController extends Controller
         $data = $request->safe()->except('photo');
 
         if ($request->hasFile('photo')) {
-            $data['photo'] = $request->file('photo')->store('pet-photos', 'public');
+            $data['photo'] = $request->file('photo')->storePublicly('pet-photos', $this->disk());
         }
 
         $request->user()->pets()->create($data);
@@ -48,9 +58,9 @@ class PetController extends Controller
 
         if ($request->hasFile('photo')) {
             if ($pet->photo) {
-                Storage::disk('public')->delete($pet->photo);
+                Storage::disk($this->disk())->delete($pet->photo);
             }
-            $data['photo'] = $request->file('photo')->store('pet-photos', 'public');
+            $data['photo'] = $request->file('photo')->storePublicly('pet-photos', $this->disk());
         }
 
         $pet->update($data);
@@ -63,7 +73,7 @@ class PetController extends Controller
         $this->authorize('delete', $pet);
 
         if ($pet->photo) {
-            Storage::disk('public')->delete($pet->photo);
+            Storage::disk($this->disk())->delete($pet->photo);
         }
 
         $pet->delete();

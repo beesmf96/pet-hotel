@@ -93,6 +93,13 @@ class SecurityHeaders
             'connect-src' => ["'self'"],
         ];
 
+        // Uploads move to a bucket on ephemeral hosting, which puts every pet and
+        // hotel photo on an origin 'self' does not cover. Without this the images
+        // vanish the moment CSP_MODE goes to enforce.
+        if ($origin = $this->uploadStorageOrigin()) {
+            $directives['img-src'][] = $origin;
+        }
+
         // Filament drives its UI with Alpine, which evaluates expression strings
         // at runtime — that is exactly what 'unsafe-eval' permits. The panels sit
         // on their own hostnames, so the customer-facing SPA keeps the tighter
@@ -136,6 +143,39 @@ class SecurityHeaders
         return collect(Filament::getPanels())
             ->contains(fn (Panel $panel) => $panel->getDomains() !== []
                 && in_array($request->getHost(), $panel->getDomains(), true));
+    }
+
+    /**
+     * The origin serving user uploads, or null when it is the app's own — the
+     * local "public" disk builds its URL from APP_URL, and listing the app's own
+     * origin again would be noise.
+     *
+     * Read from config rather than by asking Storage for a URL: this runs on
+     * every response, and a half-configured disk should not be able to throw
+     * from middleware.
+     */
+    private function uploadStorageOrigin(): ?string
+    {
+        $disk = config('filesystems.photos');
+        $url = config("filesystems.disks.{$disk}.url")
+            ?? config("filesystems.disks.{$disk}.endpoint");
+
+        if (! $url || ! ($origin = $this->originOf($url))) {
+            return null;
+        }
+
+        return $origin === $this->originOf(config('app.url')) ? null : $origin;
+    }
+
+    private function originOf(?string $url): ?string
+    {
+        $parts = parse_url((string) $url);
+
+        if (! isset($parts['scheme'], $parts['host'])) {
+            return null;
+        }
+
+        return $parts['scheme'].'://'.$parts['host'].(isset($parts['port']) ? ':'.$parts['port'] : '');
     }
 
     /**

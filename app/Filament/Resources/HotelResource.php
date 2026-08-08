@@ -69,6 +69,8 @@ class HotelResource extends Resource
                         ->columnSpan(1),
                     Forms\Components\FileUpload::make('cover_photo')
                         ->image()
+                        ->disk(config('filesystems.photos'))
+                        ->visibility('public')
                         ->nullable()
                         ->columnSpanFull(),
                 ])
