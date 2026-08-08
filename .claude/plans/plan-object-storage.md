@@ -2,7 +2,7 @@
 plan: object-storage
 status: implemented
 branch: feature/object-storage
-pr: ~
+pr: 16
 implemented: 2026-08-08
 ---
 
