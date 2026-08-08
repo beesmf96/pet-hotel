@@ -2,7 +2,7 @@
 plan: queue-worker
 status: implemented
 branch: feature/queue-worker
-pr: ~
+pr: 17
 implemented: 2026-08-08
 ---
 
