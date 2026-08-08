@@ -44,7 +44,7 @@ Hard deletes with cascading FKs throughout — soft deletes are not used.
 
 **Availability side-effects live in `Booking::booted()` only** — spots adjust on `updating`, notification jobs fire on `updated`. Never replicate this in a controller, service, or job.
 
-**Two Filament panels.** Admin at `admin.pet-hotel.local` requires `is_admin`; hotel owner at `owner.pet-hotel.local` requires `ownedHotels()->exists()`. Resources auto-discover from `app/Filament/Resources/` and `app/Filament/HotelOwner/Resources/` respectively. Colour tokens: amber (admin), teal (owner).
+**Two Filament panels**, both routed by path on the app's own domain — `/admin` requires `is_admin`, `/owner` requires `ownedHotels()->exists()`. Do not reintroduce `->domain()` on a panel without also updating `SecurityHeaders::isFilamentRequest()`, which decides where Filament's `'unsafe-eval'` CSP relaxation applies. Resources auto-discover from `app/Filament/Resources/` and `app/Filament/HotelOwner/Resources/` respectively. Colour tokens: amber (admin), teal (owner).
 
 **Two JSON endpoints exist and are intentional**, despite the general "Inertia only, never `response()->json()`" rule. Both are XHR-backed widgets, not page loads:
 - `hotels.availability` → `HotelAvailabilityController@index`, feeds `AvailabilityCalendar.vue`
