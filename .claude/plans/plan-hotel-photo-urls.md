@@ -2,7 +2,7 @@
 plan: hotel-photo-urls
 status: implemented
 branch: feature/hotel-photo-urls
-pr: ~
+pr: 18
 implemented: 2026-08-08
 ---
 
