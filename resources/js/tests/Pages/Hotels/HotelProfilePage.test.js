@@ -29,7 +29,7 @@ const baseHotel = {
     city: 'Singapore',
     lat: 1.3521,
     lng: 103.8198,
-    cover_photo: null,
+    cover_photo_url: null,
     is_active: true,
     photos: [],
     facilities: [],
@@ -70,5 +70,47 @@ describe('HotelProfilePage — Location card null-guard', () => {
         const w = mount(HotelProfilePage, { props: baseProps })
         const link = w.find('a[rel="noopener"]')
         expect(link.attributes('href')).toBe('https://maps.google.com/?q=1.3521,103.8198')
+    })
+})
+
+describe('HotelProfilePage — photo gallery', () => {
+    const photo = (id, url) => ({ id, photo_url: url, sort_order: id })
+
+    it('renders gallery photos from photo_url', () => {
+        const w = mount(HotelProfilePage, {
+            props: {
+                ...baseProps,
+                hotel: { ...baseHotel, photos: [photo(1, 'https://cdn.example.com/a.jpg')] },
+            },
+        })
+        expect(w.find('img').attributes('src')).toBe('https://cdn.example.com/a.jpg')
+    })
+
+    it('puts the cover photo first', () => {
+        const w = mount(HotelProfilePage, {
+            props: {
+                ...baseProps,
+                hotel: {
+                    ...baseHotel,
+                    cover_photo_url: 'https://cdn.example.com/cover.jpg',
+                    photos: [photo(1, 'https://cdn.example.com/a.jpg')],
+                },
+            },
+        })
+        expect(w.find('img').attributes('src')).toBe('https://cdn.example.com/cover.jpg')
+    })
+
+    it('shows no gallery when the hotel has no photos', () => {
+        const w = mount(HotelProfilePage, { props: baseProps })
+        expect(w.find('img').exists()).toBe(false)
+    })
+
+    // A photo row whose file could not be resolved would otherwise render an
+    // <img> with src="undefined".
+    it('skips photos with no resolvable url', () => {
+        const w = mount(HotelProfilePage, {
+            props: { ...baseProps, hotel: { ...baseHotel, photos: [photo(1, null)] } },
+        })
+        expect(w.find('img').exists()).toBe(false)
     })
 })

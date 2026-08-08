@@ -43,12 +43,15 @@ const petTypeLabels = {
     other: 'Other',
 };
 
+// Normalised to one shape so the template binds a single key, rather than
+// reading .url off gallery rows and a hand-built cover object that only
+// happened to share it.
 const allPhotos = computed(() => {
-    const photos = [...props.hotel.photos];
-    if (props.hotel.cover_photo) {
-        photos.unshift({ id: 0, url: props.hotel.cover_photo, sort_order: -1 });
+    const photos = props.hotel.photos.map((photo) => ({ id: photo.id, src: photo.photo_url }));
+    if (props.hotel.cover_photo_url) {
+        photos.unshift({ id: 0, src: props.hotel.cover_photo_url });
     }
-    return photos;
+    return photos.filter((photo) => photo.src);
 });
 
 const activePhotoIndex = ref(0);
@@ -79,7 +82,7 @@ function nextPhoto() {
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div v-if="allPhotos.length > 0" class="relative">
                     <img
-                        :src="allPhotos[activePhotoIndex].url"
+                        :src="allPhotos[activePhotoIndex].src"
                         :alt="hotel.name"
                         class="w-full h-80 object-cover"
                     />
