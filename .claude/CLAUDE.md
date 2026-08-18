@@ -54,7 +54,7 @@ Hard deletes with cascading FKs throughout — soft deletes are not used.
 
 Any *other* customer-facing JSON response is a violation.
 
-**OAuth.** `users.google_id` is nullable-unique and `users.password` is nullable, so OAuth-only accounts have no password — never assume one is set. Config in `config/services.php` → `google`; requires `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`.
+**OAuth.** `users.google_id` is nullable-unique. `users.password` is nullable at the database level, but nothing writes null to it — `GoogleAuthController` creates OAuth accounts with `Str::random(32)`, which `User::casts()` hashes. So an OAuth-only account has a real password hash of a value nobody knows; branching on `is_null($user->password)` to detect one will never fire. Config in `config/services.php` → `google`; requires `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`.
 
 ## Not yet built
 
