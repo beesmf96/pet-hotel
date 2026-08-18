@@ -49,10 +49,10 @@ Before writing any code:
 - Routes are registered inside the `guest` middleware group as `auth.{provider}` and `auth.{provider}.callback` and must carry a `throttle:` middleware (match `throttle:5,1` used by other guest auth routes).
 - Provider credentials go in `config/services.php` under the provider key (`google`, etc.) and are read from `env()`. Mirror the keys in `.env.example`.
 - Callback flow: look up the user by `{provider}_id` first, then by `email` (link the provider id if found), otherwise create a new user. Set `email_verified_at => now()` on first-party OAuth creation (the provider has already verified the address).
-- Use `User::forceCreate([...])` when seeding OAuth-only attributes (`google_id`, `email_verified_at`, `password => Str::random(32)`) that are intentionally outside `$fillable`. Add a brief comment if it isn't obvious.
+- Use `User::forceCreate([...])` when seeding OAuth-only attributes (`google_id`, `email_verified_at`, `password => null`) that are intentionally outside `$fillable`. Add a brief comment if it isn't obvious. Never write a random-string password for an OAuth account — null is what distinguishes it from a password the user chose.
 - Catch `Laravel\Socialite\Two\InvalidStateException` in `callback()` and redirect to `login` with a flash status — never let it 500.
 - After login, call `$request->session()->regenerate()` and redirect to `dashboard`.
-- The `password` column on `users` is nullable to support OAuth-only accounts; do not assume it is set.
+- The `password` column on `users` is nullable to support OAuth-only accounts; do not assume it is set. `password` is outside `$fillable`, so assign it with `forceFill([...])->save()` (see `PasswordController`, `ResetPasswordController`) — `update()` silently drops it.
 
 **Filament**
 - Admin resources go in `app/Filament/Resources/`.

@@ -72,7 +72,7 @@ class GoogleAuthTest extends TestCase
         $response->assertRedirect('/bookings');
     }
 
-    public function test_new_google_user_has_verified_email_and_hashed_password(): void
+    public function test_new_google_user_has_verified_email_and_no_password(): void
     {
         $googleUser = $this->mockSocialiteUser('google-uid-2', 'verified@example.com', 'Verified User');
         $this->mockSocialiteDriver($googleUser);
@@ -81,7 +81,10 @@ class GoogleAuthTest extends TestCase
 
         $user = User::where('email', 'verified@example.com')->first();
         $this->assertNotNull($user->email_verified_at);
-        $this->assertNotNull($user->getAttributes()['password']);
+
+        // Null rather than a random hash: the profile page uses this to tell an
+        // OAuth-only account apart from one whose password the user chose.
+        $this->assertNull($user->getAttributes()['password']);
     }
 
     // ── Callback: existing user by email, no google_id ────────────────────────

@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\InvalidStateException;
@@ -52,7 +51,10 @@ class GoogleAuthController extends Controller
                     'email' => $googleUser->getEmail(),
                     'google_id' => $googleUser->getId(),
                     'email_verified_at' => now(),
-                    'password' => Str::random(32),
+                    // No password: the account signs in with Google until the user
+                    // sets one from their profile. A random hash here would be
+                    // indistinguishable from a password the user actually chose.
+                    'password' => null,
                 ]);
             }
         }
