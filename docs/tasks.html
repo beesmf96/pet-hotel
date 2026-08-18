@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pet Hotel — Task List</title>
+  <link rel="stylesheet" href="assets/doc.css" />
+</head>
+<body class="doc">
+<a class="backlink" href="index.html">&larr; All docs</a>
+<h1><a id="pet-hotel-app--task-list" href="#content-pet-hotel-app--task-list" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Pet Hotel App — Task List</h1>
+<p><strong>Stack:</strong> Laravel 13 · Vue 3 · Inertia.js · Filament v4 · Laravel Sanctum · PostgreSQL · Redis</p>
+<hr />
+<h2><a id="module-0--infrastructure--docker" href="#content-module-0--infrastructure--docker" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Module 0 — Infrastructure &amp; Docker</h2>
+<h3><a id="docker-compose" href="#content-docker-compose" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Docker Compose</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Create <code>docker-compose.yml</code> with services: <code>app</code>, <code>nginx</code>, <code>postgres</code>, <code>redis</code>, <code>node</code></li>
+<li><input checked="" disabled="" type="checkbox"> Create <code>docker/nginx/default.conf</code> for Laravel</li>
+<li><input checked="" disabled="" type="checkbox"> Create <code>docker/php/Dockerfile</code> (PHP 8.4 + extensions incl. intl, redis)</li>
+<li><input checked="" disabled="" type="checkbox"> Create <code>.env.docker</code> example file</li>
+<li><input checked="" disabled="" type="checkbox"> Verify all services spin up: <code>docker compose up -d</code></li>
+</ul>
+<h3><a id="infrastructure-patch-2026-05-20" href="#content-infrastructure-patch-2026-05-20" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Infrastructure Patch (2026-05-20)</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Add <code>mailpit</code> service (<code>axllent/mailpit</code>) for local email catching</li>
+<li><input checked="" disabled="" type="checkbox"> Replace single <code>docker/nginx/default.conf</code> with <code>docker/nginx/conf.d/</code> directory</li>
+<li><input checked="" disabled="" type="checkbox"> Add nginx virtual host <code>web.pet-hotel.local</code> → Laravel app</li>
+<li><input checked="" disabled="" type="checkbox"> Add nginx virtual host <code>mailpit.local</code> → Mailpit web UI (WebSocket-aware proxy)</li>
+<li><input checked="" disabled="" type="checkbox"> Switch nginx port binding <code>8080 → 80</code></li>
+<li><input checked="" disabled="" type="checkbox"> Update <code>.env.docker</code>: <code>MAIL_MAILER=smtp</code>, <code>MAIL_HOST=mailpit</code>, <code>MAIL_PORT=1025</code></li>
+<li><input checked="" disabled="" type="checkbox"> Fix missing CSRF meta tag in <code>resources/views/app.blade.php</code> (caused 419 on logout)</li>
+</ul>
+<h3><a id="infrastructure-patch-2026-05-20--admin-subdomain" href="#content-infrastructure-patch-2026-05-20--admin-subdomain" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Infrastructure Patch (2026-05-20 — admin subdomain)</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Add nginx virtual host <code>admin.pet-hotel.local</code> → Laravel app (PHP-FPM, same pattern as <code>web.conf</code>)</li>
+<li><input checked="" disabled="" type="checkbox"> Configure Filament <code>AdminPanelProvider</code> with <code>-&gt;domain('admin.pet-hotel.local')-&gt;path('')</code></li>
+<li><input checked="" disabled="" type="checkbox"> Redirect root route <code>/</code> to <code>/hotels</code> (removes default Laravel welcome page)</li>
+<li><input checked="" disabled="" type="checkbox"> Update <code>CLAUDE.md</code> and <code>README.md</code> to document new host entries and admin URL</li>
+</ul>
+<h3><a id="laravel-project-bootstrap" href="#content-laravel-project-bootstrap" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Laravel Project Bootstrap</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Scaffold Laravel project inside repo root (Laravel 13)</li>
+<li><input checked="" disabled="" type="checkbox"> Install frontend deps: <code>bun install</code> (Vite + Vue 3 + <code>@inertiajs/vue3</code> + <code>@vitejs/plugin-vue</code>)</li>
+<li><input checked="" disabled="" type="checkbox"> Install Inertia.js server-side adapter (<code>inertiajs/inertia-laravel</code> v3.1)</li>
+<li><input checked="" disabled="" type="checkbox"> Install Inertia.js client-side adapter (<code>@inertiajs/vue3</code> v3.1)</li>
+<li><input checked="" disabled="" type="checkbox"> Install Filament v4 (<code>filament/filament</code> v4.11 — v3 does not support Laravel 13)</li>
+<li><input checked="" disabled="" type="checkbox"> Install Sanctum (<code>laravel/sanctum</code> v4.3)</li>
+<li><input checked="" disabled="" type="checkbox"> Configure PostgreSQL connection in <code>.env</code></li>
+<li><input checked="" disabled="" type="checkbox"> Configure Redis for session, cache, and queue</li>
+<li><input checked="" disabled="" type="checkbox"> Set up base layout: <code>resources/js/Layouts/AppLayout.vue</code></li>
+<li><input checked="" disabled="" type="checkbox"> Run initial migrations</li>
+</ul>
+<hr />
+<h2><a id="module-1--user-authentication" href="#content-module-1--user-authentication" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Module 1 — User Authentication</h2>
+<p><strong>Covers:</strong> FR #9 (Basic User Authentication)</p>
+<h3><a id="backend" href="#content-backend" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Backend</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Enable Sanctum SPA authentication (cookie-based)</li>
+<li><input checked="" disabled="" type="checkbox"> <code>POST /register</code> — email, password, name</li>
+<li><input checked="" disabled="" type="checkbox"> <code>POST /login</code> — email + password</li>
+<li><input checked="" disabled="" type="checkbox"> <code>POST /logout</code></li>
+<li><input checked="" disabled="" type="checkbox"> <code>GET /user</code> — return authenticated user</li>
+<li><input checked="" disabled="" type="checkbox"> Email verification on registration (<code>MustVerifyEmail</code>)</li>
+<li><input checked="" disabled="" type="checkbox"> Password reset flow (built-in Laravel)</li>
+</ul>
+<h3><a id="frontend" href="#content-frontend" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Frontend</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> <code>RegisterPage.vue</code> — form with validation errors via Inertia</li>
+<li><input checked="" disabled="" type="checkbox"> <code>LoginPage.vue</code></li>
+<li><input checked="" disabled="" type="checkbox"> <code>ForgotPasswordPage.vue</code></li>
+<li><input checked="" disabled="" type="checkbox"> <code>ResetPasswordPage.vue</code></li>
+<li><input checked="" disabled="" type="checkbox"> Auth middleware redirect (guest → login, auth → dashboard)</li>
+</ul>
+<hr />
+<h2><a id="module-2--user--pet-profile-management" href="#content-module-2--user--pet-profile-management" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Module 2 — User &amp; Pet Profile Management</h2>
+<p><strong>Covers:</strong> FR #5 (User and Pet Profile Management)</p>
+<h3><a id="backend-1" href="#content-backend-1" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Backend</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> <code>users</code> table: name, email, phone, preferred_location</li>
+<li><input checked="" disabled="" type="checkbox"> <code>pets</code> table: user_id, name, breed, species, age, special_needs, photo</li>
+<li><input checked="" disabled="" type="checkbox"> <code>UserController@update</code> — update contact details</li>
+<li><input checked="" disabled="" type="checkbox"> <code>PetController</code> — CRUD for user's pets</li>
+<li><input checked="" disabled="" type="checkbox"> Pet photo upload (local disk or S3-compatible)</li>
+<li><input checked="" disabled="" type="checkbox"> Form Request validation for pet and user updates</li>
+</ul>
+<h3><a id="frontend-1" href="#content-frontend-1" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Frontend</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> <code>ProfilePage.vue</code> — edit name, phone, preferred location</li>
+<li><input checked="" disabled="" type="checkbox"> <code>PetsPage.vue</code> — list user's pets</li>
+<li><input checked="" disabled="" type="checkbox"> <code>PetFormModal.vue</code> — add/edit pet (inline modal)</li>
+</ul>
+<hr />
+<h2><a id="module-3--pet-hotel-profiles" href="#content-module-3--pet-hotel-profiles" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Module 3 — Pet Hotel Profiles</h2>
+<p><strong>Covers:</strong> FR #3 (View Pet Hotel Profiles)</p>
+<h3><a id="backend-2" href="#content-backend-2" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Backend</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> <code>pet_hotels</code> table: name, slug, description, address, city, lat, lng, cover_photo</li>
+<li><input checked="" disabled="" type="checkbox"> <code>pet_hotel_facilities</code> table: hotel_id, type (enum: grooming, play_area, vet_care, …)</li>
+<li><input checked="" disabled="" type="checkbox"> <code>pet_hotel_photos</code> table: hotel_id, url, sort_order</li>
+<li><input checked="" disabled="" type="checkbox"> <code>pet_hotel_policies</code> table: hotel_id, check_in_time, check_out_time, cancellation_policy</li>
+<li><input checked="" disabled="" type="checkbox"> <code>pet_hotel_pricing</code> table: hotel_id, pet_type, price_per_night</li>
+<li><input checked="" disabled="" type="checkbox"> <code>HotelController@show</code> — public profile endpoint</li>
+<li><input checked="" disabled="" type="checkbox"> Slug-based routing (<code>/hotels/{slug}</code>)</li>
+</ul>
+<h3><a id="frontend-2" href="#content-frontend-2" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Frontend</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> <code>HotelProfilePage.vue</code> — full profile layout
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Photo gallery carousel</li>
+<li><input checked="" disabled="" type="checkbox"> Pricing table per pet type</li>
+<li><input checked="" disabled="" type="checkbox"> Facilities chips/icons</li>
+<li><input checked="" disabled="" type="checkbox"> Policies section</li>
+<li><input checked="" disabled="" type="checkbox"> Ratings summary (feeds from Module 6)</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2><a id="module-4--search--filter" href="#content-module-4--search--filter" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Module 4 — Search &amp; Filter</h2>
+<p><strong>Covers:</strong> FR #1 (Search by Location), FR #7 (Filter and Sort)</p>
+<h3><a id="backend-3" href="#content-backend-3" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Backend</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> <code>HotelSearchController@index</code> — query builder with filters</li>
+<li><input checked="" disabled="" type="checkbox"> Filter params: <code>city</code>, <code>pet_type</code>, <code>price_min</code>, <code>price_max</code>, <code>check_in</code>, <code>check_out</code></li>
+<li><input checked="" disabled="" type="checkbox"> Sort params: <code>rating</code>, <code>price_asc</code>, <code>price_desc</code>, <code>distance</code> (requires lat/lng)</li>
+<li><input checked="" disabled="" type="checkbox"> Pagination (15 per page)</li>
+</ul>
+<h3><a id="frontend-3" href="#content-frontend-3" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Frontend</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> <code>SearchPage.vue</code> — search results grid</li>
+<li><input checked="" disabled="" type="checkbox"> <code>SearchBar.vue</code> — city input + date range picker + pet type selector</li>
+<li><input checked="" disabled="" type="checkbox"> <code>FilterSidebar.vue</code> — price range slider, pet type, facilities checkboxes</li>
+<li><input checked="" disabled="" type="checkbox"> <code>HotelCard.vue</code> — card component (name, city, price from, rating, cover photo)</li>
+<li><input checked="" disabled="" type="checkbox"> Sort dropdown (rating, price)</li>
+<li><input checked="" disabled="" type="checkbox"> Empty state illustration</li>
+</ul>
+<hr />
+<h2><a id="module-5--availability--calendar" href="#content-module-5--availability--calendar" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Module 5 — Availability &amp; Calendar</h2>
+<p><strong>Covers:</strong> FR #2 (View Available Dates and Times)</p>
+<h3><a id="backend-4" href="#content-backend-4" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Backend</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> <code>hotel_availabilities</code> table: hotel_id, date, available_spots, is_blocked</li>
+<li><input checked="" disabled="" type="checkbox"> <code>HotelAvailabilityController@index</code> — return available dates for a hotel in a range</li>
+<li><input checked="" disabled="" type="checkbox"> Block dates when bookings are confirmed (Module 6 triggers this)</li>
+<li><input checked="" disabled="" type="checkbox"> Seed dummy availability data for development</li>
+</ul>
+<h3><a id="frontend-4" href="#content-frontend-4" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Frontend</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> <code>AvailabilityCalendar.vue</code> — month calendar with available/unavailable day states</li>
+<li><input checked="" disabled="" type="checkbox"> Integrate into <code>HotelProfilePage.vue</code> — show calendar before booking CTA</li>
+</ul>
+<hr />
+<h2><a id="module-6--booking-system" href="#content-module-6--booking-system" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Module 6 — Booking System</h2>
+<p><strong>Covers:</strong> FR #4 (Book a Pet Hotel), FR #10 (Booking Confirmation)</p>
+<h3><a id="backend-5" href="#content-backend-5" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Backend</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> <code>bookings</code> table: user_id, hotel_id, pet_id, check_in, check_out, status (pending/confirmed/cancelled), notes, total_price</li>
+<li><input checked="" disabled="" type="checkbox"> <code>BookingController@store</code> — create booking with status=pending</li>
+<li><input checked="" disabled="" type="checkbox"> <code>BookingController@index</code> — user's booking history</li>
+<li><input checked="" disabled="" type="checkbox"> <code>BookingController@cancel</code> — user cancel (if policy allows)</li>
+<li><input checked="" disabled="" type="checkbox"> Queue job: <code>SendBookingRequestNotification</code> — email to user + admin on new booking</li>
+<li><input checked="" disabled="" type="checkbox"> Queue job: <code>SendBookingConfirmationNotification</code> — email to user when confirmed</li>
+</ul>
+<h3><a id="frontend-5" href="#content-frontend-5" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Frontend</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> <code>BookingFormPage.vue</code> — select pet, dates, add notes, price summary</li>
+<li><input checked="" disabled="" type="checkbox"> <code>BookingConfirmationPage.vue</code> — &quot;Your request is pending&quot; screen</li>
+<li><input checked="" disabled="" type="checkbox"> <code>MyBookingsPage.vue</code> — list of bookings with status badges</li>
+<li><input checked="" disabled="" type="checkbox"> <code>BookingDetailPage.vue</code> — booking details + cancel button</li>
+</ul>
+<hr />
+<h2><a id="module-7--ratings--reviews" href="#content-module-7--ratings--reviews" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Module 7 — Ratings &amp; Reviews</h2>
+<p><strong>Covers:</strong> FR #6 (View Ratings and Reviews), FR #8 (Leave Feedback)</p>
+<h3><a id="backend-6" href="#content-backend-6" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Backend</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> <code>reviews</code> table: user_id, hotel_id, booking_id, rating (1–5), comment, is_visible</li>
+<li><input checked="" disabled="" type="checkbox"> Only allow review after a confirmed + completed booking</li>
+<li><input checked="" disabled="" type="checkbox"> <code>ReviewController@store</code> — submit review</li>
+<li><input checked="" disabled="" type="checkbox"> <code>ReviewController@index</code> — public list per hotel (paginated)</li>
+<li><input checked="" disabled="" type="checkbox"> Compute average rating on <code>pet_hotels</code> table (via DB view or accessor)</li>
+</ul>
+<h3><a id="frontend-6" href="#content-frontend-6" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Frontend</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> <code>ReviewList.vue</code> — paginated reviews with star display</li>
+<li><input checked="" disabled="" type="checkbox"> <code>LeaveReviewModal.vue</code> — star picker + comment textarea</li>
+<li><input checked="" disabled="" type="checkbox"> Show &quot;Leave a review&quot; prompt on <code>MyBookingsPage</code> for completed bookings</li>
+</ul>
+<hr />
+<h2><a id="module-8--notifications" href="#content-module-8--notifications" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Module 8 — Notifications</h2>
+<p><strong>Covers:</strong> FR #10 (Booking Confirmation / email or in-app)</p>
+<h3><a id="backend-7" href="#content-backend-7" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Backend</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Set up Laravel queue worker (<code>redis</code> driver)</li>
+<li><input checked="" disabled="" type="checkbox"> <code>BookingRequestedMail</code> — sent to user on booking submission</li>
+<li><input checked="" disabled="" type="checkbox"> <code>BookingConfirmedMail</code> — sent to user when admin confirms</li>
+<li><input checked="" disabled="" type="checkbox"> <code>BookingCancelledMail</code> — sent to user on cancellation</li>
+<li><input checked="" disabled="" type="checkbox"> <code>in_app_notifications</code> table (or use Laravel's built-in notifications table)</li>
+<li><input checked="" disabled="" type="checkbox"> <code>NotificationController@index</code> — return unread notifications for auth user</li>
+<li><input checked="" disabled="" type="checkbox"> Mark-as-read endpoint</li>
+</ul>
+<h3><a id="frontend-7" href="#content-frontend-7" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Frontend</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> <code>NotificationBell.vue</code> — navbar bell icon with unread count badge</li>
+<li><input checked="" disabled="" type="checkbox"> <code>NotificationsDropdown.vue</code> — last 10 notifications list</li>
+</ul>
+<hr />
+<h2><a id="module-9a--admin-panel-setup" href="#content-module-9a--admin-panel-setup" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Module 9a — Admin Panel Setup</h2>
+<p><strong>Goal:</strong> Get Filament installed, secured, and seeded with an admin user.</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Add <code>is_admin</code> boolean column migration to <code>users</code> table</li>
+<li><input checked="" disabled="" type="checkbox"> Add <code>canAccessPanel()</code> to <code>User</code> model to restrict <code>/admin</code> to admins</li>
+<li><input checked="" disabled="" type="checkbox"> Create <code>AdminUserSeeder</code> — seeds one admin account</li>
+<li><input checked="" disabled="" type="checkbox"> Update <code>DatabaseSeeder</code> to call <code>AdminUserSeeder</code></li>
+<li><input checked="" disabled="" type="checkbox"> Verify <code>/admin</code> login works and non-admins are rejected</li>
+</ul>
+<hr />
+<h2><a id="module-9b--manage-hotels-admin" href="#content-module-9b--manage-hotels-admin" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Module 9b — Manage Hotels (Admin)</h2>
+<p><strong>Goal:</strong> Full CRUD for pet hotels from the admin panel.</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Generate <code>HotelResource</code> with table (name, city, status) and form</li>
+<li><input checked="" disabled="" type="checkbox"> Form includes: name, description, address, city, price fields</li>
+<li><input checked="" disabled="" type="checkbox"> Form includes repeater or relation manager for photos</li>
+<li><input checked="" disabled="" type="checkbox"> Form includes repeater or relation manager for policies</li>
+<li><input checked="" disabled="" type="checkbox"> Form includes repeater or relation manager for pricing tiers</li>
+</ul>
+<hr />
+<h2><a id="module-9c--manage-bookings-admin" href="#content-module-9c--manage-bookings-admin" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Module 9c — Manage Bookings (Admin)</h2>
+<p><strong>Goal:</strong> Let admins view, filter, confirm, and cancel bookings.</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Generate <code>BookingResource</code> with table (pet, hotel, dates, status)</li>
+<li><input checked="" disabled="" type="checkbox"> Filter by status (pending / confirmed / cancelled)</li>
+<li><input checked="" disabled="" type="checkbox"> Add <code>Confirm</code> action button (sets status → confirmed, fires notification)</li>
+<li><input checked="" disabled="" type="checkbox"> Add <code>Cancel</code> action button (sets status → cancelled, fires notification)</li>
+</ul>
+<hr />
+<h2><a id="module-9d--manage-users--reviews-admin" href="#content-module-9d--manage-users--reviews-admin" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Module 9d — Manage Users &amp; Reviews (Admin)</h2>
+<p><strong>Goal:</strong> Read-only user list with pets, and review moderation.</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Generate <code>UserResource</code> — read-only table (name, email, created_at)</li>
+<li><input checked="" disabled="" type="checkbox"> Add relation manager to show pets per user</li>
+<li><input checked="" disabled="" type="checkbox"> Generate <code>ReviewResource</code> — table with rating, body, visibility toggle</li>
+<li><input checked="" disabled="" type="checkbox"> Add <code>Toggle Visibility</code> action (flips <code>is_visible</code>)</li>
+</ul>
+<hr />
+<h2><a id="module-9e--dashboard-widgets" href="#content-module-9e--dashboard-widgets" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Module 9e — Dashboard Widgets</h2>
+<p><strong>Goal:</strong> At-a-glance stats on the Filament dashboard.</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> <code>BookingsTodayWidget</code> — stat widget: count of bookings with check-in today</li>
+<li><input checked="" disabled="" type="checkbox"> <code>PendingBookingsWidget</code> — stat widget: count of bookings with status = pending</li>
+<li><input checked="" disabled="" type="checkbox"> <code>NewUsersThisWeekWidget</code> — stat widget: users created in the last 7 days</li>
+<li><input checked="" disabled="" type="checkbox"> Register all three widgets in <code>AdminPanelProvider</code></li>
+</ul>
+<hr />
+<h2><a id="milestone-checklist" href="#content-milestone-checklist" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Milestone Checklist</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Milestone</th>
+<th>Modules</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Docker + Laravel scaffold running</td>
+<td>0</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Auth working end-to-end</td>
+<td>1</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Profiles + pets manageable</td>
+<td>2</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Hotels searchable and viewable</td>
+<td>3, 4</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Booking flow complete (pending state)</td>
+<td>5, 6</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Reviews visible and submittable</td>
+<td>7</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Email notifications firing</td>
+<td>8</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Admin can confirm bookings</td>
+<td>9</td>
+</tr>
+</tbody>
+</table></div>
+
+</body>
+</html>

@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pet Hotel — Software Requirements Specification</title>
+  <link rel="stylesheet" href="assets/doc.css" />
+</head>
+<body class="doc">
+<a class="backlink" href="index.html">&larr; All docs</a>
+<h1><a id="software-requirements-specification--pet-hotel" href="#content-software-requirements-specification--pet-hotel" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Software Requirements Specification — Pet Hotel</h1>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Document version</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>2026-08-09</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>Baselined against the delivered MVP</td>
+</tr>
+<tr>
+<td>Supersedes</td>
+<td><code>docs/pet-hotel-boarding-mvp-v1.html</code> (retained as the original scope statement)</td>
+</tr>
+<tr>
+<td>Related</td>
+<td><a href="pid.html">Project Initiation Document</a> · <a href="tasks.html">Task List</a></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2><a id="1-introduction" href="#content-1-introduction" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>1. Introduction</h2>
+<h3><a id="11-purpose" href="#content-11-purpose" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>1.1 Purpose</h3>
+<p>This document states, in numbered and testable form, what the Pet Hotel system
+does. Each requirement carries a stable identifier so that design, tests, and
+change requests can cite it precisely.</p>
+<p>It describes the system <strong>as delivered</strong>. Where the original MVP statement was
+vague (&quot;basic authentication&quot;), this document records the behaviour that was
+actually built.</p>
+<h3><a id="12-scope" href="#content-12-scope" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>1.2 Scope</h3>
+<p>Pet Hotel is a web-based pet boarding marketplace. Customers search for hotels,
+view availability, submit booking requests, and leave reviews after a stay.
+Administrators manage listings and confirm bookings. Hotel owners act on
+bookings for their own hotel.</p>
+<p>Booking confirmation is a manual, human step. The system takes no payment.
+Exclusions are listed in §4.2 of the <a href="pid.html">PID</a>.</p>
+<h3><a id="13-definitions" href="#content-13-definitions" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>1.3 Definitions</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Customer / pet owner</td>
+<td>An end user who books boarding for their pet</td>
+</tr>
+<tr>
+<td>Hotel owner</td>
+<td>A user linked to a <code>pet_hotel</code> through the <code>hotel_owner</code> pivot</td>
+</tr>
+<tr>
+<td>Administrator</td>
+<td>A user with <code>is_admin = true</code></td>
+</tr>
+<tr>
+<td>Booking request</td>
+<td>A booking in <code>pending</code> status, not yet confirmed</td>
+</tr>
+<tr>
+<td>Spot</td>
+<td>One unit of capacity for one hotel on one date (<code>hotel_availabilities.available_spots</code>)</td>
+</tr>
+<tr>
+<td>Completed stay</td>
+<td>A confirmed booking whose check-out date has passed</td>
+</tr>
+<tr>
+<td>Panel</td>
+<td>A Filament admin interface — <code>/admin</code> or <code>/owner</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3><a id="14-requirement-notation" href="#content-14-requirement-notation" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>1.4 Requirement notation</h3>
+<ul>
+<li><strong>FR-nn</strong> — functional requirement; <strong>NFR-nn</strong> — non-functional requirement.</li>
+<li>Priority: <strong>M</strong> must have, <strong>S</strong> should have, <strong>C</strong> could have.</li>
+<li>&quot;Shall&quot; denotes a mandatory behaviour.</li>
+<li>Traceability columns cite the implementing route or class and the automated
+tests that verify it.</li>
+</ul>
+<hr />
+<h2><a id="2-actors" href="#content-2-actors" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>2. Actors</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Actor</th>
+<th>Description</th>
+<th>Authentication</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Guest</td>
+<td>Unauthenticated visitor</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Customer</td>
+<td>Registered, email-verified user</td>
+<td>Session (Sanctum cookie) or Google OAuth</td>
+</tr>
+<tr>
+<td>Hotel owner</td>
+<td>Customer who also owns at least one hotel</td>
+<td>As above, plus <code>ownedHotels()-&gt;exists()</code></td>
+</tr>
+<tr>
+<td>Administrator</td>
+<td>Staff operating the platform</td>
+<td>As above, plus <code>is_admin</code></td>
+</tr>
+<tr>
+<td>System</td>
+<td>Queue worker sending notifications</td>
+<td>n/a</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2><a id="3-functional-requirements" href="#content-3-functional-requirements" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>3. Functional Requirements</h2>
+<h3><a id="31-authentication-and-accounts" href="#content-31-authentication-and-accounts" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>3.1 Authentication and Accounts</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+<th>Traces to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-01</td>
+<td>A guest shall register with name, email, and password. Registration is rate limited to 5 attempts per minute.</td>
+<td>M</td>
+<td><code>POST /register</code> · <code>tests/Feature/Auth/AuthTest.php</code></td>
+</tr>
+<tr>
+<td>FR-02</td>
+<td>The system shall send a verification email on registration and shall deny access to customer features until the address is verified.</td>
+<td>M</td>
+<td><code>verification.*</code> routes, <code>verified</code> middleware · <code>tests/Feature/Auth/EmailVerificationTest.php</code></td>
+</tr>
+<tr>
+<td>FR-03</td>
+<td>A registered user shall log in with email and password, and shall log out.</td>
+<td>M</td>
+<td><code>POST /login</code>, <code>POST /logout</code> · <code>tests/Feature/Auth/AuthTest.php</code></td>
+</tr>
+<tr>
+<td>FR-04</td>
+<td>A user shall reset a forgotten password through an emailed, signed link.</td>
+<td>M</td>
+<td><code>password.request</code>, <code>password.reset</code>, <code>password.update</code> · <code>tests/Feature/Auth/PasswordResetTest.php</code></td>
+</tr>
+<tr>
+<td>FR-05</td>
+<td>A user shall register and sign in with a Google account. An account created this way has no password and shall remain usable without one.</td>
+<td>S</td>
+<td><code>auth.google</code>, <code>auth.google.callback</code> · <code>tests/Feature/Auth/GoogleAuthTest.php</code></td>
+</tr>
+<tr>
+<td>FR-06</td>
+<td>Authentication endpoints shall be rate limited to 5 requests per minute per client.</td>
+<td>M</td>
+<td><code>throttle:5,1</code> on auth routes · <code>tests/Feature/Auth/AuthTest.php</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3><a id="32-profiles" href="#content-32-profiles" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>3.2 Profiles</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+<th>Traces to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-07</td>
+<td>A customer shall view and update their name, phone, and preferred location.</td>
+<td>M</td>
+<td><code>profile.edit</code>, <code>profile.update</code> · <code>tests/Feature/UserTest.php</code></td>
+</tr>
+<tr>
+<td>FR-08</td>
+<td>A customer shall create, edit, and delete pet profiles holding name, species, breed, age, and special needs.</td>
+<td>M</td>
+<td><code>pets.*</code> · <code>tests/Feature/PetTest.php</code></td>
+</tr>
+<tr>
+<td>FR-09</td>
+<td>A customer shall upload a photo for a pet. Uploads shall be written to the configured photo disk.</td>
+<td>S</td>
+<td><code>PetController</code> · <code>tests/Feature/UploadDiskTest.php</code></td>
+</tr>
+<tr>
+<td>FR-10</td>
+<td>A customer shall access and modify only their own pets.</td>
+<td>M</td>
+<td><code>PetPolicy</code> · <code>tests/Unit/Policies/PetPolicyTest.php</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3><a id="33-hotel-discovery" href="#content-33-hotel-discovery" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>3.3 Hotel Discovery</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+<th>Traces to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-11</td>
+<td>A guest shall search hotels by city.</td>
+<td>M</td>
+<td><code>GET /hotels</code> · <code>tests/Feature/HotelSearchTest.php</code></td>
+</tr>
+<tr>
+<td>FR-12</td>
+<td>A guest shall filter results by pet type, price range, facilities, and stay dates.</td>
+<td>M</td>
+<td><code>HotelSearchController</code> · <code>tests/Feature/HotelSearchTest.php</code></td>
+</tr>
+<tr>
+<td>FR-13</td>
+<td>A guest shall sort results by rating, ascending price, descending price, or distance. Distance sorting requires coordinates.</td>
+<td>S</td>
+<td><code>HotelSearchController</code> · <code>tests/Feature/HotelSearchTest.php</code></td>
+</tr>
+<tr>
+<td>FR-14</td>
+<td>Search results shall be paginated at 15 per page.</td>
+<td>M</td>
+<td><code>HotelSearchController</code> · <code>tests/Feature/HotelSearchTest.php</code></td>
+</tr>
+<tr>
+<td>FR-15</td>
+<td>The system shall show an empty state when no hotel matches the criteria.</td>
+<td>S</td>
+<td><code>SearchPage.vue</code> · Vitest component suite</td>
+</tr>
+<tr>
+<td>FR-16</td>
+<td>A guest shall view a hotel profile by slug, showing description, photo gallery, facilities, policies, per-pet-type pricing, and rating summary.</td>
+<td>M</td>
+<td><code>GET /hotels/{slug}</code> · <code>tests/Feature/HotelTest.php</code></td>
+</tr>
+<tr>
+<td>FR-17</td>
+<td>Photo references shall be resolved to URLs on the disk they were written to before reaching the page.</td>
+<td>M</td>
+<td><code>PhotoUrl</code> support class · <code>tests/Unit/Support/PhotoUrlTest.php</code>, <code>tests/Feature/HotelPhotoUrlTest.php</code></td>
+</tr>
+<tr>
+<td>FR-18</td>
+<td>A guest shall view a hotel's availability calendar for a date range. Availability is served as JSON to the calendar widget.</td>
+<td>M</td>
+<td><code>GET /hotels/{slug}/availability</code> · <code>tests/Feature/HotelAvailabilityTest.php</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3><a id="34-booking" href="#content-34-booking" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>3.4 Booking</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+<th>Traces to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-19</td>
+<td>A verified customer shall submit a booking request selecting a pet, check-in and check-out dates, and optional notes.</td>
+<td>M</td>
+<td><code>bookings.create</code>, <code>bookings.store</code> · <code>tests/Feature/BookingTest.php</code></td>
+</tr>
+<tr>
+<td>FR-20</td>
+<td>A new booking shall be created with status <code>pending</code>; the system shall never confirm it automatically.</td>
+<td>M</td>
+<td><code>BookingController@store</code> · <code>tests/Feature/BookingTest.php</code></td>
+</tr>
+<tr>
+<td>FR-21</td>
+<td>The system shall calculate total price from the hotel's per-night rate for the pet's type and the number of nights. Where the hotel has no rate for that pet type the total is currently 0 — see OI-5.</td>
+<td>M</td>
+<td><code>BookingController@store</code> · <code>tests/Feature/BookingTest.php</code></td>
+</tr>
+<tr>
+<td>FR-22</td>
+<td>The system shall reject a booking whose dates exceed available spots or fall on blocked dates. <strong>Not implemented</strong> — <code>BookingController@store</code> locks the availability rows for update but never checks <code>available_spots</code> or <code>is_blocked</code>. See OI-4.</td>
+<td>M</td>
+<td><em>gap</em></td>
+</tr>
+<tr>
+<td>FR-23</td>
+<td>Available spots shall be adjusted as a side effect of a booking status change, in the <code>Booking</code> model only.</td>
+<td>M</td>
+<td><code>Booking::booted()</code> · <code>tests/Feature/BookingTest.php</code></td>
+</tr>
+<tr>
+<td>FR-24</td>
+<td>A customer shall view a confirmation screen stating the request is pending.</td>
+<td>M</td>
+<td><code>bookings.confirmation</code> · <code>tests/Feature/BookingTest.php</code></td>
+</tr>
+<tr>
+<td>FR-25</td>
+<td>A customer shall list their bookings with status badges and open any one for detail.</td>
+<td>M</td>
+<td><code>bookings.index</code>, <code>bookings.show</code> · <code>tests/Feature/BookingTest.php</code></td>
+</tr>
+<tr>
+<td>FR-26</td>
+<td>A customer shall cancel their own booking where the hotel's policy allows.</td>
+<td>M</td>
+<td><code>bookings.cancel</code> · <code>tests/Feature/BookingTest.php</code></td>
+</tr>
+<tr>
+<td>FR-27</td>
+<td>A customer shall access only their own bookings.</td>
+<td>M</td>
+<td><code>BookingPolicy</code> · <code>tests/Unit/Policies/BookingPolicyTest.php</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3><a id="35-reviews" href="#content-35-reviews" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>3.5 Reviews</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+<th>Traces to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-28</td>
+<td>A customer shall submit one review per booking, with a 1–5 star rating and a comment, only after a confirmed and completed stay.</td>
+<td>M</td>
+<td><code>reviews.store</code> · <code>tests/Feature/ReviewTest.php</code></td>
+</tr>
+<tr>
+<td>FR-29</td>
+<td>Review submission shall be rate limited to 5 requests per 10 minutes.</td>
+<td>S</td>
+<td><code>throttle:5,10</code> · <code>tests/Feature/ReviewTest.php</code></td>
+</tr>
+<tr>
+<td>FR-30</td>
+<td>A guest shall read a hotel's visible reviews, paginated. Hidden reviews shall never appear publicly.</td>
+<td>M</td>
+<td><code>reviews.index</code> · <code>tests/Feature/ReviewTest.php</code></td>
+</tr>
+<tr>
+<td>FR-31</td>
+<td>A hotel's average rating shall be derived from its visible reviews.</td>
+<td>M</td>
+<td><code>PetHotel</code> model · <code>tests/Unit/Models/PetHotelTest.php</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3><a id="36-notifications" href="#content-36-notifications" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>3.6 Notifications</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+<th>Traces to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-32</td>
+<td>The system shall email the customer when a booking request is submitted, when it is confirmed, and when it is cancelled.</td>
+<td>M</td>
+<td>Notification jobs · <code>tests/Feature/NotificationTest.php</code></td>
+</tr>
+<tr>
+<td>FR-33</td>
+<td>Notification emails shall be dispatched through the queue, not sent inline during the web request.</td>
+<td>M</td>
+<td><code>Booking::booted()</code> dispatch · <code>tests/Feature/Jobs/NotificationJobPolicyTest.php</code></td>
+</tr>
+<tr>
+<td>FR-34</td>
+<td>A queued notification job shall fail safely and shall not be retried indefinitely when its subject no longer exists.</td>
+<td>M</td>
+<td>Job policy · <code>tests/Feature/Jobs/NotificationJobPolicyTest.php</code></td>
+</tr>
+<tr>
+<td>FR-35</td>
+<td>A customer shall see an unread notification count and read their recent in-app notifications.</td>
+<td>M</td>
+<td><code>notifications.index</code> · <code>tests/Feature/NotificationTest.php</code></td>
+</tr>
+<tr>
+<td>FR-36</td>
+<td>A customer shall mark one notification, or all of them, as read.</td>
+<td>M</td>
+<td><code>notifications.read</code>, <code>notifications.read-all</code> · <code>tests/Feature/NotificationTest.php</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3><a id="37-administration" href="#content-37-administration" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>3.7 Administration</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+<th>Traces to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-37</td>
+<td>Only users with <code>is_admin</code> shall reach the admin panel at <code>/admin</code>.</td>
+<td>M</td>
+<td><code>User::canAccessPanel()</code> · <code>tests/Feature/Filament/PanelRoutingTest.php</code></td>
+</tr>
+<tr>
+<td>FR-38</td>
+<td>An administrator shall create, edit, and delete hotels, including photos, pricing tiers, policies, and owner assignment.</td>
+<td>M</td>
+<td><code>HotelResource</code> · <code>tests/Feature/Filament/Admin/HotelResourceTest.php</code></td>
+</tr>
+<tr>
+<td>FR-39</td>
+<td>An administrator shall list and filter bookings by status, and confirm or cancel any booking. Both actions fire the corresponding notification.</td>
+<td>M</td>
+<td><code>BookingResource</code> · <code>tests/Feature/Filament/Admin/BookingResourceTest.php</code></td>
+</tr>
+<tr>
+<td>FR-40</td>
+<td>An administrator shall view a read-only list of users with their pets.</td>
+<td>S</td>
+<td><code>UserResource</code> · <code>tests/Feature/Filament/Admin/UserResourceTest.php</code></td>
+</tr>
+<tr>
+<td>FR-41</td>
+<td>An administrator shall toggle a review's visibility and delete reviews.</td>
+<td>M</td>
+<td><code>ReviewResource</code> · <code>tests/Feature/Filament/Admin/ReviewResourceTest.php</code></td>
+</tr>
+<tr>
+<td>FR-42</td>
+<td>The admin dashboard shall show bookings checking in today, pending bookings, and users created in the last 7 days.</td>
+<td>C</td>
+<td>Widgets · <code>tests/Feature/Filament/Admin/WidgetsTest.php</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3><a id="38-hotel-owner" href="#content-38-hotel-owner" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>3.8 Hotel Owner</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+<th>Traces to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-43</td>
+<td>Only users owning at least one hotel shall reach the owner panel at <code>/owner</code>.</td>
+<td>M</td>
+<td><code>HotelOwnerPanelProvider</code> · <code>tests/Feature/Filament/PanelRoutingTest.php</code></td>
+</tr>
+<tr>
+<td>FR-44</td>
+<td>A hotel owner shall see bookings for their own hotels only, filterable by status.</td>
+<td>M</td>
+<td><code>HotelOwner\BookingResource</code> · <code>tests/Feature/HotelOwnerBookingTest.php</code></td>
+</tr>
+<tr>
+<td>FR-45</td>
+<td>A hotel owner shall confirm or decline a booking for their own hotel.</td>
+<td>M</td>
+<td><code>HotelOwner\BookingResource</code> · <code>tests/Feature/Filament/HotelOwner/BookingResourceTest.php</code></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2><a id="4-non-functional-requirements" href="#content-4-non-functional-requirements" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4. Non-Functional Requirements</h2>
+<h3><a id="41-security" href="#content-41-security" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4.1 Security</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+<th>Traces to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NFR-01</td>
+<td>All state-changing requests shall be CSRF protected, except the documented CSP report endpoint.</td>
+<td>M</td>
+<td><code>bootstrap/app.php</code> · <code>tests/Feature/CspReportTest.php</code></td>
+</tr>
+<tr>
+<td>NFR-02</td>
+<td>The system shall send security headers including a Content Security Policy on every response. The policy shall permit the configured photo storage host and no other external origin.</td>
+<td>M</td>
+<td><code>SecurityHeaders</code> middleware · <code>tests/Feature/SecurityHeadersTest.php</code></td>
+</tr>
+<tr>
+<td>NFR-03</td>
+<td>CSP violations shall be reportable to a throttled endpoint that writes to the application log.</td>
+<td>C</td>
+<td><code>csp.report</code> · <code>tests/Feature/CspReportTest.php</code></td>
+</tr>
+<tr>
+<td>NFR-04</td>
+<td>Passwords shall be stored hashed; a null password shall never authenticate a user.</td>
+<td>M</td>
+<td>Laravel hashing · <code>tests/Feature/Auth/GoogleAuthTest.php</code></td>
+</tr>
+<tr>
+<td>NFR-05</td>
+<td>Authorization shall be enforced by policy classes, not by view-level hiding alone.</td>
+<td>M</td>
+<td><code>tests/Unit/Policies/*</code></td>
+</tr>
+<tr>
+<td>NFR-06</td>
+<td>The application shall be free of known high-severity dependency advisories at release.</td>
+<td>M</td>
+<td>Dependency review; see <code>.claude/plans/plan-owasp-hardening.md</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3><a id="42-usability" href="#content-42-usability" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4.2 Usability</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NFR-07</td>
+<td>Validation errors shall be shown inline against the field they concern, without losing entered data.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-08</td>
+<td>The interface shall be usable at mobile, tablet, and desktop widths.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-09</td>
+<td>Booking status shall be visible at a glance wherever a booking is listed.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-10</td>
+<td>End-user instructions shall be maintained in the <a href="user_guide.html">user guide</a>.</td>
+<td>S</td>
+</tr>
+</tbody>
+</table></div>
+<h3><a id="43-performance-and-capacity" href="#content-43-performance-and-capacity" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4.3 Performance and Capacity</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NFR-11</td>
+<td>Search result pages shall be paginated so that response size stays bounded regardless of catalogue size.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-12</td>
+<td>Email delivery shall not block a web request; all mail goes through the queue.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-13</td>
+<td>Performance targets beyond &quot;functional&quot; are explicitly deferred; scalability work waits for evidence of traction.</td>
+<td>M</td>
+</tr>
+</tbody>
+</table></div>
+<h3><a id="44-maintainability" href="#content-44-maintainability" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4.4 Maintainability</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+<th>Traces to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NFR-14</td>
+<td>Backend line coverage shall not fall below the CI floor (currently 95%).</td>
+<td>M</td>
+<td><code>.github/workflows/ci.yml</code></td>
+</tr>
+<tr>
+<td>NFR-15</td>
+<td>PHP shall be formatted with Pint and JavaScript linted with ESLint; both are enforced in CI.</td>
+<td>M</td>
+<td><code>.github/workflows/ci.yml</code></td>
+</tr>
+<tr>
+<td>NFR-16</td>
+<td>Pages shall be delivered through Inertia. JSON responses are permitted only for the hotel availability and notification widgets.</td>
+<td>M</td>
+<td><code>.claude/CLAUDE.md</code></td>
+</tr>
+<tr>
+<td>NFR-17</td>
+<td>Availability side effects shall exist in exactly one place, <code>Booking::booted()</code>.</td>
+<td>M</td>
+<td><code>tests/Feature/BookingTest.php</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3><a id="45-portability-and-operations" href="#content-45-portability-and-operations" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4.5 Portability and Operations</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NFR-18</td>
+<td>The full stack shall start from a clean checkout with <code>docker compose up -d</code>.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-19</td>
+<td>Photo storage shall be selectable by configuration; on ephemeral hosting it shall be S3-compatible.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-20</td>
+<td>The database shall be PostgreSQL in Docker and production, and SQLite for tests.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-21</td>
+<td>Go-live steps that cannot be enforced from the repository shall be documented in the <a href="deployment-checklist.html">deployment checklist</a>.</td>
+<td>M</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2><a id="5-external-interfaces" href="#content-5-external-interfaces" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>5. External Interfaces</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Interface</th>
+<th>Direction</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Google OAuth 2.0</td>
+<td>Outbound</td>
+<td>Sign-in and registration (<code>laravel/socialite</code>)</td>
+</tr>
+<tr>
+<td>SMTP / transactional mail</td>
+<td>Outbound</td>
+<td>Booking notification emails; Mailpit locally</td>
+</tr>
+<tr>
+<td>S3-compatible object storage</td>
+<td>Outbound</td>
+<td>Photo uploads when <code>PHOTO_DISK=s3</code></td>
+</tr>
+<tr>
+<td>Leaflet tiles</td>
+<td>Outbound (browser)</td>
+<td>Map rendering on hotel pages</td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>Internal</td>
+<td>Queue, cache, sessions</td>
+</tr>
+</tbody>
+</table></div>
+<p>The system exposes no public API. <code>routes/api.php</code> does not exist.</p>
+<hr />
+<h2><a id="6-data-requirements" href="#content-6-data-requirements" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>6. Data Requirements</h2>
+<p>Entities and relationships are defined in <code>.claude/CLAUDE.md</code>. Requirements that
+constrain the data layer:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DR-01</td>
+<td>Deletion shall cascade through foreign keys; soft deletes shall not be used.</td>
+</tr>
+<tr>
+<td>DR-02</td>
+<td><code>users.google_id</code> shall be nullable and unique; <code>users.password</code> shall be nullable.</td>
+</tr>
+<tr>
+<td>DR-03</td>
+<td>Availability shall be stored as one row per hotel per date, holding <code>available_spots</code> and <code>is_blocked</code>.</td>
+</tr>
+<tr>
+<td>DR-04</td>
+<td>Pricing shall be stored per hotel per pet type.</td>
+</tr>
+<tr>
+<td>DR-05</td>
+<td>A review shall belong to exactly one booking.</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2><a id="7-traceability-to-the-original-mvp-statement" href="#content-7-traceability-to-the-original-mvp-statement" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>7. Traceability to the Original MVP Statement</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>MVP requirement</th>
+<th>Covered by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Search pet hotels by location</td>
+<td>FR-11, FR-14</td>
+</tr>
+<tr>
+<td>2. View available dates and times</td>
+<td>FR-18</td>
+</tr>
+<tr>
+<td>3. View pet hotel profiles</td>
+<td>FR-16, FR-17</td>
+</tr>
+<tr>
+<td>4. Book a pet hotel (manual process)</td>
+<td>FR-19 – FR-24, FR-39, FR-45</td>
+</tr>
+<tr>
+<td>5. User and pet profile management</td>
+<td>FR-07 – FR-10</td>
+</tr>
+<tr>
+<td>6. View ratings and reviews</td>
+<td>FR-30, FR-31</td>
+</tr>
+<tr>
+<td>7. Filter and sort search results</td>
+<td>FR-12, FR-13, FR-15</td>
+</tr>
+<tr>
+<td>8. Leave feedback</td>
+<td>FR-28, FR-29</td>
+</tr>
+<tr>
+<td>9. Basic user authentication</td>
+<td>FR-01 – FR-06</td>
+</tr>
+<tr>
+<td>10. Booking confirmation</td>
+<td>FR-24, FR-32, FR-35, FR-36</td>
+</tr>
+<tr>
+<td>A. Security and basic usability</td>
+<td>NFR-01 – NFR-10</td>
+</tr>
+<tr>
+<td>B. Keep performance simple</td>
+<td>NFR-11 – NFR-13</td>
+</tr>
+<tr>
+<td>C. Defer scalability</td>
+<td>NFR-13</td>
+</tr>
+</tbody>
+</table></div>
+<p>Requirements with no MVP ancestor — delivered as post-MVP scope: FR-05 (Google
+sign-in), FR-33/FR-34 (queue hardening), FR-37/FR-43 – FR-45 (panels and owner
+role), FR-17 (photo URL resolution), NFR-02/NFR-03 (security headers and CSP),
+NFR-14/NFR-15 (CI quality gates).</p>
+<hr />
+<h2><a id="8-open-items" href="#content-8-open-items" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>8. Open Items</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Item</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OI-1</td>
+<td>Cancellation policy is enforced per hotel but the exact rule is not specified here; needs a written rule per policy field.</td>
+<td><em>TBC</em></td>
+</tr>
+<tr>
+<td>OI-2</td>
+<td>No requirement covers what happens to reviews when a hotel is deleted beyond the cascade in DR-01.</td>
+<td><em>TBC</em></td>
+</tr>
+<tr>
+<td>OI-3</td>
+<td>Distance sorting (FR-13) depends on coordinates that admins enter manually; no validation requirement exists for them.</td>
+<td><em>TBC</em></td>
+</tr>
+<tr>
+<td>OI-4</td>
+<td><strong>FR-22 is unimplemented.</strong> A customer can book dates that are fully booked or blocked; spots go negative through <code>Booking::booted()</code>. The transaction in <code>BookingController@store</code> already takes <code>lockForUpdate()</code> on the availability rows, so the capacity check was intended — only the assertion is missing. Needs a fix and a regression test.</td>
+<td><em>TBC</em></td>
+</tr>
+<tr>
+<td>OI-5</td>
+<td>A booking for a pet type the hotel has no pricing row for is created with <code>total_price = 0</code> rather than being rejected (FR-21).</td>
+<td><em>TBC</em></td>
+</tr>
+</tbody>
+</table></div>
+
+</body>
+</html>

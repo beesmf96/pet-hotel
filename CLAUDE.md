@@ -16,6 +16,17 @@ bun run lint          # ESLint (--fix variant: bun run lint:fix)
 vendor/bin/pint       # PHP formatter
 ```
 
+### Documentation
+```bash
+php docs/build.php     # renders docs/*.md → docs/*.html and regenerates index.html
+```
+
+Markdown under `docs/` is the source of truth. Never hand-edit a generated
+`.html` file — `user_guide.html`, `booking-flow.html`, and
+`pet-hotel-boarding-mvp-v1.html` predate the renderer and are the only
+hand-written pages left; they are listed in `STATIC_DOCS` in `docs/build.php`.
+Page styling lives in `docs/assets/doc.css`.
+
 ### Docker
 ```bash
 docker compose up -d                    # app, nginx, postgres, redis
