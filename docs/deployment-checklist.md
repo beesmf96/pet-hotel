@@ -1,3 +1,10 @@
+---
+title: Deployment Checklist
+description: Configuration and infrastructure that must be in place before go-live, beyond what the repository can enforce.
+badges: Operations
+order: 50
+---
+
 # Deployment Checklist
 
 Everything that has to be true before Pet Hotel is reachable from the public

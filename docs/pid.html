@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pet Hotel — Project Initiation Document</title>
+  <link rel="stylesheet" href="assets/doc.css" />
+</head>
+<body class="doc">
+<a class="backlink" href="index.html">&larr; All docs</a>
+<h1><a id="project-initiation-document--pet-hotel" href="#content-project-initiation-document--pet-hotel" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Project Initiation Document — Pet Hotel</h1>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project name</td>
+<td>Pet Hotel — Pet Boarding Marketplace</td>
+</tr>
+<tr>
+<td>Document version</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>2026-08-08</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>Baselined</td>
+</tr>
+<tr>
+<td>Author</td>
+<td><em>TBC</em></td>
+</tr>
+<tr>
+<td>Approver / Sponsor</td>
+<td><em>TBC</em></td>
+</tr>
+<tr>
+<td>Repository</td>
+<td><code>beesmf96/pet-hotel</code></td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>Fields marked <em>TBC</em> need input from the project owner before this document is signed off.</p>
+</blockquote>
+<hr />
+<h2><a id="1-purpose-of-this-document" href="#content-1-purpose-of-this-document" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>1. Purpose of This Document</h2>
+<p>This PID defines what the Pet Hotel project is, what it will and will not deliver,
+who is involved, how it is being run, and what &quot;done&quot; means. It is the reference
+point for scope decisions and the baseline against which delivery is measured.</p>
+<p>Related documents:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Location</th>
+<th>Covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MVP requirements</td>
+<td><code>docs/pet-hotel-boarding-mvp-v1.html</code></td>
+<td>Original functional / non-functional requirements</td>
+</tr>
+<tr>
+<td>Task list</td>
+<td><code>docs/tasks.md</code></td>
+<td>Work breakdown, Modules 0–9</td>
+</tr>
+<tr>
+<td>User guide</td>
+<td><code>docs/user_guide.html</code></td>
+<td>End-user instructions (pet owner, admin, hotel owner)</td>
+</tr>
+<tr>
+<td>Booking flow</td>
+<td><code>docs/booking-flow.html</code></td>
+<td>Step-by-step booking journey</td>
+</tr>
+<tr>
+<td>Deployment checklist</td>
+<td><code>docs/deployment-checklist.md</code></td>
+<td>Release / go-live steps</td>
+</tr>
+<tr>
+<td>Stack &amp; domain reference</td>
+<td><code>.claude/CLAUDE.md</code></td>
+<td>Architecture and domain model</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2><a id="2-background" href="#content-2-background" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>2. Background</h2>
+<p>Pet owners looking for boarding currently rely on phone calls, social media, and
+word of mouth. There is no single place to compare hotels on price, facilities,
+location, and other owners' experience, and no reliable way to see whether a hotel
+has space on the dates needed.</p>
+<p>Pet Hotel is a marketplace that brings that into one system: customers search and
+compare hotels, submit booking requests, and leave reviews; hotel owners and
+administrators manage listings, availability, and bookings through dedicated admin
+panels. Booking confirmation is deliberately a <strong>manual</strong> step — a human confirms
+each request — which keeps the MVP simple and avoids payment integration.</p>
+<hr />
+<h2><a id="3-objectives" href="#content-3-objectives" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>3. Objectives</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Objective</th>
+<th>Success measure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>Let customers find suitable pet hotels</td>
+<td>Search with location, date, pet-type, price filters and rating/price/distance sorting</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Let customers book without phone calls</td>
+<td>Booking request submitted online, confirmed by an operator, both parties notified by email and in-app</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>Give operators control without developer help</td>
+<td>Admin and hotel-owner panels cover hotels, bookings, users, and review moderation</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>Build trust between strangers</td>
+<td>Reviews restricted to customers with a completed booking; moderation available</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>Ship something maintainable</td>
+<td>≥95% backend line coverage enforced in CI; linting and formatting gates on every PR</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2><a id="4-scope" href="#content-4-scope" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4. Scope</h2>
+<h3><a id="41-in-scope" href="#content-41-in-scope" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4.1 In scope</h3>
+<p><strong>Customer (pet owner)</strong></p>
+<ul>
+<li>Registration, email verification, login, password reset, Google sign-in</li>
+<li>Profile management (contact details, preferred location)</li>
+<li>Pet profiles with photo upload</li>
+<li>Hotel search with filters and sorting; paginated results</li>
+<li>Hotel profile pages — description, photos, pricing per pet type, facilities, policies</li>
+<li>Availability calendar per hotel</li>
+<li>Booking request submission, booking history, booking detail, cancellation</li>
+<li>Reviews and ratings after a completed stay</li>
+<li>In-app notification bell and email notifications</li>
+</ul>
+<p><strong>Administrator</strong></p>
+<ul>
+<li>Filament admin panel at <code>/admin</code>, restricted to <code>is_admin</code> users</li>
+<li>Hotel CRUD including photos, pricing tiers, policies, and owner assignment</li>
+<li>Booking management — filter, confirm, cancel</li>
+<li>Read-only user list with pets</li>
+<li>Review moderation (visibility toggle, delete)</li>
+<li>Dashboard widgets — bookings today, pending bookings, new users this week</li>
+</ul>
+<p><strong>Hotel owner</strong></p>
+<ul>
+<li>Filament panel at <code>/owner</code>, restricted to users who own a hotel</li>
+<li>View own bookings, filter by status, confirm or decline</li>
+</ul>
+<p><strong>Platform</strong></p>
+<ul>
+<li>Dockerised local environment (app, nginx, PostgreSQL, Redis, Mailpit, Vite)</li>
+<li>Redis-backed queue for notification jobs</li>
+<li>Configurable photo storage disk (local or S3-compatible)</li>
+<li>Security hardening — security headers, CSP, dependency advisory clearance</li>
+<li>CI pipeline on every PR and push to <code>main</code></li>
+</ul>
+<h3><a id="42-out-of-scope" href="#content-42-out-of-scope" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4.2 Out of scope</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Excluded</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Online payment / deposits</td>
+<td>MVP confirms bookings manually; payments are a later phase</td>
+</tr>
+<tr>
+<td>Public API (<code>routes/api.php</code>)</td>
+<td>No third-party or mobile consumer exists yet</td>
+</tr>
+<tr>
+<td>Native mobile apps</td>
+<td>Responsive web is sufficient for MVP</td>
+</tr>
+<tr>
+<td>Real-time chat between customer and hotel</td>
+<td>Email and notifications cover the MVP need</td>
+</tr>
+<tr>
+<td>Additional OAuth providers</td>
+<td>Google only; others add support cost without demand</td>
+</tr>
+<tr>
+<td>Full hotel-owner self-service listing management</td>
+<td>Owner panel covers bookings only; hotels are managed by admins</td>
+</tr>
+<tr>
+<td>Multi-language / multi-currency</td>
+<td>Single market at launch</td>
+</tr>
+<tr>
+<td>Automated availability sync with external calendars</td>
+<td>No integration partners identified</td>
+</tr>
+</tbody>
+</table></div>
+<h3><a id="43-assumptions" href="#content-43-assumptions" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4.3 Assumptions</h3>
+<ul>
+<li>Operators check and confirm pending bookings promptly; the system does not auto-confirm.</li>
+<li>Hotel content (photos, descriptions, pricing) is supplied by hotels and entered by admins.</li>
+<li>Email delivery is available in production; Mailpit is local-only.</li>
+<li>Object storage (<code>PHOTO_DISK=s3</code>) is provisioned before deploying to ephemeral hosting.</li>
+<li>Users have a modern browser; no legacy browser support is required.</li>
+</ul>
+<h3><a id="44-constraints" href="#content-44-constraints" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4.4 Constraints</h3>
+<ul>
+<li>Fixed technology stack (see §7); substitutions require a change request.</li>
+<li>Bun is the only package manager; npm and pnpm are not used.</li>
+<li>Leaflet is the only mapping library.</li>
+<li>No TypeScript, no component library, no Pinia/Vuex.</li>
+<li>Pages are served through Inertia; JSON responses are permitted only for the two
+documented XHR widgets (hotel availability, notifications).</li>
+<li>Hard deletes with cascading foreign keys throughout — soft deletes are not used.</li>
+</ul>
+<hr />
+<h2><a id="5-deliverables" href="#content-5-deliverables" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>5. Deliverables</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Deliverable</th>
+<th>Acceptance criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1</td>
+<td>Customer web application</td>
+<td>All in-scope customer journeys work end to end</td>
+</tr>
+<tr>
+<td>D2</td>
+<td>Admin panel</td>
+<td>All in-scope admin functions available and access-restricted</td>
+</tr>
+<tr>
+<td>D3</td>
+<td>Hotel-owner panel</td>
+<td>Owner can view and act on their own hotel's bookings only</td>
+</tr>
+<tr>
+<td>D4</td>
+<td>Notification system</td>
+<td>Request, confirmation, and cancellation emails plus in-app notifications fire reliably via the queue</td>
+</tr>
+<tr>
+<td>D5</td>
+<td>Dockerised environment</td>
+<td><code>docker compose up -d</code> yields a working stack from a clean checkout</td>
+</tr>
+<tr>
+<td>D6</td>
+<td>Automated test suite</td>
+<td>PHPUnit and Vitest green; backend line coverage ≥95%</td>
+</tr>
+<tr>
+<td>D7</td>
+<td>CI pipeline</td>
+<td>Formatting, linting, tests, and coverage gate enforced on every PR</td>
+</tr>
+<tr>
+<td>D8</td>
+<td>Documentation set</td>
+<td>PID, requirements, user guide, booking flow, deployment checklist</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2><a id="6-stakeholders-and-roles" href="#content-6-stakeholders-and-roles" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>6. Stakeholders and Roles</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Responsibility</th>
+<th>Who</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project sponsor</td>
+<td>Funds the project, approves scope changes</td>
+<td><em>TBC</em></td>
+</tr>
+<tr>
+<td>Product owner</td>
+<td>Prioritises the backlog, accepts deliverables</td>
+<td><em>TBC</em></td>
+</tr>
+<tr>
+<td>Developer</td>
+<td>Implementation, testing, documentation</td>
+<td><em>TBC</em></td>
+</tr>
+<tr>
+<td>Operations / admin user</td>
+<td>Confirms bookings, maintains hotel listings, moderates reviews</td>
+<td><em>TBC</em></td>
+</tr>
+<tr>
+<td>Hotel owner</td>
+<td>Supplies listing content, acts on their bookings</td>
+<td>External partner hotels</td>
+</tr>
+<tr>
+<td>Customer</td>
+<td>End user — searches, books, reviews</td>
+<td>Public</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2><a id="7-approach" href="#content-7-approach" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>7. Approach</h2>
+<h3><a id="71-technology" href="#content-71-technology" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>7.1 Technology</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Choice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Backend</td>
+<td>Laravel 13.8 (PHP 8.3+)</td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td>Vue 3, Vite 8, Tailwind CSS v4</td>
+</tr>
+<tr>
+<td>SPA bridge</td>
+<td>Inertia.js 3.1</td>
+</tr>
+<tr>
+<td>Admin UI</td>
+<td>Filament v4 (two panels)</td>
+</tr>
+<tr>
+<td>Auth</td>
+<td>Sanctum cookie SPA + Google OAuth via Socialite</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>PostgreSQL 16 (Docker); SQLite locally and in tests</td>
+</tr>
+<tr>
+<td>Queue</td>
+<td>Redis</td>
+</tr>
+<tr>
+<td>Maps</td>
+<td>Leaflet</td>
+</tr>
+<tr>
+<td>Package manager</td>
+<td>Bun</td>
+</tr>
+<tr>
+<td>Tests</td>
+<td>PHPUnit 12, Vitest 4</td>
+</tr>
+<tr>
+<td>Formatters</td>
+<td>Laravel Pint, ESLint + Prettier</td>
+</tr>
+</tbody>
+</table></div>
+<h3><a id="72-delivery-method" href="#content-72-delivery-method" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>7.2 Delivery method</h3>
+<p>Work is broken into modules (see <code>docs/tasks.md</code>) delivered incrementally. Each
+change is developed on a <code>feature/{name}</code> branch, opened as a pull request to
+<code>main</code>, and merged only after human review. Larger pieces of work carry a plan file
+in <code>.claude/plans/</code>.</p>
+<h3><a id="73-quality-gates" href="#content-73-quality-gates" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>7.3 Quality gates</h3>
+<p>Every pull request must pass:</p>
+<ol>
+<li><code>vendor/bin/pint --test</code> — PHP formatting</li>
+<li>PHPUnit with pcov coverage, failing below <code>MIN_COVERAGE</code> (currently 95)</li>
+<li><code>bun run lint</code> — ESLint</li>
+<li><code>bun run test --run</code> — Vitest</li>
+</ol>
+<p>The coverage floor is raised as coverage improves and is never lowered to turn a
+build green.</p>
+<hr />
+<h2><a id="8-work-breakdown-and-milestones" href="#content-8-work-breakdown-and-milestones" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>8. Work Breakdown and Milestones</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Milestone</th>
+<th>Modules</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Docker + Laravel scaffold running</td>
+<td>0</td>
+<td>Complete</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Authentication working end to end</td>
+<td>1</td>
+<td>Complete</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Profiles and pets manageable</td>
+<td>2</td>
+<td>Complete</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Hotels searchable and viewable</td>
+<td>3, 4</td>
+<td>Complete</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Booking flow complete (pending state)</td>
+<td>5, 6</td>
+<td>Complete</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Reviews visible and submittable</td>
+<td>7</td>
+<td>Complete</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Email notifications firing</td>
+<td>8</td>
+<td>Complete</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Admin can confirm bookings</td>
+<td>9a–9e</td>
+<td>Complete</td>
+</tr>
+</tbody>
+</table></div>
+<p>Post-MVP work delivered outside the original module list: Google OAuth, hotel-owner
+panel, object storage for photos, OWASP security hardening, and test-coverage
+raising. Dates for each milestone are <em>TBC</em> — reconstruct from git history if a
+dated schedule is required.</p>
+<hr />
+<h2><a id="9-risks" href="#content-9-risks" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>9. Risks</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Risk</th>
+<th>Likelihood</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1</td>
+<td>Manual booking confirmation does not scale as volume grows</td>
+<td>Medium</td>
+<td>High</td>
+<td>Monitor pending-booking volume via the dashboard widget; automate confirmation in a later phase</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>Photos lost on redeploy if <code>PHOTO_DISK</code> is left on the local disk</td>
+<td>Medium</td>
+<td>High</td>
+<td>Deployment checklist mandates <code>s3</code> on ephemeral hosting; documented in the stack reference</td>
+</tr>
+<tr>
+<td>R3</td>
+<td>Availability drift — spots not adjusting correctly</td>
+<td>Low</td>
+<td>High</td>
+<td>Availability side-effects are centralised in <code>Booking::booted()</code> and covered by tests; never duplicated elsewhere</td>
+</tr>
+<tr>
+<td>R4</td>
+<td>Dependency vulnerabilities accumulate</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>Advisory review and dependency bumps; OWASP hardening plan completed</td>
+</tr>
+<tr>
+<td>R5</td>
+<td>Email deliverability in production (spam filtering)</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>Use a reputable transactional provider; verify sending domain before go-live</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>Coverage gate blocks urgent fixes</td>
+<td>Low</td>
+<td>Low</td>
+<td>Add tests with the fix; the floor is not lowered</td>
+</tr>
+<tr>
+<td>R7</td>
+<td>Fake or abusive reviews damage hotel trust</td>
+<td>Low</td>
+<td>Medium</td>
+<td>Reviews limited to completed bookings; admin moderation with visibility toggle</td>
+</tr>
+<tr>
+<td>R8</td>
+<td>Single-developer knowledge concentration</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>Conventions and architecture documented in <code>CLAUDE.md</code>, plans, and this document set</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2><a id="10-dependencies" href="#content-10-dependencies" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>10. Dependencies</h2>
+<ul>
+<li>Google Cloud OAuth credentials (<code>GOOGLE_CLIENT_ID</code>, <code>GOOGLE_CLIENT_SECRET</code>, <code>GOOGLE_REDIRECT_URI</code>)</li>
+<li>S3-compatible object storage bucket for production photo uploads</li>
+<li>Transactional email provider for production mail</li>
+<li>Managed PostgreSQL and Redis instances in production</li>
+<li>Hotel partners willing to list and to act on booking requests</li>
+</ul>
+<hr />
+<h2><a id="11-acceptance-criteria" href="#content-11-acceptance-criteria" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>11. Acceptance Criteria</h2>
+<p>The project is accepted when:</p>
+<ol>
+<li>All in-scope journeys in §4.1 work end to end in a production-like environment.</li>
+<li>CI is green on <code>main</code>, with backend line coverage at or above the configured floor.</li>
+<li>The deployment checklist has been executed against the target environment.</li>
+<li>Admin and hotel-owner panels enforce their access rules — non-admins cannot
+reach the admin panel, and owners see only their own hotel's bookings.</li>
+<li>The documentation set in §5/D8 is complete and current.</li>
+</ol>
+<hr />
+<h2><a id="12-change-control" href="#content-12-change-control" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>12. Change Control</h2>
+<p>Changes to scope, technology choices, or the constraints in §4.4 require the
+product owner's approval. Approved changes are recorded as a new version of this
+document and, where implementation work follows, a plan file in <code>.claude/plans/</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Change</th>
+<th>Author</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.0</td>
+<td>2026-08-08</td>
+<td>Initial baseline</td>
+<td><em>TBC</em></td>
+</tr>
+</tbody>
+</table></div>
+
+</body>
+</html>

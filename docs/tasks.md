@@ -1,3 +1,10 @@
+---
+title: Task List
+description: Work breakdown across Modules 0–9, with delivery status per item.
+badges: Planning
+order: 40
+---
+
 # Pet Hotel App — Task List
 
 **Stack:** Laravel 13 · Vue 3 · Inertia.js · Filament v4 · Laravel Sanctum · PostgreSQL · Redis
