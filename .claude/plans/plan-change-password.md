@@ -2,7 +2,7 @@
 plan: change-password
 status: implemented
 branch: feature/change-password
-pr: ~
+pr: 24
 implemented: 2026-08-19
 ---
 
