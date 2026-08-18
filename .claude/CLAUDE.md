@@ -54,7 +54,7 @@ Hard deletes with cascading FKs throughout — soft deletes are not used.
 
 Any *other* customer-facing JSON response is a violation.
 
-**OAuth.** `users.google_id` is nullable-unique. `users.password` is nullable at the database level, but nothing writes null to it — `GoogleAuthController` creates OAuth accounts with `Str::random(32)`, which `User::casts()` hashes. So an OAuth-only account has a real password hash of a value nobody knows; branching on `is_null($user->password)` to detect one will never fire. Config in `config/services.php` → `google`; requires `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`.
+**OAuth.** `users.google_id` is nullable-unique and `users.password` is null for OAuth-created accounts — that null is the *only* signal that an account has no password the user could type, and `PasswordController` relies on it to skip the `current_password` check. Never detect an OAuth account by `google_id !== null` instead: a user who registered with a password and later linked Google has both, and must still confirm their current password. Laravel's hasher rejects a null hash, so such accounts simply cannot log in by password until one is set. Config in `config/services.php` → `google`; requires `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`.
 
 ## Not yet built
 
