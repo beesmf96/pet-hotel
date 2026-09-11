@@ -41,5 +41,5 @@ What is intentionally NOT included. Prevents scope creep.
 List anything that could go wrong or needs special handling.
 
 ## Open Questions
-Anything unresolved before implementation starts. 
-Coder agent should not proceed if any question is unanswered.
+Anything unresolved before implementation starts. Ask when the answer would
+materially change the work; otherwise state the assumption here and proceed.

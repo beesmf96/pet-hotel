@@ -2,7 +2,7 @@
 
 Guidance for Claude Code working in this repository.
 
-**Pet Hotel** — a pet boarding marketplace. Stack and domain model: `.claude/CLAUDE.md`. Code conventions: `.claude/agents/coder.md`, `tester.md`, `linter.md`. Feature roadmap: `docs/tasks.md` (Modules 0–9, all currently checked off).
+**Pet Hotel** — a pet boarding marketplace. Stack, domain model, and the project-specific conventions and traps: `.claude/CLAUDE.md`. Feature roadmap: `docs/tasks.md` (Modules 0–9, all currently checked off).
 
 ## Commands
 
@@ -72,9 +72,10 @@ Cloud that is a worker in the dashboard, not something the repo can declare.
 
 ## CI
 
-`.github/workflows/ci.yml` runs on every PR to `main` and every push to `main`:
+`.github/workflows/ci.yml` runs on every PR to, and push to, `main` or `dev`:
 
 - **Backend** — `vendor/bin/pint --test`, then PHPUnit with pcov coverage
+- **Security** — `composer audit` and `bun audit`
 - **Frontend** — `bun run lint`, then `bun run test --run`
 
 The backend job fails if line coverage drops below `MIN_COVERAGE` (currently `95`,
@@ -88,10 +89,11 @@ docker compose exec --user appuser app \
 
 ## Shipping work
 
-How you get there is your call — subagents, straight-through, whatever fits the task. What holds regardless:
+Work happens in the main session; delegate to a subagent only when it genuinely helps. What holds regardless:
 
-- Work on a `feature/{name}` branch, never directly on `main`
+- Cut the `feature/{name}` branch first, before exploring or editing — never work directly on `main`
 - Open a PR to `main` and leave it for human review — **do not merge**
-- `.claude/agents/coder.md`, `tester.md`, and `linter.md` define this codebase's conventions. Consult them when writing or reviewing code, whether or not you delegate to an agent.
+- Code reads like the surrounding code. The non-obvious rules are in `.claude/CLAUDE.md`; everything else, match what is already there
+- Verify before reporting: run the tests, run Pint, run the linter, and report the actual output — a failing test is reported as failing, not described as done
 
 Plan files live in `.claude/plans/` as `plan-{name}.md`; start from `_template.md` and keep the frontmatter (`status`, `branch`, `pr`, `implemented`) current.
