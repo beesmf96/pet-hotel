@@ -111,7 +111,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Full history: the gitleaks step scans the commit range of the push or
+      # PR, and the default one-commit checkout does not contain the range's
+      # parent, so the scan fails before it starts.
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -146,6 +151,16 @@ jobs:
       - name: Audit all JS dependencies (advisory)
         continue-on-error: true
         run: bun audit
+
+      # Blocking. Scans every commit in the push or PR for anything shaped like
+      # a credential. GitHub push protection covers known provider tokens;
+      # this catches the generic patterns (private keys, high-entropy strings)
+      # that it does not. Same rules as the local .githooks/pre-commit hook.
+      - name: Scan for committed secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_SUMMARY: 'false'
 
   frontend:
     name: Frontend (ESLint + Vitest)
