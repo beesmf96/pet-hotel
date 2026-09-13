@@ -91,9 +91,19 @@ docker compose exec --user appuser app \
 
 Work happens in the main session; delegate to a subagent only when it genuinely helps. What holds regardless:
 
-- Cut the `feature/{name}` branch first, before exploring or editing — never work directly on `main`
-- Open a PR to `main` and leave it for human review — **do not merge**
+- Cut the `feature/{name}` branch from `dev` first, before exploring or editing — never work directly on `dev` or `main`
+- Open a PR to `dev` and leave it for human review — **do not merge**
+- `main` only ever receives a PR from `dev` (a release), opened when the user asks for one — never from a feature branch
 - Code reads like the surrounding code. The non-obvious rules are in `.claude/CLAUDE.md`; everything else, match what is already there
 - Verify before reporting: run the tests, run Pint, run the linter, and report the actual output — a failing test is reported as failing, not described as done
 
 Plan files live in `.claude/plans/` as `plan-{name}.md`; start from `_template.md` and keep the frontmatter (`status`, `branch`, `pr`, `implemented`) current.
+
+### Branch flow
+
+```
+feature/{name}  ──PR──▶  dev  ──PR (release)──▶  main
+```
+
+`dev` is the integration branch and always contains `main`. Both are protected;
+changes land through pull requests only. CI runs on PRs to, and pushes to, both.
