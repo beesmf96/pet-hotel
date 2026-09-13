@@ -1,125 +1,123 @@
 # CLAUDE.md
 
-Guidance for Claude Code working in this repository.
+**Pet Hotel** — a pet boarding marketplace. Customers search, book, and review
+boarding stays; hotel owners manage listings through a Filament panel. Feature
+roadmap and status: `docs/tasks.md`.
 
-**Pet Hotel** — a pet boarding marketplace. Stack, domain model, and the project-specific conventions and traps: `.claude/CLAUDE.md`. Feature roadmap and its current status: `docs/tasks.md`.
+This file records what you cannot infer from the code: workflow, decisions, and
+traps. For everything else — naming, structure, style — match the surrounding code.
+
+## Stack
+
+Laravel 13 · Vue 3 + Vite + Tailwind v4 (no `tailwind.config.js`) · Inertia 3 · Filament 4
+(two panels) · Sanctum cookie SPA + Google OAuth via Socialite · PostgreSQL in Docker, SQLite
+locally and in every test · Bun (never npm/pnpm) · Pint + ESLint/Prettier · PHPUnit 12 · Vitest 4.
+
+No component library, no TypeScript, no Pinia/Vuex, no `routes/api.php`, no payments,
+no Blade views outside the Filament panels. Google is the only Socialite provider.
+
+## Domain model
+
+```
+users ──< pets
+users ──< bookings ──> pets
+users >─< pet_hotels  (pivot: hotel_owner, has role column)
+pet_hotels ──< facilities, photos, pricing (per pet_type), bookings
+pet_hotels ──1 policies
+pet_hotels ──< hotel_availabilities   (one row per date, available_spots INT)
+bookings   ──1 reviews
+```
+
+Hard deletes with cascading FKs throughout.
 
 ## Commands
 
-### Local (no Docker)
 ```bash
-composer dev          # PHP server + queue worker + Pail + Vite, all at once
+composer dev          # PHP server + queue worker + Pail + Vite
 composer test         # Clears config cache, then PHPUnit
-bun run dev           # Vite only
 bun run test          # Vitest
-bun run lint          # ESLint (--fix variant: bun run lint:fix)
+bun run lint          # ESLint (bun run lint:fix to autofix)
 vendor/bin/pint       # PHP formatter
+php docs/build.php    # renders stakeholder docs → docs/html/
 ```
 
-### Documentation
-```bash
-php docs/build.php     # renders stakeholder docs → docs/html/ and regenerates its index.html
-```
+Docker: `docker compose up -d` (add `--profile dev` for the Vite container). **Always pass
+`--user appuser` to `docker compose exec`** — without it commands run as root and leave
+root-owned files you cannot edit. Repair with
+`docker compose exec -u root app chown -R 1000:1000 /var/www`.
 
-Markdown under `docs/` is the source of truth and is **coder-facing by
-default** — runbooks, the paper trail, anything a developer reads in the repo.
-Only files with `audience: stakeholder` in their frontmatter are rendered to
-`docs/html/`, which is the user- and stakeholder-facing site. Never hand-edit
-a generated `.html` file — `user_guide.html`, `booking-flow.html`, and
-`pet-hotel-boarding-mvp-v1.html` in `docs/html/` predate the renderer and are
-the only hand-written pages left; they are listed in `STATIC_DOCS` in
-`docs/build.php`. Page styling lives in `docs/html/assets/doc.css`.
+Hosts file: `127.0.0.1 web.pet-hotel.local mailpit.local`. Google rejects `.local`
+redirect URIs, so Google login is tested end to end on `http://localhost`.
 
-### Docker
-```bash
-docker compose up -d                    # app, nginx, postgres, redis
-docker compose --profile dev up -d      # + the Bun/Vite node container
-docker compose exec --user appuser app <cmd>
+**Queue worker.** Booking notifications are queued jobs and are the only thing that tells a
+customer their booking was requested, confirmed, or cancelled. Without a worker, bookings
+still succeed and no one is notified — there is no error. Docker runs one as the `queue`
+service; any hosted deployment needs its own long-running worker process.
 
-# Backend coverage (pcov ships in the image, disabled unless you opt in)
-docker compose exec --user appuser app \
-  php -d pcov.enabled=1 vendor/bin/phpunit --coverage-text
-```
+## Traps and decisions
 
-> **Always pass `--user appuser` to `docker compose exec`.** Compose v5 does not inherit the service's `user:` setting for exec, so without it commands run as root and leave root-owned files on the host that you cannot edit.
->
-> To repair root-owned files: `docker compose exec -u root app chown -R 1000:1000 /var/www`
+- **Availability side-effects live in `Booking::booted()` only** — spots adjust on
+  `updating`, notification jobs fire on `updated`. Never replicate this elsewhere.
+- **Two Filament panels routed by path** — `/admin` requires `is_admin`, `/owner` requires
+  `ownedHotels()->exists()`. Do not add `->domain()` to a panel without updating
+  `SecurityHeaders::isFilamentRequest()`, which scopes the `'unsafe-eval'` CSP relaxation.
+  Owner-panel resources must scope `getEloquentQuery()` to `ownedHotels()`.
+- **All uploads go through `config('filesystems.photos')`.** Never name a disk literally at
+  an upload site or build a URL from a different disk. `PHOTO_DISK` must be `s3` on
+  ephemeral hosting. `SecurityHeaders` reads the same config for the CSP `img-src`.
+- **Customer-facing routes never return `response()->json()`.** The two exceptions are
+  XHR-backed widgets: `hotels.availability` and `notifications.*`.
+- **A null `users.password` is the only signal of an OAuth-only account.** `PasswordController`
+  relies on it to skip the `current_password` check. Never test `google_id` instead — a
+  user who registered with a password and later linked Google has both. Never write a
+  random password for an OAuth account.
+- **`password` is outside `$fillable`** — assign it with `forceFill()`; `update()` silently
+  drops it. `User::forceCreate()` is reserved for registration and first-party OAuth creation.
+- **Guest auth routes carry `throttle:5,1`** — match it on any new guest-facing auth endpoint.
+- **The OAuth entry link is a plain `<a href="/auth/google">`** — an Inertia `<Link>` will
+  not follow the 302 to Google. Everything else navigates with `<Link>` / `router.visit()`.
+- **Every page wraps itself in `<AppLayout>` or `<AuthLayout>`.** `Landing.vue` is the one
+  `layout: null` page.
 
-### Hosts file
-Add to `/etc/hosts` (or `C:\Windows\System32\drivers\etc\hosts`):
-```
-127.0.0.1  web.pet-hotel.local      # app — /admin and /owner serve the Filament panels
-127.0.0.1  mailpit.local            # caught email
-```
+## Testing
 
-Nginx also serves the app on `http://localhost`. Google rejects `.local` redirect
-URIs, so Google login is tested at `http://localhost` end to end (the session
-cookie is host-only, so the flow must start and finish on the same host).
-
-## Queue worker
-
-Booking notifications (`app/Jobs/SendBooking*Notification.php`) are queued, and
-they are the only thing that tells a customer their booking was requested,
-confirmed, or cancelled. **Without a running worker, bookings still succeed and
-no one is ever notified** — there is no error anywhere to tell you.
-
-```bash
-php artisan queue:work
-```
-
-Docker starts one as the `queue` service. Any hosted deployment needs it
-configured as its own long-running process alongside the web process; on Laravel
-Cloud that is a worker in the dashboard, not something the repo can declare.
+`tests/Feature/BookingTest.php` is the canonical shape. Factories only, never seeders
+(`HotelAvailability` has none — `create([...])` it; `User::factory()->admin()` and
+`->hotelOwner($hotel)` exist). Booking tests assert `available_spots` decrements on confirm
+and re-increments on cancel. Filament resources are tested with `Livewire::test(...)` under
+`tests/Feature/Filament/`, not over HTTP. Socialite is mocked at the facade — see
+`GoogleAuthTest.php`. Vitest specs live in `resources/js/tests/` mirroring `resources/js/`;
+when a page gains a prop-driven `v-if` branch, add one test per branch.
 
 ## After any implementation task
 
 1. Tests exist for the new behaviour, and `composer test` passes
-2. `vendor/bin/pint`
-3. For frontend changes, `bun run lint`
-4. A session log entry in `docs/log/` (rules and bar: `docs/paper-trail.md`).
-   Add an ADR, knowledge entry, or intake entry only when the bar there is met.
+2. `vendor/bin/pint`; for frontend changes, `bun run lint`
+3. A session log entry in `docs/log/` (rules: `docs/paper-trail.md`). Add an ADR, knowledge
+   entry, or intake entry only when the bar there is met. Write an intake entry **before**
+   adding any package, binary, image, or action.
 
-## Paper trail
+The log is the primary source for any recap of past work — read it before git history.
 
-`docs/paper-trail.md` defines four record types written after work is done:
-session log, ADR, knowledge entry, dependency intake. The log is the primary
-source for any recap of past work — read it before git history. Write an
-intake entry **before** adding any package, binary, image, or action.
+## Docs
 
-## CI
-
-`.github/workflows/ci.yml` runs on every PR to, and push to, `main` or `dev`:
-
-- **Backend** — `vendor/bin/pint --test`, then PHPUnit with pcov coverage
-- **Security** — `composer audit` and `bun audit`
-- **Frontend** — `bun run lint`, then `bun run test --run`
-
-The backend job fails if line coverage drops below `MIN_COVERAGE` (currently `95`,
-set at the top of the workflow). Raise that floor as coverage improves; don't lower
-it to turn a build green. Reproduce the gate locally with:
-
-```bash
-docker compose exec --user appuser app \
-  php -d pcov.enabled=1 vendor/bin/phpunit --coverage-text
-```
+Markdown under `docs/` is coder-facing by default. Only files with `audience: stakeholder`
+render to `docs/html/`. Never hand-edit a generated `.html` — the hand-written exceptions
+are listed in `STATIC_DOCS` in `docs/build.php`.
 
 ## Shipping work
-
-Work happens in the main session; delegate to a subagent only when it genuinely helps. What holds regardless:
-
-- Cut the `feature/{name}` branch from `dev` first, before exploring or editing — never work directly on `dev` or `main`
-- Open a PR to `dev` and leave it for human review — **do not merge**
-- `main` only ever receives a PR from `dev` (a release), opened when the user asks for one — never from a feature branch
-- Code reads like the surrounding code. The non-obvious rules are in `.claude/CLAUDE.md`; everything else, match what is already there
-- Verify before reporting: run the tests, run Pint, run the linter, and report the actual output — a failing test is reported as failing, not described as done
-
-Plan files live in `.claude/plans/` as `plan-{name}.md`; start from `_template.md` and keep the frontmatter (`status`, `branch`, `pr`, `implemented`) current.
-
-### Branch flow
 
 ```
 feature/{name}  ──PR──▶  dev  ──PR (release)──▶  main
 ```
 
-`dev` is the integration branch and always contains `main`. Both are protected;
-changes land through pull requests only. CI runs on PRs to, and pushes to, both.
+- Cut `feature/{name}` from `dev` before exploring or editing — never work on `dev` or `main`
+- Open a PR to `dev` and leave it for human review — **do not merge**
+- `main` only receives a release PR from `dev`, opened when the user asks for one
+- Verify before reporting: run the tests, Pint, and the linter, and report the actual output
+- Plan files live in `.claude/plans/` as `plan-{name}.md`; start from `_template.md` and
+  keep the frontmatter current
+
+CI (`.github/workflows/ci.yml`) runs Pint, PHPUnit with pcov coverage, `composer audit`,
+`bun audit`, ESLint, and Vitest on every PR to and push to `main` or `dev`. The backend job
+fails below `MIN_COVERAGE` (`95`) — raise it as coverage improves, never lower it.
