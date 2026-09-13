@@ -111,7 +111,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Full history: the gitleaks step scans the commit range of the push or
+      # PR, and the default one-commit checkout does not contain the range's
+      # parent, so the scan fails before it starts.
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
