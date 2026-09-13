@@ -8,7 +8,7 @@
 </head>
 <body class="doc">
 <a class="backlink" href="index.html">&larr; All docs</a>
-<h1><a id="project-initiation-document--pet-hotel" href="#content-project-initiation-document--pet-hotel" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>Project Initiation Document — Pet Hotel</h1>
+<h1><a id="project-initiation-document--pet-hotel" href="#content-project-initiation-document--pet-hotel" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>Project Initiation Document — Pet Hotel</h1>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -51,7 +51,7 @@
 <p>Fields marked <em>TBC</em> need input from the project owner before this document is signed off.</p>
 </blockquote>
 <hr />
-<h2><a id="1-purpose-of-this-document" href="#content-1-purpose-of-this-document" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>1. Purpose of This Document</h2>
+<h2><a id="1-purpose-of-this-document" href="#content-1-purpose-of-this-document" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>1. Purpose of This Document</h2>
 <p>This PID defines what the Pet Hotel project is, what it will and will not deliver,
 who is involved, how it is being run, and what &quot;done&quot; means. It is the reference
 point for scope decisions and the baseline against which delivery is measured.</p>
@@ -98,7 +98,7 @@ point for scope decisions and the baseline against which delivery is measured.</
 </tbody>
 </table></div>
 <hr />
-<h2><a id="2-background" href="#content-2-background" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>2. Background</h2>
+<h2><a id="2-background" href="#content-2-background" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>2. Background</h2>
 <p>Pet owners looking for boarding currently rely on phone calls, social media, and
 word of mouth. There is no single place to compare hotels on price, facilities,
 location, and other owners' experience, and no reliable way to see whether a hotel
@@ -109,7 +109,7 @@ administrators manage listings, availability, and bookings through dedicated adm
 panels. Booking confirmation is deliberately a <strong>manual</strong> step — a human confirms
 each request — which keeps the MVP simple and avoids payment integration.</p>
 <hr />
-<h2><a id="3-objectives" href="#content-3-objectives" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>3. Objectives</h2>
+<h2><a id="3-objectives" href="#content-3-objectives" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>3. Objectives</h2>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -147,8 +147,8 @@ each request — which keeps the MVP simple and avoids payment integration.</p>
 </tbody>
 </table></div>
 <hr />
-<h2><a id="4-scope" href="#content-4-scope" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4. Scope</h2>
-<h3><a id="41-in-scope" href="#content-41-in-scope" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4.1 In scope</h3>
+<h2><a id="4-scope" href="#content-4-scope" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>4. Scope</h2>
+<h3><a id="41-in-scope" href="#content-41-in-scope" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>4.1 In scope</h3>
 <p><strong>Customer (pet owner)</strong></p>
 <ul>
 <li>Registration, email verification, login, password reset, Google sign-in</li>
@@ -183,7 +183,7 @@ each request — which keeps the MVP simple and avoids payment integration.</p>
 <li>Security hardening — security headers, CSP, dependency advisory clearance</li>
 <li>CI pipeline on every PR and push to <code>main</code></li>
 </ul>
-<h3><a id="42-out-of-scope" href="#content-42-out-of-scope" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4.2 Out of scope</h3>
+<h3><a id="42-out-of-scope" href="#content-42-out-of-scope" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>4.2 Out of scope</h3>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -226,7 +226,7 @@ each request — which keeps the MVP simple and avoids payment integration.</p>
 </tr>
 </tbody>
 </table></div>
-<h3><a id="43-assumptions" href="#content-43-assumptions" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4.3 Assumptions</h3>
+<h3><a id="43-assumptions" href="#content-43-assumptions" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>4.3 Assumptions</h3>
 <ul>
 <li>Operators check and confirm pending bookings promptly; the system does not auto-confirm.</li>
 <li>Hotel content (photos, descriptions, pricing) is supplied by hotels and entered by admins.</li>
@@ -234,7 +234,7 @@ each request — which keeps the MVP simple and avoids payment integration.</p>
 <li>Object storage (<code>PHOTO_DISK=s3</code>) is provisioned before deploying to ephemeral hosting.</li>
 <li>Users have a modern browser; no legacy browser support is required.</li>
 </ul>
-<h3><a id="44-constraints" href="#content-44-constraints" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>4.4 Constraints</h3>
+<h3><a id="44-constraints" href="#content-44-constraints" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>4.4 Constraints</h3>
 <ul>
 <li>Fixed technology stack (see §7); substitutions require a change request.</li>
 <li>Bun is the only package manager; npm and pnpm are not used.</li>
@@ -245,7 +245,7 @@ documented XHR widgets (hotel availability, notifications).</li>
 <li>Hard deletes with cascading foreign keys throughout — soft deletes are not used.</li>
 </ul>
 <hr />
-<h2><a id="5-deliverables" href="#content-5-deliverables" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>5. Deliverables</h2>
+<h2><a id="5-deliverables" href="#content-5-deliverables" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>5. Deliverables</h2>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -298,7 +298,7 @@ documented XHR widgets (hotel availability, notifications).</li>
 </tbody>
 </table></div>
 <hr />
-<h2><a id="6-stakeholders-and-roles" href="#content-6-stakeholders-and-roles" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>6. Stakeholders and Roles</h2>
+<h2><a id="6-stakeholders-and-roles" href="#content-6-stakeholders-and-roles" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>6. Stakeholders and Roles</h2>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -341,8 +341,8 @@ documented XHR widgets (hotel availability, notifications).</li>
 </tbody>
 </table></div>
 <hr />
-<h2><a id="7-approach" href="#content-7-approach" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>7. Approach</h2>
-<h3><a id="71-technology" href="#content-71-technology" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>7.1 Technology</h3>
+<h2><a id="7-approach" href="#content-7-approach" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>7. Approach</h2>
+<h3><a id="71-technology" href="#content-71-technology" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>7.1 Technology</h3>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -397,12 +397,12 @@ documented XHR widgets (hotel availability, notifications).</li>
 </tr>
 </tbody>
 </table></div>
-<h3><a id="72-delivery-method" href="#content-72-delivery-method" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>7.2 Delivery method</h3>
+<h3><a id="72-delivery-method" href="#content-72-delivery-method" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>7.2 Delivery method</h3>
 <p>Work is broken into modules (see <code>docs/tasks.md</code>) delivered incrementally. Each
 change is developed on a <code>feature/{name}</code> branch, opened as a pull request to
 <code>main</code>, and merged only after human review. Larger pieces of work carry a plan file
 in <code>.claude/plans/</code>.</p>
-<h3><a id="73-quality-gates" href="#content-73-quality-gates" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>7.3 Quality gates</h3>
+<h3><a id="73-quality-gates" href="#content-73-quality-gates" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>7.3 Quality gates</h3>
 <p>Every pull request must pass:</p>
 <ol>
 <li><code>vendor/bin/pint --test</code> — PHP formatting</li>
@@ -413,7 +413,7 @@ in <code>.claude/plans/</code>.</p>
 <p>The coverage floor is raised as coverage improves and is never lowered to turn a
 build green.</p>
 <hr />
-<h2><a id="8-work-breakdown-and-milestones" href="#content-8-work-breakdown-and-milestones" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>8. Work Breakdown and Milestones</h2>
+<h2><a id="8-work-breakdown-and-milestones" href="#content-8-work-breakdown-and-milestones" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>8. Work Breakdown and Milestones</h2>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -479,7 +479,7 @@ panel, object storage for photos, OWASP security hardening, and test-coverage
 raising. Dates for each milestone are <em>TBC</em> — reconstruct from git history if a
 dated schedule is required.</p>
 <hr />
-<h2><a id="9-risks" href="#content-9-risks" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>9. Risks</h2>
+<h2><a id="9-risks" href="#content-9-risks" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>9. Risks</h2>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -550,7 +550,7 @@ dated schedule is required.</p>
 </tbody>
 </table></div>
 <hr />
-<h2><a id="10-dependencies" href="#content-10-dependencies" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>10. Dependencies</h2>
+<h2><a id="10-dependencies" href="#content-10-dependencies" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>10. Dependencies</h2>
 <ul>
 <li>Google Cloud OAuth credentials (<code>GOOGLE_CLIENT_ID</code>, <code>GOOGLE_CLIENT_SECRET</code>, <code>GOOGLE_REDIRECT_URI</code>)</li>
 <li>S3-compatible object storage bucket for production photo uploads</li>
@@ -559,7 +559,7 @@ dated schedule is required.</p>
 <li>Hotel partners willing to list and to act on booking requests</li>
 </ul>
 <hr />
-<h2><a id="11-acceptance-criteria" href="#content-11-acceptance-criteria" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>11. Acceptance Criteria</h2>
+<h2><a id="11-acceptance-criteria" href="#content-11-acceptance-criteria" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>11. Acceptance Criteria</h2>
 <p>The project is accepted when:</p>
 <ol>
 <li>All in-scope journeys in §4.1 work end to end in a production-like environment.</li>
@@ -570,7 +570,7 @@ reach the admin panel, and owners see only their own hotel's bookings.</li>
 <li>The documentation set in §5/D8 is complete and current.</li>
 </ol>
 <hr />
-<h2><a id="12-change-control" href="#content-12-change-control" class="heading-permalink" aria-hidden="true" title="Permalink">#</a>12. Change Control</h2>
+<h2><a id="12-change-control" href="#content-12-change-control" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>12. Change Control</h2>
 <p>Changes to scope, technology choices, or the constraints in §4.4 require the
 product owner's approval. Approved changes are recorded as a new version of this
 document and, where implementation work follows, a plan file in <code>.claude/plans/</code>.</p>
