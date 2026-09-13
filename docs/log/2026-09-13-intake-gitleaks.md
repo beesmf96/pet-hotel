@@ -31,7 +31,7 @@ Write an intake entry for gitleaks, the first real use of the intake template.
 
 ## Produced
 - ADR: none
-- Knowledge: none
+- Knowledge: ../knowledge/pre-commit-hook-fails-in-worktrees.md
 - Intake: ../intake/gitleaks.md, ../intake/gitleaks-action.md
 
 ## Verified
