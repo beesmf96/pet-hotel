@@ -37,7 +37,7 @@ Related documents:
 | User guide | `docs/html/user_guide.html` | End-user instructions (pet owner, admin, hotel owner) |
 | Booking flow | `docs/html/booking-flow.html` | Step-by-step booking journey |
 | Deployment checklist | `docs/deployment-checklist.md` | Release / go-live steps |
-| Stack & domain reference | `.claude/CLAUDE.md` | Architecture and domain model |
+| Stack & domain reference | `CLAUDE.md` | Architecture, domain model, conventions |
 
 ---
 

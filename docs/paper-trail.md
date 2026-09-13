@@ -41,7 +41,7 @@ Written only when a decision is one of:
 
 - **destructive** — data, files, or history are removed and cannot be recovered
 - **irreversible** — undoing it later would cost more than a normal change
-- **against convention** — it contradicts a rule in `CLAUDE.md`, `.claude/CLAUDE.md`, or an earlier ADR
+- **against convention** — it contradicts a rule in `CLAUDE.md` or an earlier ADR
 
 Ordinary choices inside a feature do not get one. Numbered from `0001`; an ADR
 is never edited after acceptance, it is superseded by a new one that links back.
@@ -49,9 +49,9 @@ is never edited after acceptance, it is superseded by a new one that links back.
 ## Knowledge entry
 
 One fact per file. The bar: it was not obvious, it cost time to find, and it
-will matter again. Most traps now in `.claude/CLAUDE.md` would qualify. If a
+will matter again. Most traps now in `CLAUDE.md` would qualify. If a
 knowledge entry becomes a rule everyone must follow, promote a one-line summary
-to `.claude/CLAUDE.md` and keep the entry as the long form.
+to `CLAUDE.md` and keep the entry as the long form.
 
 Project facts go here, not in per-machine memory. Memory is for cross-project
 user preferences only.
