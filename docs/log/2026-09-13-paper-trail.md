@@ -2,7 +2,7 @@
 title: Paper trail discipline
 description: Added the session log, ADR, knowledge, and intake record types, with a renderer and rules.
 date: 2026-09-13
-pr: ~
+pr: 33
 plan: .claude/plans/plan-paper-trail.md
 ---
 

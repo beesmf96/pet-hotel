@@ -2,7 +2,7 @@
 plan: paper-trail
 status: implemented
 branch: feature/paper-trail
-pr: ~
+pr: 33
 implemented: 2026-09-13
 ---
 
