@@ -2,7 +2,7 @@
 
 Guidance for Claude Code working in this repository.
 
-**Pet Hotel** — a pet boarding marketplace. Stack, domain model, and the project-specific conventions and traps: `.claude/CLAUDE.md`. Feature roadmap: `docs/tasks.md` (Modules 0–9, all currently checked off).
+**Pet Hotel** — a pet boarding marketplace. Stack, domain model, and the project-specific conventions and traps: `.claude/CLAUDE.md`. Feature roadmap and its current status: `docs/tasks.md`.
 
 ## Commands
 
