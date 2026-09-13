@@ -53,6 +53,6 @@ It runs gitleaks on staged changes and refuses the commit if something looks lik
 
 ## More
 
-- [Documentation](docs/index.html) — user guide, booking flow, requirements, roadmap
+- [Documentation](docs/html/index.html) — user guide, booking flow, requirements, roadmap (stakeholder-facing); developer docs are the markdown under `docs/`
 - [Deployment checklist](docs/deployment-checklist.md) — read before putting it on a public host
 - [CLAUDE.md](CLAUDE.md) — conventions for working in the codebase

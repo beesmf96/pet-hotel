@@ -2,6 +2,7 @@
 title: Task List
 description: Work breakdown across Modules 0–9, with delivery status per item.
 badges: Planning
+audience: stakeholder
 order: 40
 ---
 
