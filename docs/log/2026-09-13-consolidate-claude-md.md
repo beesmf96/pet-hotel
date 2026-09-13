@@ -2,7 +2,7 @@
 title: Consolidate CLAUDE.md
 description: Folded .claude/CLAUDE.md into the root CLAUDE.md, keeping only rules that cannot be inferred from the code.
 date: 2026-09-13
-pr: ~
+pr: 35
 plan: ~
 ---
 
