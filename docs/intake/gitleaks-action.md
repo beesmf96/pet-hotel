@@ -7,7 +7,7 @@ kind: github-action
 scope: ci
 source: https://github.com/gitleaks/gitleaks-action
 license: Proprietary (Gitleaks LLC EULA, source-available; MIT before v2.0.0)
-version: v2 (floating major tag)
+version: v3 (floating major tag; was v2 until 2026-09-13)
 ---
 
 # gitleaks-action
@@ -38,11 +38,14 @@ not capability.
 - Transitive dependencies: Node action bundled into `dist/`. Runtime deps are
   `@actions/core` and the gitleaks binary it downloads at run time.
 - Where checked: GitHub Advisory Database, GitHub releases.
-- **Deadline.** `v2` runs on Node 20. GitHub removes Node 20 from hosted
-  runners on **2026-09-16**, after which `gitleaks-action@v2` fails on every
-  run. `v3` is a runtime bump only, no input or behaviour change. The CI
-  workflow must move to `gitleaks/gitleaks-action@v3` before then. Upstream
-  also recommends `actions/checkout@v6` alongside it; the workflow is on v5.
+- **Node 20 deadline, handled.** `v2` ran on Node 20, which GitHub removes
+  from hosted runners on 2026-09-16. `v3` is a runtime bump to Node 24 only,
+  no input or behaviour change. The CI workflow moved to
+  `gitleaks/gitleaks-action@v3` on 2026-09-13 (PR #38), and
+  `actions/checkout` moved from v5 to v7 in the same change. Upstream
+  recommends v6 as the matching Node 24 release; v7 adds only a block on
+  checking out fork PRs under `pull_request_target`, which this workflow
+  does not use.
 - Licence. From v2.0.0 the Action is under a Gitleaks LLC end-user licence,
   not MIT. Personal accounts need no key. Organization accounts need a free
   licence key set as `GITLEAKS_LICENSE`. The Action enforces this itself.
@@ -55,7 +58,6 @@ not capability.
 - trufflehog-actions-scan: different scanner, see the `gitleaks` entry.
 
 ## Verdict
-Accepted, with two conditions. Bump to `v3` before 2026-09-16 or CI stops.
-If the repo ever moves to an organization account, either add the free
+Accepted. The `v3` bump is done. One condition remains: if the repo ever moves to an organization account, either add the free
 licence key or replace the Action with the `run:` step above; the licence
 change is the reason the plain step is the fallback.
