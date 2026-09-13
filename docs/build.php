@@ -2,6 +2,8 @@
 
 /**
  * Renders every docs/<name>.md into docs/<name>.html and regenerates index.html.
+ * Also renders each record collection (docs/log, docs/adr, ...) — see
+ * COLLECTIONS — into per-entry pages plus a collection index.
  *
  *   php docs/build.php
  *
@@ -63,6 +65,36 @@ const BADGE_COLOURS = [
     'Pet Owners' => 'blue',
     'Hotel Owners' => 'teal',
     'Admin' => 'amber',
+    'Paper Trail' => 'slate',
+];
+
+/**
+ * Record collections: one markdown file per entry, sorted newest first by the
+ * `date` frontmatter key. Files starting with `_` (templates) are skipped.
+ * Each collection gets its own index at docs/<dir>/index.html and a card on
+ * the main index. The rules for when to write each kind are in paper-trail.md.
+ */
+const COLLECTIONS = [
+    'log' => [
+        'title' => 'Session Log',
+        'description' => 'What was done in each session, newest first. The primary source for a recap.',
+        'order' => 60,
+    ],
+    'adr' => [
+        'title' => 'Decision Records',
+        'description' => 'Decisions that were destructive, irreversible, or went against an existing convention.',
+        'order' => 61,
+    ],
+    'knowledge' => [
+        'title' => 'Knowledge Entries',
+        'description' => 'Non-obvious facts learnt while working here, one per file.',
+        'order' => 62,
+    ],
+    'intake' => [
+        'title' => 'Dependency Intake',
+        'description' => 'Why each package, binary, image, or action was let in, and how it looked on the day.',
+        'order' => 63,
+    ],
 ];
 
 /**
@@ -136,9 +168,11 @@ function wrap_tables(string $html): string
     return preg_replace('/(<table>.*?<\/table>)/s', '<div class="table-wrap">$1</div>', $html);
 }
 
-function article_page(string $title, string $body): string
+function article_page(string $title, string $body, string $root = '', string $backHref = 'index.html', string $backLabel = 'All docs'): string
 {
     $title = htmlspecialchars($title, ENT_QUOTES);
+    $backHref = htmlspecialchars($backHref, ENT_QUOTES);
+    $backLabel = htmlspecialchars($backLabel, ENT_QUOTES);
 
     return <<<HTML
     <!DOCTYPE html>
@@ -147,11 +181,60 @@ function article_page(string $title, string $body): string
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>Pet Hotel — {$title}</title>
-      <link rel="stylesheet" href="assets/doc.css" />
+      <link rel="stylesheet" href="{$root}assets/doc.css" />
     </head>
     <body class="doc">
-    <a class="backlink" href="index.html">&larr; All docs</a>
+    <a class="backlink" href="{$backHref}">&larr; {$backLabel}</a>
     {$body}
+    </body>
+    </html>
+
+    HTML;
+}
+
+/** Index for one record collection: a dated list, newest first. */
+function collection_page(string $title, string $description, array $entries): string
+{
+    $rows = '';
+
+    foreach ($entries as $entry) {
+        $rows .= sprintf(
+            "\n      <a class=\"doc-card\" href=\"%s\">\n        <div class=\"doc-title\">\n          %s%s\n        </div>\n        <div class=\"doc-desc\">%s</div>\n      </a>\n",
+            htmlspecialchars($entry['href'], ENT_QUOTES),
+            htmlspecialchars($entry['title'], ENT_QUOTES),
+            badges_html($entry['badges']),
+            htmlspecialchars($entry['description'], ENT_QUOTES)
+        );
+    }
+
+    if ($rows === '') {
+        $rows = "\n      <p class=\"empty\">No entries yet.</p>\n";
+    }
+
+    $title = htmlspecialchars($title, ENT_QUOTES);
+    $description = htmlspecialchars($description, ENT_QUOTES);
+
+    return <<<HTML
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Pet Hotel — {$title}</title>
+      <link rel="stylesheet" href="../assets/doc.css" />
+    </head>
+    <body class="index">
+      <div class="container">
+        <a class="backlink" href="../index.html">&larr; All docs</a>
+        <div class="header">
+          <h1>{$title}</h1>
+          <p class="subtitle">{$description}</p>
+        </div>
+
+        <div class="docs">
+    {$rows}
+        </div>
+      </div>
     </body>
     </html>
 
@@ -247,6 +330,56 @@ foreach (glob(DOCS_DIR.'/*.md') as $path) {
     ];
 
     echo "rendered {$slug}.html\n";
+}
+
+foreach (COLLECTIONS as $dir => $collection) {
+    $records = [];
+
+    foreach (glob(DOCS_DIR."/{$dir}/*.md") as $path) {
+        $slug = basename($path, '.md');
+
+        if (str_starts_with($slug, '_')) {
+            continue;
+        }
+
+        [$meta, $body] = split_frontmatter(file_get_contents($path));
+
+        $title = $meta['title'] ?? first_heading($body) ?? ucfirst(str_replace('-', ' ', $slug));
+        $badges = array_values(array_filter([$meta['date'] ?? null, $meta['status'] ?? null]));
+
+        file_put_contents(
+            DOCS_DIR."/{$dir}/{$slug}.html",
+            article_page($title, wrap_tables((string) $converter->convert($body)), '../', 'index.html', $collection['title'])
+        );
+
+        $records[] = [
+            'href' => "{$slug}.html",
+            'title' => $title,
+            'description' => $meta['description'] ?? first_paragraph($body) ?? '',
+            'badges' => $badges,
+            'date' => $meta['date'] ?? '',
+            'slug' => $slug,
+        ];
+
+        echo "rendered {$dir}/{$slug}.html\n";
+    }
+
+    usort($records, fn (array $a, array $b) => [$b['date'], $b['slug']] <=> [$a['date'], $a['slug']]);
+
+    file_put_contents(
+        DOCS_DIR."/{$dir}/index.html",
+        collection_page($collection['title'], $collection['description'], $records)
+    );
+
+    $entries[] = [
+        'href' => "{$dir}/index.html",
+        'title' => $collection['title'],
+        'description' => $collection['description'].' ('.count($records).')',
+        'badges' => ['Paper Trail'],
+        'order' => $collection['order'],
+    ];
+
+    echo "rendered {$dir}/index.html (".count($records)." entries)\n";
 }
 
 usort($entries, fn (array $a, array $b) => [$a['order'], $a['title']] <=> [$b['order'], $b['title']]);

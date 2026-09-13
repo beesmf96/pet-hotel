@@ -73,6 +73,16 @@ Cloud that is a worker in the dashboard, not something the repo can declare.
 1. Tests exist for the new behaviour, and `composer test` passes
 2. `vendor/bin/pint`
 3. For frontend changes, `bun run lint`
+4. A session log entry in `docs/log/` (rules and bar: `docs/paper-trail.md`).
+   Add an ADR, knowledge entry, or intake entry only when the bar there is met.
+   Run `php docs/build.php` so the indexes are current.
+
+## Paper trail
+
+`docs/paper-trail.md` defines four record types written after work is done:
+session log, ADR, knowledge entry, dependency intake. The log is the primary
+source for any recap of past work — read it before git history. Write an
+intake entry **before** adding any package, binary, image, or action.
 
 ## CI
 

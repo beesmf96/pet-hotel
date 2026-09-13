@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pet Hotel — Paper Trail</title>
+  <link rel="stylesheet" href="assets/doc.css" />
+</head>
+<body class="doc">
+<a class="backlink" href="index.html">&larr; All docs</a>
+<h1><a id="paper-trail" href="#content-paper-trail" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>Paper Trail</h1>
+<p>Records written <strong>after</strong> work is done. Plans in <code>.claude/plans/</code> say what we
+intended. These say what happened, what we decided, what we learnt, and what we
+let in. They are the primary source when someone asks for a recap of past work.</p>
+<p>All four live under <code>docs/</code> as markdown, one file per entry, and are rendered
+by <code>php docs/build.php</code> into a per-collection index. Each folder has a
+<code>_template.md</code> to copy. Files starting with <code>_</code> are not rendered.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Collection</th>
+<th>Folder</th>
+<th>Written when</th>
+<th>File name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Session log</td>
+<td><code>docs/log/</code></td>
+<td>Every completed task</td>
+<td><code>YYYY-MM-DD-{slug}.md</code></td>
+</tr>
+<tr>
+<td>Decision record (ADR)</td>
+<td><code>docs/adr/</code></td>
+<td>A decision meets the bar below</td>
+<td><code>NNNN-{slug}.md</code></td>
+</tr>
+<tr>
+<td>Knowledge entry</td>
+<td><code>docs/knowledge/</code></td>
+<td>We learnt something non-obvious</td>
+<td><code>{slug}.md</code></td>
+</tr>
+<tr>
+<td>Dependency intake</td>
+<td><code>docs/intake/</code></td>
+<td>Before adding any dependency</td>
+<td><code>{name}.md</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2><a id="session-log" href="#content-session-log" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>Session log</h2>
+<p>One entry per completed piece of work, written in the same PR as the work.
+No log entry, the task is not done. It records what was asked, what was done,
+what was left out, what other records it produced, and how it was verified.</p>
+<p>A task too small to fill that template does not get an entry. A commit message
+is enough for it.</p>
+<p><strong>Recap rule.</strong> To answer &quot;what did we do&quot;, read <code>docs/log/</code> by date first.
+Fall back to git history only for detail the log does not carry.</p>
+<h2><a id="decision-record" href="#content-decision-record" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>Decision record</h2>
+<p>Written only when a decision is one of:</p>
+<ul>
+<li><strong>destructive</strong> — data, files, or history are removed and cannot be recovered</li>
+<li><strong>irreversible</strong> — undoing it later would cost more than a normal change</li>
+<li><strong>against convention</strong> — it contradicts a rule in <code>CLAUDE.md</code>, <code>.claude/CLAUDE.md</code>, or an earlier ADR</li>
+</ul>
+<p>Ordinary choices inside a feature do not get one. Numbered from <code>0001</code>; an ADR
+is never edited after acceptance, it is superseded by a new one that links back.</p>
+<h2><a id="knowledge-entry" href="#content-knowledge-entry" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>Knowledge entry</h2>
+<p>One fact per file. The bar: it was not obvious, it cost time to find, and it
+will matter again. Most traps now in <code>.claude/CLAUDE.md</code> would qualify. If a
+knowledge entry becomes a rule everyone must follow, promote a one-line summary
+to <code>.claude/CLAUDE.md</code> and keep the entry as the long form.</p>
+<p>Project facts go here, not in per-machine memory. Memory is for cross-project
+user preferences only.</p>
+<h2><a id="dependency-intake" href="#content-dependency-intake" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>Dependency intake</h2>
+<p>Written <strong>before</strong> a dependency is added, for anything the project would not
+run, build, test, or deploy without: composer and bun packages, binaries,
+Docker images, GitHub Actions, PHP extensions. Transitive dependencies do not
+get their own entry; the direct one notes the size of the tree.</p>
+<p>Every entry answers the same questions: why, and what we would do without it;
+what it touches; maintenance state; security state; license; alternatives;
+verdict. The maintenance and security sections are a snapshot and carry the
+date they were checked. Ongoing coverage is <code>composer audit</code> and <code>bun audit</code>
+in CI, not this file.</p>
+<p>A removed dependency keeps its entry with <code>status: removed</code> and the reason, so
+the trail still explains why it was ever there.</p>
+
+</body>
+</html>
