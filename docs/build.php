@@ -1,12 +1,15 @@
 <?php
 
 /**
- * Renders every docs/<name>.md into docs/<name>.html and regenerates index.html.
+ * Renders the stakeholder-facing docs to docs/html/ and regenerates its index.
  *
  *   php docs/build.php
  *
- * Markdown is the source of truth — never hand-edit a generated .html file.
- * Pages are styled by docs/assets/doc.css, which is hand-maintained.
+ * Markdown under docs/ is the source of truth and is coder-facing by default.
+ * Only files whose frontmatter says `audience: stakeholder` are rendered to
+ * HTML; everything else (runbooks, the paper trail, ...) is read as markdown
+ * in the repo. Never hand-edit a generated .html file. Pages are styled by
+ * docs/html/assets/doc.css, which is hand-maintained.
  *
  * Optional frontmatter (simple `key: value` lines, no YAML dependency):
  *
@@ -14,6 +17,7 @@
  *   title: Project Initiation Document
  *   description: Scope, objectives, risks, and acceptance criteria.
  *   badges: Governance, Planning
+ *   audience: stakeholder
  *   order: 10
  *   ---
  *
@@ -32,10 +36,12 @@ use League\CommonMark\Extension\TaskList\TaskListExtension;
 use League\CommonMark\MarkdownConverter;
 
 const DOCS_DIR = __DIR__;
+const HTML_DIR = __DIR__.'/html';
 
 /**
- * Hand-written HTML docs that predate this script. They are listed on the
- * index but never regenerated — convert one to markdown to have it rendered.
+ * Hand-written HTML docs that predate this script. They live in docs/html/
+ * directly, are listed on the index, but never regenerated — convert one to
+ * markdown to have it rendered.
  */
 const STATIC_DOCS = [
     'user_guide.html' => [
@@ -229,10 +235,16 @@ foreach (glob(DOCS_DIR.'/*.md') as $path) {
     $slug = basename($path, '.md');
     [$meta, $body] = split_frontmatter(file_get_contents($path));
 
+    if (($meta['audience'] ?? null) !== 'stakeholder') {
+        echo "skipped  {$slug}.md (coder-facing)\n";
+
+        continue;
+    }
+
     $title = $meta['title'] ?? first_heading($body) ?? ucfirst(str_replace('-', ' ', $slug));
 
     file_put_contents(
-        DOCS_DIR."/{$slug}.html",
+        HTML_DIR."/{$slug}.html",
         article_page($title, wrap_tables((string) $converter->convert($body)))
     );
 
@@ -246,11 +258,11 @@ foreach (glob(DOCS_DIR.'/*.md') as $path) {
         'order' => (int) ($meta['order'] ?? 100),
     ];
 
-    echo "rendered {$slug}.html\n";
+    echo "rendered html/{$slug}.html\n";
 }
 
 usort($entries, fn (array $a, array $b) => [$a['order'], $a['title']] <=> [$b['order'], $b['title']]);
 
-file_put_contents(DOCS_DIR.'/index.html', index_page($entries));
+file_put_contents(HTML_DIR.'/index.html', index_page($entries));
 
-echo 'rendered index.html ('.count($entries)." docs)\n";
+echo 'rendered html/index.html ('.count($entries)." docs)\n";

@@ -1,205 +1,278 @@
 ---
 title: Deployment Checklist
-description: Configuration and infrastructure that must be in place before go-live, beyond what the repository can enforce.
+description: Step-by-step runbook for putting Pet Hotel on Laravel Cloud, from the first deploy to go-live.
 badges: Operations
 order: 50
 ---
 
 # Deployment Checklist
 
-Everything that has to be true before Pet Hotel is reachable from the public
-internet, and that **cannot be enforced from the repository**.
+How to deploy Pet Hotel on [Laravel Cloud](https://cloud.laravel.com), in the
+order the Cloud dashboard asks for things. Follow it top to bottom for a new
+environment. For an existing environment, use it as a checklist.
 
-The application code was audited against the OWASP Top 10 on 2026-08-01 and the
-code-side fixes are merged (PRs #10 and #11; findings in
-`.claude/plans/plan-owasp-hardening.md`). What remains below is configuration set
-on the host. No test, lint, or CI job can catch a mistake here — that is the whole
-reason this file exists.
+Everything below is set in the Cloud dashboard, not in the repository. No test
+or CI job can catch a mistake here, which is why this file exists.
+
+The current `dev` environment lives at
+`https://pet-hotel-dev-qvhqsv.laravel.cloud` and tracks the `dev` branch.
+Production should track `main`.
 
 ---
 
-## 1. Blockers — do not go live without these
+## 1. Before the first deploy (repository side)
 
-### `APP_DEBUG=false`
+These have to be true in the code before Cloud can run it.
 
-**The single most dangerous setting in this list.**
+- [ ] **S3 driver installed.** Cloud object storage is S3-compatible and needs
+      the Flysystem adapter, which is **not yet in `composer.json`**:
 
-With debug on, any unhandled exception renders a full stack trace to whoever
-triggered it — including environment variables and database credentials. An
-attacker does not need to find a vulnerability; they only need to cause an error.
+      ```bash
+      composer require league/flysystem-aws-s3-v3 "^3.0" --with-all-dependencies
+      ```
+
+      Without it, `PHOTO_DISK=s3` throws on the first upload.
+
+- [ ] `composer.lock` and `bun.lock` are committed and up to date. Cloud reads
+      the lock files at build time.
+- [ ] The branch you deploy has passed CI.
+
+---
+
+## 2. Create the environment
+
+In Cloud: **Applications → your app → New environment** (or **Replicate** the
+`dev` environment and change the branch).
+
+- [ ] Name: `production` (the name becomes part of the free `*.laravel.cloud` URL)
+- [ ] Region: same as the `dev` environment
+- [ ] Branch: `main`
+- [ ] PHP version: 8.3 or newer (`composer.json` requires `^8.3`)
+- [ ] **Push to deploy** stays on. Every merge to `main` then deploys itself.
+
+---
+
+## 3. Attach resources
+
+Click the environment canvas. Each of these injects its own env vars when you
+deploy, so do not type database or cache credentials by hand.
+
+- [ ] **Database → Serverless Postgres.** Injects `DB_*`. Then run migrations as
+      a deploy command (step 5).
+- [ ] **Cache → Laravel Valkey.** Injects `CACHE_STORE`, `REDIS_HOST`,
+      `REDIS_PASSWORD`. Sessions and cache both use it (step 4).
+- [ ] **Add bucket → Laravel Object Storage.** Visibility **public** (pet and
+      hotel photos are shown to everyone). Disk name `s3`. Injects the `AWS_*`
+      credentials and `FILESYSTEM_DISK`.
+- [ ] Copy the bucket's public URL from its settings page. Cloud does **not**
+      inject `AWS_URL`, and the app needs it to build photo URLs and to allow the
+      bucket in the CSP `img-src`.
+
+Cloud's own compute is ephemeral: every deploy wipes the container filesystem.
+Anything written to `storage/` is lost, which is why photos must go to the bucket.
+
+---
+
+## 4. Environment variables
+
+**Environment → Settings → Environment variables.** Custom values override the
+injected ones.
+
+### Must be set
 
 ```bash
 APP_ENV=production
 APP_DEBUG=false
-```
-
-Both tracked env files (`.env.example`, `.env.docker`) ship `APP_DEBUG=true`,
-which is correct for local work. Production must override it.
-
-- [ ] `APP_ENV=production`
-- [ ] `APP_DEBUG=false`
-- [ ] Trigger a deliberate 500 on the live site and confirm you get a generic
-      error page, not a stack trace
-
-### `APP_KEY`
-
-Laravel encrypts session and cookie data with this. It is empty in both tracked
-env files.
-
-```bash
-php artisan key:generate
-```
-
-- [ ] A real `APP_KEY` is set
-- [ ] It is **not** the same value as any other environment
-- [ ] It is backed up somewhere — rotating it invalidates every existing session
-      and every encrypted column
-
-### `SESSION_SECURE_COOKIE=true`
-
-`config/session.php` reads this with **no default**, so leaving it unset ships
-the session cookie without the `Secure` flag. The cookie then travels over plain
-HTTP if a connection is ever downgraded, exposing live sessions.
-
-```bash
+APP_URL=https://your-domain.example       # the real public URL, https
+SESSION_DRIVER=redis
 SESSION_SECURE_COOKIE=true
+CACHE_STORE=redis
+PHOTO_DISK=s3
+AWS_URL=https://...                        # from the bucket settings page (step 3)
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+CSP_MODE=report                            # switch to enforce later (step 9)
 ```
 
-- [ ] Set to `true` (requires working HTTPS first)
+- [ ] `APP_DEBUG=false`. **The single most dangerous setting here.** With debug
+      on, any error shows a stack trace with env values and database credentials
+      to whoever caused it.
+- [ ] `APP_KEY` is set. Cloud generates one on the first deploy. Never copy the
+      key from another environment, and keep a backup: rotating it logs out
+      every user and breaks every encrypted column.
+- [ ] `SESSION_SECURE_COOKIE=true`. `config/session.php` has no default for it,
+      so an unset value ships the session cookie without the `Secure` flag.
+- [ ] `PHOTO_DISK=s3` and `AWS_URL` filled in. Step 1 must be done first.
+- [ ] `GOOGLE_CLIENT_SECRET` from the Google Cloud console, for a client that
+      belongs to **this** environment (step 7).
+- [ ] No secret is committed to git. `.env.docker` is tracked on purpose as a
+      local template, so never put a real value in it.
 
-### HTTPS
+### Do not set
 
-- [ ] TLS certificate installed and valid
-- [ ] Plain HTTP redirects to HTTPS
-- [ ] Confirm the `Strict-Transport-Security` header appears — `SecurityHeaders`
-      middleware emits it automatically once `$request->isSecure()` is true, and
-      stays silent before then
+- `GOOGLE_REDIRECT_URI`. `config/services.php` defaults to the relative
+  `/auth/google/callback`, which Socialite expands against the request host, so
+  one code path works on every environment.
+- `QUEUE_CONNECTION`, unless you choose the worker cluster route in step 6.
+- `DB_*`, `REDIS_*`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_BUCKET`,
+  `AWS_ENDPOINT`. Injected by the attached resources.
 
-> HSTS is hard to walk back: browsers cache `max-age=31536000` for a year. Only
-> let it go live once the certificate is confirmed working.
-
-### Real hostnames
-
-The two Filament panels hardcode `.local` domains in
-`app/Providers/Filament/*PanelProvider.php`:
-
-```php
-->domain('admin.pet-hotel.local')
-->domain('owner.pet-hotel.local')
-```
-
-These will not resolve in production. They also feed the CSP host check in
-`SecurityHeaders::isFilamentHost()`, so a stale value means the panels get the
-customer-facing policy and Alpine breaks once CSP enforces.
-
-- [ ] Panel domains updated to real hostnames
-- [ ] `APP_URL` set to the real public URL
-- [ ] `SESSION_DOMAIN` set so sessions are shared across the panel subdomains
-- [ ] `GOOGLE_REDIRECT_URI` updated, and the same URL registered in the Google
-      Cloud console — OAuth fails outright if these disagree
+After changing any variable, **redeploy**. Deploys run `config:cache`, so a
+change does nothing until the next deploy.
 
 ---
 
-## 2. Should be done before real users
+## 5. Build and deploy commands
 
-### Secrets
+**Environment → Settings → Deployments.**
 
-- [ ] `DB_PASSWORD` is not `secret` (the local placeholder in `.env.docker`)
-- [ ] `GOOGLE_CLIENT_SECRET` set from the Google Cloud console
-- [ ] `REDIS_PASSWORD` set if Redis is network-reachable
-- [ ] No production secret is committed. `.env` and `.env.production` are
-      gitignored; `.env.docker` is deliberately **not** — it is a tracked
-      template, so never put a real secret in it
-
-### Mail
-
-`.env.example` defaults to `MAIL_MAILER=log`, which silently writes mail to a
-file instead of sending it. Password resets and booking notifications would
-appear to work while nobody receives anything.
-
-- [ ] A real mail transport configured
-- [ ] Send a live password reset and confirm it arrives
-
-### Queue
-
-`SendBooking*Notification` jobs are dispatched to the queue.
-
-- [ ] `QUEUE_CONNECTION=redis` and Redis reachable
-- [ ] A queue worker runs under a supervisor and restarts on failure — without
-      one, bookings succeed but no notification is ever sent
-- [ ] Deploys run `php artisan queue:restart`
-
-### Production caches
-
-- [ ] `php artisan config:cache`
-- [ ] `php artisan route:cache`
-- [ ] `php artisan view:cache`
-- [ ] `bun run build` — the built manifest must exist, or every Inertia page 500s
-- [ ] `php artisan migrate --force`
-
-### Storage
-
-- [ ] `php artisan storage:link` — pet photos 404 without it
-- [ ] `storage/` and `bootstrap/cache/` writable by the web user
-
----
-
-## 3. Content Security Policy rollout
-
-The CSP ships in **report-only** mode (`CSP_MODE=report`), so browsers report
-violations without blocking anything. It protects nothing until enforced.
-
-- [ ] Deploy with `CSP_MODE=report`
-- [ ] Let it run against real traffic — clicking around yourself will not hit
-      every page
-- [ ] Watch `storage/logs` for `CSP violation` entries
-- [ ] Widen `SecurityHeaders::contentSecurityPolicy()` for legitimate sources only
-- [ ] When the log is quiet, set `CSP_MODE=enforce`
-- [ ] Re-check the maps, both Filament panels, and photo upload afterwards
-
-Detail and the current policy: `.claude/plans/plan-owasp-hardening.md`.
-
----
-
-## 4. Repository settings
-
-- [ ] **Branch protection on `main`**, requiring `Backend (PHPUnit + coverage)`,
-      `Frontend (ESLint + Vitest)`, and `Security (dependency audit)`
-
-Currently unprotected, so a red build can merge. PRs #9, #10, and #11 all could
-have. Needs admin rights on `beesmf96/pet-hotel`; see
-`.claude/plans/plan-backend-coverage-followups.md`.
-
----
-
-## 5. Known gaps
-
-Not blockers, but worth knowing you are accepting them:
-
-- **No security event logging** (OWASP A09) — failed logins, password resets, and
-  admin actions are not recorded, so there is nothing to investigate with after an
-  incident
-- **`style-src 'unsafe-inline'`** — the weakest part of the CSP. Vue emits
-  component styles as inline blocks; removing it needs nonces or hashes
-- **No payment integration** — nothing to secure yet, but that changes the moment
-  it lands
-- **`is_admin` is a boolean, not roles** — fine at current scale
-
----
-
-## Post-deploy verification
+Build commands (run at image build time, results are kept):
 
 ```bash
-# No stack traces
-curl -s https://YOUR_DOMAIN/nonexistent | grep -ci "stack trace"   # expect 0
+composer install --no-dev --optimize-autoloader
+bun install --frozen-lockfile
+bun run build
+php artisan optimize
+```
+
+Deploy commands (run just before the new release goes live, filesystem changes
+are **not** kept):
+
+```bash
+php artisan migrate --force
+```
+
+- [ ] Build commands as above. `bun run build` is required: without the built
+      manifest every Inertia page is a 500.
+- [ ] Deploy command is only the migration.
+- [ ] **Do not** add `queue:restart`, `storage:link`, or `optimize:clear`. Cloud
+      restarts workers itself, the storage symlink does not survive a deploy
+      (the bucket replaces it), and `optimize:clear` can break the queue.
+
+---
+
+## 6. Queue worker
+
+`SendBooking*Notification` jobs are queued. They are the only thing that tells a
+customer their booking was requested, confirmed, or cancelled. **Without a
+worker, bookings still succeed and nobody is notified.** Nothing in Cloud runs a
+worker by default.
+
+Pick one:
+
+- [ ] **Managed queue (recommended).** Canvas → **Add compute → Managed queue**.
+      Name it `default`, Flex class, 256 MiB, 0 to 3 workers. Deploying sets
+      `QUEUE_CONNECTION=cloud` for you. Failed jobs appear under
+      **Monitoring → Queues**. Requires `aws/aws-sdk-php` in `composer.json`
+      (it is not there yet; add it the same way as step 1).
+- [ ] **Or a background process on the App cluster.** Click the App cluster →
+      **Background processes → New background process → Queue worker**.
+      Connection `redis`, queue `default`, 1 process. Set
+      `QUEUE_CONNECTION=redis` in step 4. Cheaper, but shares CPU with web
+      traffic and can be cut off if the environment scales to zero.
+
+The app registers no scheduled tasks, so the scheduler toggle stays off.
+
+---
+
+## 7. Domain and HTTPS
+
+Cloud terminates TLS at its edge, redirects HTTP to HTTPS, and issues and renews
+the certificate for you. The app's `SecurityHeaders` middleware sees the request
+as secure and adds `Strict-Transport-Security` on its own. This was verified on
+the `dev` environment.
+
+- [ ] **Environment → Network → Add domain.** Add the DNS records the dashboard
+      shows and refresh until the status is **Connected**.
+- [ ] Set it as the primary domain.
+- [ ] `APP_URL` in step 4 matches it exactly, with `https://`.
+- [ ] Leave the Cloud edge HSTS toggle **off**. The app already sends the header
+      with a one-year `max-age`; enabling it twice adds nothing and the header
+      is very hard to walk back.
+
+The free `*.laravel.cloud` URL carries `X-Robots-Tag: noindex`, so search engines
+only index the custom domain.
+
+### Google OAuth for this environment
+
+Local and Cloud use separate OAuth clients on purpose.
+
+- [ ] In the Google Cloud console, create (or reuse) an OAuth client for this
+      environment and add
+      `https://your-domain.example/auth/google/callback` to its authorised
+      redirect URIs. If you also want sign-in to work on the `*.laravel.cloud`
+      URL, add that callback too.
+- [ ] Put its id and secret in step 4, then redeploy.
+
+---
+
+## 8. Mail
+
+`MAIL_MAILER=log` is the repository default. It writes email to the log file
+instead of sending it. Password resets and booking notifications would look
+fine and reach nobody.
+
+- [ ] Choose a transport that `config/mail.php` already supports: `resend`,
+      `postmark`, `ses`, or `smtp`. Set `MAIL_MAILER`, its credentials, and a
+      real `MAIL_FROM_ADDRESS` in step 4.
+- [ ] Send a password reset to yourself on the live site and confirm it arrives.
+
+---
+
+## 9. Content Security Policy rollout
+
+The CSP ships in report-only mode. Browsers report violations and block nothing,
+so it protects nothing until you enforce it.
+
+- [ ] Deploy with `CSP_MODE=report`.
+- [ ] Let real users click around for a few days. Your own clicks will not hit
+      every page.
+- [ ] Watch **Environment → Logs** for `CSP violation` entries.
+- [ ] Widen `SecurityHeaders::contentSecurityPolicy()` only for legitimate
+      sources.
+- [ ] When the log is quiet, set `CSP_MODE=enforce` and redeploy.
+- [ ] Re-check the map, both Filament panels, and a photo upload.
+
+Policy detail: `.claude/plans/plan-owasp-hardening.md`.
+
+---
+
+## 10. Go-live verification
+
+Run from your machine, with the real domain:
+
+```bash
+# Generic error page, not a stack trace (expect 0)
+curl -s https://YOUR_DOMAIN/nonexistent | grep -ci "stack trace"
 
 # Security headers present
 curl -sI https://YOUR_DOMAIN/ | grep -iE "strict-transport|x-frame|content-security"
 
-# Session cookie is Secure and HttpOnly
-curl -sI https://YOUR_DOMAIN/ | grep -i "set-cookie"
+# Session cookie is Secure, HttpOnly, SameSite
+curl -sI https://YOUR_DOMAIN/ | grep -i "set-cookie: pet-hotel-session"
 ```
 
-- [ ] Register, verify email, book, and cancel — as a real user would
-- [ ] Google sign-in works against the production redirect URI
-- [ ] Both Filament panels load and are reachable only by authorised accounts
+Then as a real user:
+
+- [ ] Register, verify email, add a pet, upload a photo, and confirm the photo
+      URL points at the bucket
+- [ ] Book, then check the confirmation email arrives (this proves the worker
+      and mail together)
+- [ ] Cancel, and check the cancellation email arrives
+- [ ] Google sign-in works on the custom domain
+- [ ] `/admin` and `/owner` load, and only for admin and hotel-owner accounts
+- [ ] Trigger a deliberate error and confirm no stack trace is shown
+
+---
+
+## 11. Known gaps
+
+Not blockers, but you are accepting them:
+
+- **No security event logging.** Failed logins, password resets, and admin
+  actions are not recorded, so there is nothing to investigate after an incident.
+- **`style-src 'unsafe-inline'`** is the weakest part of the CSP. Vue emits
+  component styles inline; removing it needs nonces or hashes.
+- **No payment integration.** Nothing to secure yet. That changes the moment it
+  lands.
+- **`is_admin` is a boolean, not roles.** Fine at current scale.

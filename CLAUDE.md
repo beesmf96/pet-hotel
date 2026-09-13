@@ -2,7 +2,7 @@
 
 Guidance for Claude Code working in this repository.
 
-**Pet Hotel** — a pet boarding marketplace. Stack, domain model, and the project-specific conventions and traps: `.claude/CLAUDE.md`. Feature roadmap: `docs/tasks.md` (Modules 0–9, all currently checked off).
+**Pet Hotel** — a pet boarding marketplace. Stack, domain model, and the project-specific conventions and traps: `.claude/CLAUDE.md`. Feature roadmap and its current status: `docs/tasks.md`.
 
 ## Commands
 
@@ -18,14 +18,17 @@ vendor/bin/pint       # PHP formatter
 
 ### Documentation
 ```bash
-php docs/build.php     # renders docs/*.md → docs/*.html and regenerates index.html
+php docs/build.php     # renders stakeholder docs → docs/html/ and regenerates its index.html
 ```
 
-Markdown under `docs/` is the source of truth. Never hand-edit a generated
-`.html` file — `user_guide.html`, `booking-flow.html`, and
-`pet-hotel-boarding-mvp-v1.html` predate the renderer and are the only
-hand-written pages left; they are listed in `STATIC_DOCS` in `docs/build.php`.
-Page styling lives in `docs/assets/doc.css`.
+Markdown under `docs/` is the source of truth and is **coder-facing by
+default** — runbooks, the paper trail, anything a developer reads in the repo.
+Only files with `audience: stakeholder` in their frontmatter are rendered to
+`docs/html/`, which is the user- and stakeholder-facing site. Never hand-edit
+a generated `.html` file — `user_guide.html`, `booking-flow.html`, and
+`pet-hotel-boarding-mvp-v1.html` in `docs/html/` predate the renderer and are
+the only hand-written pages left; they are listed in `STATIC_DOCS` in
+`docs/build.php`. Page styling lives in `docs/html/assets/doc.css`.
 
 ### Docker
 ```bash
@@ -49,6 +52,10 @@ Add to `/etc/hosts` (or `C:\Windows\System32\drivers\etc\hosts`):
 127.0.0.1  mailpit.local            # caught email
 ```
 
+Nginx also serves the app on `http://localhost`. Google rejects `.local` redirect
+URIs, so Google login is tested at `http://localhost` end to end (the session
+cookie is host-only, so the flow must start and finish on the same host).
+
 ## Queue worker
 
 Booking notifications (`app/Jobs/SendBooking*Notification.php`) are queued, and
@@ -69,6 +76,15 @@ Cloud that is a worker in the dashboard, not something the repo can declare.
 1. Tests exist for the new behaviour, and `composer test` passes
 2. `vendor/bin/pint`
 3. For frontend changes, `bun run lint`
+4. A session log entry in `docs/log/` (rules and bar: `docs/paper-trail.md`).
+   Add an ADR, knowledge entry, or intake entry only when the bar there is met.
+
+## Paper trail
+
+`docs/paper-trail.md` defines four record types written after work is done:
+session log, ADR, knowledge entry, dependency intake. The log is the primary
+source for any recap of past work — read it before git history. Write an
+intake entry **before** adding any package, binary, image, or action.
 
 ## CI
 

@@ -1,166 +1,58 @@
 # Pet Hotel
 
-A booking platform for pet boarding. Built with Laravel 13 · Vue 3 · Inertia.js · Filament v4 · PostgreSQL · Redis.
+A booking platform for pet boarding. Laravel 13 · Vue 3 · Inertia · Filament 4 · PostgreSQL · Redis.
 
-> **Deploying to a public host?** Work through
-> [`docs/deployment-checklist.md`](docs/deployment-checklist.md) first. It covers the
-> settings that live on the server and so cannot be caught by tests or CI —
-> `APP_DEBUG=false` above all.
+## Run it locally
 
----
-
-## Prerequisites
-
-- [Docker](https://docs.docker.com/get-docker/) and Docker Compose v2
-- Git
-
----
-
-## Local Development Setup
-
-### 1. Clone the repository
-
-```bash
-git clone <repo-url> pet-hotel
-cd pet-hotel
-```
-
-### 2. Set up environment file
+You need Docker and Git.
 
 ```bash
 cp .env.docker .env
-```
-
-The `.env.docker` file is pre-configured for Docker (PostgreSQL host `postgres`, Redis host `redis`, app URL `http://web.pet-hotel.local`, Mailpit for email).
-
-### 3. Add local hostnames
-
-Add these entries to your hosts file — `/etc/hosts` on Linux/Mac, `C:\Windows\System32\drivers\etc\hosts` on Windows:
-
-```
-127.0.0.1  web.pet-hotel.local
-127.0.0.1  admin.pet-hotel.local
-127.0.0.1  owner.pet-hotel.local
-127.0.0.1  mailpit.local
-```
-
-### 4. Build and start the containers
-
-```bash
 docker compose up -d
-```
-
-This starts six services:
-
-| Container             | Description              | Host port |
-|-----------------------|--------------------------|-----------|
-| `pet_hotel_app`       | PHP-FPM (Laravel)        | —         |
-| `pet_hotel_nginx`     | Nginx web server         | 80        |
-| `pet_hotel_postgres`  | PostgreSQL 16            | 5432      |
-| `pet_hotel_redis`     | Redis 7                  | 6379      |
-| `pet_hotel_queue`     | Laravel queue worker     | —         |
-| `pet_hotel_mailpit`   | Mailpit email catcher    | —         |
-
-### 5. Generate the application key
-
-```bash
 docker compose exec --user appuser app php artisan key:generate
-```
-
-### 6. Run migrations and seed the database
-
-```bash
 docker compose exec --user appuser app php artisan migrate --seed
 ```
 
-### 7. Open the app
+Add to your hosts file (`/etc/hosts`, or `C:\Windows\System32\drivers\etc\hosts` on Windows):
 
-- **App**: http://web.pet-hotel.local
-- **Admin panel**: http://admin.pet-hotel.local
-- **Owner portal**: http://owner.pet-hotel.local
-- **Mailpit** (email UI): http://mailpit.local
+```
+127.0.0.1  web.pet-hotel.local
+127.0.0.1  mailpit.local
+```
 
----
+Then open:
 
-## Frontend Hot Reload (Vite)
+| URL | What |
+|---|---|
+| http://web.pet-hotel.local | The app |
+| http://web.pet-hotel.local/admin | Admin panel — `admin@pethotel.test` / `password` |
+| http://web.pet-hotel.local/owner | Hotel owner panel — `owner@example.com` / `password` |
+| http://mailpit.local | Caught email |
 
-For active frontend development, start the `node` container (Bun + Vite dev server):
+Frontend hot reload: `docker compose --profile dev up -d` starts the Vite container.
+
+## Everyday commands
 
 ```bash
-docker compose --profile dev up -d
+docker compose exec --user appuser app php artisan test    # PHP tests
+docker compose exec --user appuser app vendor/bin/pint     # PHP formatter
+bun run test                                               # JS tests
+bun run lint                                               # ESLint
+docker compose down                                        # stop (keeps data); add -v to wipe it
 ```
 
-Vite will be available at http://localhost:5173. The app served at `web.pet-hotel.local` will automatically use the hot-reload assets.
+Always pass `--user appuser` to `docker compose exec`, or files created inside the container end up owned by root on your machine.
 
----
-
-## Daily Workflow
-
-### Start / stop
+Once per clone, turn on the secret-scanning commit hook:
 
 ```bash
-docker compose up -d          # Start all services
-docker compose down           # Stop and remove containers (data volumes are preserved)
-docker compose down -v        # Stop and also wipe all data volumes
+git config core.hooksPath .githooks
 ```
 
-### Run artisan commands
+It runs gitleaks on staged changes and refuses the commit if something looks like a credential.
 
-```bash
-docker compose exec --user appuser app php artisan <command>
-```
+## More
 
-### Run tests
-
-```bash
-docker compose exec --user appuser app php artisan test
-```
-
-### Fix PHP code style (Laravel Pint)
-
-```bash
-docker compose exec --user appuser app vendor/bin/pint
-```
-
-### Lint / format frontend
-
-```bash
-bun run lint        # Report ESLint violations
-bun run lint:fix    # Auto-fix ESLint violations
-bun run format      # Prettier format
-```
-
-### Wipe and re-seed the database
-
-```bash
-docker compose exec --user appuser app php artisan migrate:fresh --seed
-```
-
----
-
-## Project Structure
-
-```
-app/
-  Http/Controllers/     # Inertia controllers
-  Models/               # Eloquent models
-  Filament/             # Admin panel resources, pages, widgets
-resources/js/
-  Pages/                # Vue page components (resolved by Inertia)
-  Layouts/              # Shared Vue layouts
-docker/
-  nginx/                # Nginx config
-  php/                  # Dockerfile + php.ini overrides
-docs/
-  tasks.md              # Feature roadmap (Modules 0–9)
-```
-
----
-
-## Troubleshooting
-
-**App key not set** — Run step 4 (`key:generate`). The app will throw a 500 without it.
-
-**Database connection refused on first boot** — PostgreSQL takes a few seconds to initialize. The `app` container waits for a health check, but if you hit an error immediately after `up -d`, wait 10 seconds and retry.
-
-**Port conflicts** — If `:80`, `:5432`, or `:6379` are in use on your machine, edit the `ports` mappings in `docker-compose.yml` before starting.
+- [Documentation](docs/html/index.html) — user guide, booking flow, requirements, roadmap (stakeholder-facing); developer docs are the markdown under `docs/`
+- [Deployment checklist](docs/deployment-checklist.md) — read before putting it on a public host
+- [CLAUDE.md](CLAUDE.md) — conventions for working in the codebase

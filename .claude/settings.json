@@ -1,3 +1,19 @@
 {
-  "hooks": {}
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(gh pr *)",
+      "Bash(php artisan *)",
+      "Bash(composer test *)",
+      "Bash(composer audit *)",
+      "Bash(vendor/bin/pint *)",
+      "Bash(vendor/bin/phpunit *)",
+      "Bash(bun run *)",
+      "Bash(bun add *)",
+      "Bash(bun audit *)",
+      "Bash(bun outdated *)",
+      "Bash(docker compose *)",
+      "Bash(python3 *)"
+    ]
+  }
 }
