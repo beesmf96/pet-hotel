@@ -3,6 +3,7 @@
 #
 # Enable once per clone:  git config core.hooksPath .githooks
 # Uses a local gitleaks binary if present, otherwise the Docker image.
+# The image tag below must match GITLEAKS_VERSION in .github/workflows/ci.yml.
 # Skip for one commit (only if you are sure it is a false positive):
 #   SKIP_GITLEAKS=1 git commit ...
 # Then add the false positive to .gitleaks.toml so nobody has to skip again.

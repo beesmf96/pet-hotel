@@ -21,7 +21,7 @@ jobs:
       MIN_COVERAGE: '95'
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -114,7 +114,7 @@ jobs:
       # Full history: the gitleaks step scans the commit range of the push or
       # PR, and the default one-commit checkout does not contain the range's
       # parent, so the scan fails before it starts.
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -156,18 +156,21 @@ jobs:
       # a credential. GitHub push protection covers known provider tokens;
       # this catches the generic patterns (private keys, high-entropy strings)
       # that it does not. Same rules as the local .githooks/pre-commit hook.
+      # GITLEAKS_VERSION must match the image tag pinned in that hook, or CI
+      # and local scan with different rule sets.
       - name: Scan for committed secrets
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_ENABLE_SUMMARY: 'false'
+          GITLEAKS_VERSION: '8.30.1'
 
   frontend:
     name: Frontend (ESLint + Vitest)
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2

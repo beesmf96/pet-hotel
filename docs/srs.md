@@ -199,7 +199,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 |----|-------------|-----|-----------|
 | NFR-14 | Backend line coverage shall not fall below the CI floor (currently 95%). | M | `.github/workflows/ci.yml` |
 | NFR-15 | PHP shall be formatted with Pint and JavaScript linted with ESLint; both are enforced in CI. | M | `.github/workflows/ci.yml` |
-| NFR-16 | Pages shall be delivered through Inertia. JSON responses are permitted only for the hotel availability and notification widgets. | M | `.claude/CLAUDE.md` |
+| NFR-16 | Pages shall be delivered through Inertia. JSON responses are permitted only for the hotel availability and notification widgets. | M | `CLAUDE.md` |
 | NFR-17 | Availability side effects shall exist in exactly one place, `Booking::booted()`. | M | `tests/Feature/BookingTest.php` |
 
 ### 4.5 Portability and Operations
@@ -229,7 +229,7 @@ The system exposes no public API. `routes/api.php` does not exist.
 
 ## 6. Data Requirements
 
-Entities and relationships are defined in `.claude/CLAUDE.md`. Requirements that
+Entities and relationships are defined in `CLAUDE.md`. Requirements that
 constrain the data layer:
 
 | ID | Requirement |
