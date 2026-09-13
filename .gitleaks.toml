@@ -1,0 +1,13 @@
+# gitleaks config shared by the pre-commit hook and CI.
+# Start from the built-in rules; only add allowlist entries here for
+# confirmed false positives, with a comment saying why.
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Tracked local templates hold placeholders only"
+paths = [
+    '''^\.env\.docker$''',
+    '''^\.env\.example$''',
+]

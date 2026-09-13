@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+# Blocks a commit that contains something that looks like a secret.
+#
+# Enable once per clone:  git config core.hooksPath .githooks
+# Uses a local gitleaks binary if present, otherwise the Docker image.
+# Skip for one commit (only if you are sure it is a false positive):
+#   SKIP_GITLEAKS=1 git commit ...
+# Then add the false positive to .gitleaks.toml so nobody has to skip again.
+
+set -e
+
+if [ -n "$SKIP_GITLEAKS" ]; then
+    echo "pre-commit: gitleaks skipped (SKIP_GITLEAKS set)"
+    exit 0
+fi
+
+if command -v gitleaks >/dev/null 2>&1; then
+    gitleaks git --staged --redact --no-banner
+elif command -v docker >/dev/null 2>&1; then
+    docker run --rm -v "$(git rev-parse --show-toplevel):/repo" \
+        zricethezav/gitleaks:v8.30.1 git --staged --redact --no-banner /repo
+else
+    echo "pre-commit: neither gitleaks nor docker found; install one of them" >&2
+    exit 1
+fi

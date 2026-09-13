@@ -43,6 +43,14 @@ docker compose down                                        # stop (keeps data); 
 
 Always pass `--user appuser` to `docker compose exec`, or files created inside the container end up owned by root on your machine.
 
+Once per clone, turn on the secret-scanning commit hook:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+It runs gitleaks on staged changes and refuses the commit if something looks like a credential.
+
 ## More
 
 - [Documentation](docs/index.html) — user guide, booking flow, requirements, roadmap

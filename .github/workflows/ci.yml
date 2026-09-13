@@ -147,6 +147,16 @@ jobs:
         continue-on-error: true
         run: bun audit
 
+      # Blocking. Scans every commit in the push or PR for anything shaped like
+      # a credential. GitHub push protection covers known provider tokens;
+      # this catches the generic patterns (private keys, high-entropy strings)
+      # that it does not. Same rules as the local .githooks/pre-commit hook.
+      - name: Scan for committed secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_SUMMARY: 'false'
+
   frontend:
     name: Frontend (ESLint + Vitest)
     runs-on: ubuntu-latest
