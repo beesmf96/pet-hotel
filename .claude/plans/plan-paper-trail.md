@@ -17,7 +17,8 @@ convention is a later decision.
 
 ## Scope
 - Four folders under `docs/` with a `_template.md` each
-- `docs/build.php` renders each collection to per-entry pages plus an index
+- Docs split by audience: only `audience: stakeholder` markdown renders, into
+  `docs/html/`; the paper trail stays as markdown
 - `docs/paper-trail.md` states the rules and the bar for each record type
 - `CLAUDE.md` gains the "log entry or not done" rule and the intake rule
 - First real entries: ADR 0001 and the log entry for this task
@@ -37,14 +38,13 @@ None.
 None. Docs only.
 
 ## Acceptance Criteria
-- [x] `php docs/build.php` renders the four collections and their indexes
-- [x] Templates are skipped by the renderer
+- [x] `php docs/build.php` renders only stakeholder pages, into `docs/html/`
+- [x] Paper trail folders produce no HTML
 - [x] Rules page explains when each record is written
 - [x] `CLAUDE.md` names the rule
 
 ## Edge Cases
-- Empty collection renders an index with "No entries yet."
-- Two entries on the same date sort by slug.
+- A markdown file without `audience: stakeholder` is skipped and reported.
 
 ## Open Questions
 None.

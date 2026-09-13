@@ -18,9 +18,11 @@ security state on the day. Apply to this project first, consider global later.
 
 ## Done
 - Four folders under `docs/` (`log`, `adr`, `knowledge`, `intake`), each with
-  a `_template.md`.
-- `docs/build.php` renders each collection to per-entry pages and a
-  newest-first index, and lists the collections on the main docs index.
+  a `_template.md`. They are coder-facing markdown and are not rendered.
+- Split the docs by audience: markdown under `docs/` is coder-facing by
+  default; only pages marked `audience: stakeholder` render, and they now
+  render into a dedicated `docs/html/` folder with the hand-written pages and
+  the stylesheet. Generated HTML for runbooks and the paper trail was removed.
 - `docs/paper-trail.md` states the rules and the bar for each record type.
 - `CLAUDE.md` names the log entry as part of the definition of done, and the
   intake entry as a step before adding a dependency.
@@ -38,5 +40,5 @@ security state on the day. Apply to this project first, consider global later.
 - Intake: none
 
 ## Verified
-`php docs/build.php` renders all collections. `composer test` and
+`php docs/build.php` renders the stakeholder pages only. `composer test` and
 `vendor/bin/pint --test` run clean. See the PR for the actual output.

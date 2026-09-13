@@ -21,8 +21,8 @@ This changes the definition of done for every task, which is why it is an ADR
 and not just a docs page.
 
 ## Decision
-We will keep four record types under `docs/`, one file per entry, rendered by
-the existing docs builder:
+We will keep four record types under `docs/`, one file per entry, as
+coder-facing markdown that is never rendered to the stakeholder HTML site:
 
 - a session log entry for every completed task, in the same PR as the work
 - an ADR for any decision that is destructive, irreversible, or against convention
@@ -43,6 +43,9 @@ knowledge entries, not in per-machine memory. The rules are in
 - Rely on git history: noisy, and a decision cannot be read out of a diff.
 
 ## Consequences
+- Markdown under `docs/` is now coder-facing by default; only pages marked
+  `audience: stakeholder` render to `docs/html/`. Developer docs stay out of
+  the site shown to users and stakeholders.
 - Every PR carries at least one docs file. Small, but never zero.
 - Reviewers can ask "where is the log entry" and reject a PR without one.
 - The bar for ADR, knowledge, and intake must be held. If entries are written

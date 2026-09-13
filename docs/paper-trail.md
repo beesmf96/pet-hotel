@@ -11,9 +11,10 @@ Records written **after** work is done. Plans in `.claude/plans/` say what we
 intended. These say what happened, what we decided, what we learnt, and what we
 let in. They are the primary source when someone asks for a recap of past work.
 
-All four live under `docs/` as markdown, one file per entry, and are rendered
-by `php docs/build.php` into a per-collection index. Each folder has a
-`_template.md` to copy. Files starting with `_` are not rendered.
+All four live under `docs/` as markdown, one file per entry, and are
+coder-facing: they are read in the repo and never rendered to `docs/html/`.
+Each folder has a `_template.md` to copy. `ls` the folder for the index; the
+file names carry the date or number.
 
 | Collection | Folder | Written when | File name |
 |---|---|---|---|

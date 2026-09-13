@@ -18,14 +18,17 @@ vendor/bin/pint       # PHP formatter
 
 ### Documentation
 ```bash
-php docs/build.php     # renders docs/*.md → docs/*.html and regenerates index.html
+php docs/build.php     # renders stakeholder docs → docs/html/ and regenerates its index.html
 ```
 
-Markdown under `docs/` is the source of truth. Never hand-edit a generated
-`.html` file — `user_guide.html`, `booking-flow.html`, and
-`pet-hotel-boarding-mvp-v1.html` predate the renderer and are the only
-hand-written pages left; they are listed in `STATIC_DOCS` in `docs/build.php`.
-Page styling lives in `docs/assets/doc.css`.
+Markdown under `docs/` is the source of truth and is **coder-facing by
+default** — runbooks, the paper trail, anything a developer reads in the repo.
+Only files with `audience: stakeholder` in their frontmatter are rendered to
+`docs/html/`, which is the user- and stakeholder-facing site. Never hand-edit
+a generated `.html` file — `user_guide.html`, `booking-flow.html`, and
+`pet-hotel-boarding-mvp-v1.html` in `docs/html/` predate the renderer and are
+the only hand-written pages left; they are listed in `STATIC_DOCS` in
+`docs/build.php`. Page styling lives in `docs/html/assets/doc.css`.
 
 ### Docker
 ```bash
@@ -75,7 +78,6 @@ Cloud that is a worker in the dashboard, not something the repo can declare.
 3. For frontend changes, `bun run lint`
 4. A session log entry in `docs/log/` (rules and bar: `docs/paper-trail.md`).
    Add an ADR, knowledge entry, or intake entry only when the bar there is met.
-   Run `php docs/build.php` so the indexes are current.
 
 ## Paper trail
 

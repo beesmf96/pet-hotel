@@ -58,7 +58,6 @@ body.index {
 
 .doc-title { font-weight: 600; font-size: 1rem; margin-bottom: 0.2rem; }
 .doc-desc { color: var(--muted); font-size: 0.875rem; }
-.empty { color: var(--muted); text-align: center; padding: 2rem 0; }
 
 .badge {
   display: inline-block;

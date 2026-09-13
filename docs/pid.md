@@ -2,6 +2,7 @@
 title: Project Initiation Document
 description: Background, objectives, scope, deliverables, milestones, risks, and acceptance criteria for the MVP.
 badges: Governance
+audience: stakeholder
 order: 10
 ---
 
@@ -33,8 +34,8 @@ Related documents:
 |----------|----------|--------|
 | MVP requirements | `docs/pet-hotel-boarding-mvp-v1.html` | Original functional / non-functional requirements |
 | Task list | `docs/tasks.md` | Work breakdown, Modules 0–9 |
-| User guide | `docs/user_guide.html` | End-user instructions (pet owner, admin, hotel owner) |
-| Booking flow | `docs/booking-flow.html` | Step-by-step booking journey |
+| User guide | `docs/html/user_guide.html` | End-user instructions (pet owner, admin, hotel owner) |
+| Booking flow | `docs/html/booking-flow.html` | Step-by-step booking journey |
 | Deployment checklist | `docs/deployment-checklist.md` | Release / go-live steps |
 | Stack & domain reference | `.claude/CLAUDE.md` | Architecture and domain model |
 

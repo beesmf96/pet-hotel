@@ -2,6 +2,7 @@
 title: Software Requirements Specification
 description: Numbered functional and non-functional requirements, each traced to the module, route, and tests that satisfy it.
 badges: Requirements
+audience: stakeholder
 order: 12
 ---
 
