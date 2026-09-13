@@ -2,7 +2,7 @@
 title: Intake entries for gitleaks
 description: Backfilled the dependency intake for the gitleaks scanner and the gitleaks GitHub Action.
 date: 2026-09-13
-pr: ~
+pr: 36
 plan: ~
 ---
 
