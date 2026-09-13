@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\BookingController;
@@ -65,6 +66,8 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/profile', [UserController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [UserController::class, 'update'])->name('profile.update');
+        Route::put('/profile/password', [PasswordController::class, 'update'])
+            ->middleware('throttle:5,1')->name('profile.password.update');
 
         Route::get('/pets', [PetController::class, 'index'])->name('pets.index');
         Route::post('/pets', [PetController::class, 'store'])->name('pets.store');

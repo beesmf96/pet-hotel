@@ -13,6 +13,9 @@ class UserController extends Controller
     {
         return Inertia::render('Profile', [
             'user' => auth()->user()->only('name', 'email', 'phone', 'preferred_location'),
+            // OAuth-only accounts have no password to confirm, so the page shows
+            // a set-password form instead of a change-password one.
+            'hasPassword' => auth()->user()->password !== null,
         ]);
     }
 

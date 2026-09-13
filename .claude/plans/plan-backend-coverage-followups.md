@@ -1,6 +1,6 @@
 ---
 plan: backend-coverage-followups
-status: in-progress
+status: deferred
 branch: feature/photos-relation-manager-coverage
 pr: https://github.com/beesmf96/pet-hotel/pull/9
 implemented: 2026-08-01 (item 3 only; items 1 and 2 deferred to the maintainer)
