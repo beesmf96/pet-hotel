@@ -49,6 +49,10 @@ Add to `/etc/hosts` (or `C:\Windows\System32\drivers\etc\hosts`):
 127.0.0.1  mailpit.local            # caught email
 ```
 
+Nginx also serves the app on `http://localhost`. Google rejects `.local` redirect
+URIs, so Google login is tested at `http://localhost` end to end (the session
+cookie is host-only, so the flow must start and finish on the same host).
+
 ## Queue worker
 
 Booking notifications (`app/Jobs/SendBooking*Notification.php`) are queued, and
