@@ -46,6 +46,11 @@ not capability.
   recommends v6 as the matching Node 24 release; v7 adds only a block on
   checking out fork PRs under `pull_request_target`, which this workflow
   does not use.
+- Version drift, handled. The Action installs its own gitleaks binary and
+  defaulted to 8.24.3 on the first v3 run (2026-09-13), while the local hook
+  pins the 8.30.1 image. `GITLEAKS_VERSION: '8.30.1'` is now set in the
+  workflow (PR #39) so CI and local run the same rule set. Bump both places
+  together; each carries a comment pointing at the other.
 - Licence. From v2.0.0 the Action is under a Gitleaks LLC end-user licence,
   not MIT. Personal accounts need no key. Organization accounts need a free
   licence key set as `GITLEAKS_LICENSE`. The Action enforces this itself.
