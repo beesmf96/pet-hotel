@@ -11,6 +11,7 @@ vi.mock('@inertiajs/vue3', () => ({
     router: { delete: vi.fn() },
 }))
 
+import { router } from '@inertiajs/vue3'
 import PetsPage from '@/Pages/Pets.vue'
 
 const basePet = {
@@ -77,5 +78,70 @@ describe('Pets page — pet card rendering', () => {
     it('hides special needs when null', () => {
         const w = mount(PetsPage, { props: { pets: [basePet] } })
         expect(w.text()).not.toContain('Needs insulin shots')
+    })
+})
+
+describe('Pets page — modal and actions', () => {
+    const modalStub = {
+        props: ['show', 'pet'],
+        emits: ['close'],
+        template: '<div data-testid="pet-form-modal" :data-show="show" :data-pet="pet ? pet.id : \'\'" />',
+    }
+
+    // The mock above renders a bare div; this test group needs the real props, so it
+    // swaps in a stub that exposes them as data attributes.
+    const mountWithStub = (pets) =>
+        mount(PetsPage, { props: { pets }, global: { stubs: { PetFormModal: modalStub } } })
+
+    const modal = (w) => w.find('[data-testid="pet-form-modal"]')
+    const button = (w, label) => w.findAll('button').find((b) => b.text() === label)
+
+    it('starts with the modal hidden', () => {
+        const w = mountWithStub([basePet])
+        expect(modal(w).attributes('data-show')).toBe('false')
+    })
+
+    it('"+ Add Pet" opens the modal with no pet', async () => {
+        const w = mountWithStub([basePet])
+        await button(w, '+ Add Pet').trigger('click')
+        expect(modal(w).attributes('data-show')).toBe('true')
+        expect(modal(w).attributes('data-pet')).toBe('')
+    })
+
+    it('"Add your first pet" in the empty state opens the modal', async () => {
+        const w = mountWithStub([])
+        await button(w, 'Add your first pet').trigger('click')
+        expect(modal(w).attributes('data-show')).toBe('true')
+    })
+
+    it('"Edit" opens the modal with that pet', async () => {
+        const w = mountWithStub([basePet])
+        await button(w, 'Edit').trigger('click')
+        expect(modal(w).attributes('data-show')).toBe('true')
+        expect(modal(w).attributes('data-pet')).toBe('1')
+    })
+
+    it('close event hides the modal and clears the pet', async () => {
+        const w = mountWithStub([basePet])
+        await button(w, 'Edit').trigger('click')
+        await w.findComponent(modalStub).vm.$emit('close')
+        expect(modal(w).attributes('data-show')).toBe('false')
+        expect(modal(w).attributes('data-pet')).toBe('')
+    })
+
+    it('"Remove" deletes the pet when confirmed', async () => {
+        vi.spyOn(window, 'confirm').mockReturnValue(true)
+        const w = mountWithStub([basePet])
+        await button(w, 'Remove').trigger('click')
+        expect(window.confirm).toHaveBeenCalledWith('Remove Buddy?')
+        expect(router.delete).toHaveBeenCalledWith('/pets/1')
+    })
+
+    it('"Remove" does nothing when the confirm is dismissed', async () => {
+        vi.spyOn(window, 'confirm').mockReturnValue(false)
+        router.delete.mockClear()
+        const w = mountWithStub([basePet])
+        await button(w, 'Remove').trigger('click')
+        expect(router.delete).not.toHaveBeenCalled()
     })
 })
