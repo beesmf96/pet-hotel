@@ -71,11 +71,6 @@ point for scope decisions and the baseline against which delivery is measured.</
 <td>Original functional / non-functional requirements</td>
 </tr>
 <tr>
-<td>Task list</td>
-<td><code>docs-src/tasks.md</code></td>
-<td>Work breakdown, Modules 0–9</td>
-</tr>
-<tr>
 <td>User guide</td>
 <td><code>docs/user_guide.html</code></td>
 <td>End-user instructions (pet owner, admin, hotel owner)</td>
@@ -398,7 +393,7 @@ documented XHR widgets (hotel availability, notifications).</li>
 </tbody>
 </table></div>
 <h3><a id="72-delivery-method" href="#content-72-delivery-method" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>7.2 Delivery method</h3>
-<p>Work is broken into modules (see <code>docs-src/tasks.md</code>) delivered incrementally. Each
+<p>Work was broken into modules (see §8) delivered incrementally. Each
 change is developed on a <code>feature/{name}</code> branch cut from <code>dev</code>, opened as a pull
 request to <code>dev</code>, and merged only after human review. <code>main</code> receives a release pull
 request from <code>dev</code> when the product owner asks for one. Larger pieces of work carry a
@@ -417,6 +412,8 @@ plan file in <code>.claude/plans/</code>, and every completed task gets a sessio
 build green.</p>
 <hr />
 <h2><a id="8-work-breakdown-and-milestones" href="#content-8-work-breakdown-and-milestones" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>8. Work Breakdown and Milestones</h2>
+<p>The module-by-module task list was retired on 2026-09-16 once every item was
+delivered. The session log in <code>docs-src/log/</code> is now the record of what shipped.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -597,7 +594,7 @@ document and, where implementation work follows, a plan file in <code>.claude/pl
 <tr>
 <td>1.1</td>
 <td>2026-09-16</td>
-<td>Audit against the code: sorting claims, coverage floors, branching model, CI triggers, stack versions, post-MVP list</td>
+<td>Audit against the code: sorting claims, coverage floors, branching model, CI triggers, stack versions, post-MVP list; task list retired</td>
 <td><em>TBC</em></td>
 </tr>
 </tbody>

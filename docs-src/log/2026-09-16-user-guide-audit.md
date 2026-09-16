@@ -1,6 +1,6 @@
 ---
 title: Stakeholder docs audit
-description: Checked the user guide, booking flow, SRS, and PID against the code; fixed the stale parts, made MYR the currency everywhere, loaded the average rating for search cards, and made the Docker cache actually use Redis.
+description: Checked the user guide, booking flow, SRS, PID, and deployment checklist against the code; fixed the stale parts, retired the task list, made MYR the currency everywhere, loaded the average rating for search cards, and made the Docker cache actually use Redis.
 date: 2026-09-16
 pr: 49
 plan: ~
@@ -13,7 +13,9 @@ plan: ~
 then "update the guide and fix the USD label too". A follow-up asked for
 the same audit of `docs/booking-flow.html`, with "MYR wins" for the
 currency and a fix for the search-card rating. A third follow-up asked for the
-same audit of the SRS and PID, with "redis should be true" for the cache.
+same audit of the SRS and PID, with "redis should be true" for the cache. A
+fourth asked for the deployment checklist, and to remove the task list from the
+index and, if possible, altogether "since it is already done".
 
 ## Done
 - Docs: `docs/user_guide.html` (a hand-written page in `STATIC_DOCS`, not
@@ -50,6 +52,21 @@ same audit of the SRS and PID, with "redis should be true" for the cache.
 - Docs: `docs/srs.html` and `docs/pid.html` regenerated with
   `php docs-src/build.php`. Before the edits the build reproduced the
   committed HTML exactly, so the HTML had not drifted from the markdown.
+- Docs: `docs-src/deployment-checklist.md` checked claim by claim against
+  `composer.json`, `config/`, the env template, and live headers from the
+  `dev` environment. Nearly all of it holds: the S3 and AWS SDK packages are
+  still absent, the Google redirect default, the session secure flag, the
+  CSP mode, the mail default, the cookie name, HSTS, and the known gaps are
+  all as described. Changed: the `dev` URL does not send `X-Robots-Tag`, so
+  that sentence is now a check rather than a promise; PHP 8.4 to match
+  Docker; the two `composer require` steps now say to write the intake
+  entry first.
+- Docs: `docs-src/tasks.md` and `docs/tasks.html` deleted. Every checkbox
+  was ticked and the paper trail (ADR-0001) already made the log the record
+  of what shipped. References in `CLAUDE.md`, the SRS, and the PID now point
+  to the log; the PID milestones table stays as the summary. ADR-0001 keeps
+  its historical mention, as ADRs are not edited after acceptance. The file
+  remains in git history.
 - Infra: `.env.docker` set `CACHE_DRIVER=redis`, a key Laravel no longer
   reads, so the Docker cache silently fell back to the database store. Now
   `CACHE_STORE=redis`. A running stack needs the same change in its `.env`.

@@ -33,7 +33,6 @@ Related documents:
 | Document | Location | Covers |
 |----------|----------|--------|
 | MVP requirements | `docs/pet-hotel-boarding-mvp-v1.html` | Original functional / non-functional requirements |
-| Task list | `docs-src/tasks.md` | Work breakdown, Modules 0–9 |
 | User guide | `docs/user_guide.html` | End-user instructions (pet owner, admin, hotel owner) |
 | Booking flow | `docs/booking-flow.html` | Step-by-step booking journey |
 | Deployment checklist | `docs-src/deployment-checklist.md` | Release / go-live steps |
@@ -187,7 +186,7 @@ each request — which keeps the MVP simple and avoids payment integration.
 
 ### 7.2 Delivery method
 
-Work is broken into modules (see `docs-src/tasks.md`) delivered incrementally. Each
+Work was broken into modules (see §8) delivered incrementally. Each
 change is developed on a `feature/{name}` branch cut from `dev`, opened as a pull
 request to `dev`, and merged only after human review. `main` receives a release pull
 request from `dev` when the product owner asks for one. Larger pieces of work carry a
@@ -210,6 +209,9 @@ build green.
 ---
 
 ## 8. Work Breakdown and Milestones
+
+The module-by-module task list was retired on 2026-09-16 once every item was
+delivered. The session log in `docs-src/log/` is now the record of what shipped.
 
 | # | Milestone | Modules | Status |
 |---|-----------|---------|--------|
@@ -277,4 +279,4 @@ document and, where implementation work follows, a plan file in `.claude/plans/`
 | Version | Date | Change | Author |
 |---------|------|--------|--------|
 | 1.0 | 2026-08-08 | Initial baseline | *TBC* |
-| 1.1 | 2026-09-16 | Audit against the code: sorting claims, coverage floors, branching model, CI triggers, stack versions, post-MVP list | *TBC* |
+| 1.1 | 2026-09-16 | Audit against the code: sorting claims, coverage floors, branching model, CI triggers, stack versions, post-MVP list; task list retired | *TBC* |

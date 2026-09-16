@@ -14,7 +14,7 @@ order: 12
 | Date | 2026-09-16 |
 | Status | Baselined against the delivered MVP |
 | Supersedes | `docs/pet-hotel-boarding-mvp-v1.html` (retained as the original scope statement) |
-| Related | [Project Initiation Document](pid.html) · [Task List](tasks.html) |
+| Related | [Project Initiation Document](pid.html) |
 
 ---
 
