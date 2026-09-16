@@ -34,3 +34,14 @@ describe('BookingConfirmationPage', () => {
         expect(hrefs).toEqual(expect.arrayContaining(['/bookings', '/hotels']))
     })
 })
+
+describe('BookingConfirmationPage — ISO timestamp dates', () => {
+    it('formats dates that arrive as full timestamps from the date cast', () => {
+        const w = mount(BookingConfirmationPage, {
+            props: { booking: { ...booking, check_in: '2026-10-01T00:00:00.000000Z', check_out: '2026-10-04T00:00:00.000000Z' } },
+        })
+        expect(w.text()).toContain('Thu, Oct 1, 2026')
+        expect(w.text()).toContain('Sun, Oct 4, 2026')
+        expect(w.text()).not.toContain('Invalid Date')
+    })
+})

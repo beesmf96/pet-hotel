@@ -1,6 +1,6 @@
 ---
 title: Customer pages redesign (playful bold)
-description: Rebuilt the landing page, app layout, search, hotel profile and booking form in the "Playful bold" direction chosen from three design proposals.
+description: Rebuilt the landing page, app layout, search, hotel profile, booking form, booking confirmation and my bookings in the "Playful bold" direction chosen from three design proposals.
 date: 2026-09-16
 pr: 51
 plan: ~
@@ -14,7 +14,8 @@ attractive for a pet hotel searching platform. can we have 3 different design
 proposal, see which one is good?" The user then picked direction B, "Playful
 bold". A second request in the same session: apply the same style to the
 search page, with the shared app layout included, on the same branch. A third
-request: the hotel profile page too, same branch. A fourth: the booking form.
+request: the hotel profile page too, same branch. A fourth: the booking form. A fifth: the booking confirmation and my
+bookings pages.
 
 ## Done
 - Design: three directions (warm editorial, playful bold, clean marketplace)
@@ -49,6 +50,14 @@ request: the hotel profile page too, same branch. A fourth: the booking form.
 - Frontend: `AvailabilityCalendar.vue` selected check-in and check-out cells
   are now ink on cream, and the nights in between are mustard. The
   available, limited, full and past cell colours are unchanged.
+- Frontend: `BookingConfirmationPage.vue` and `MyBookingsPage.vue` restyled.
+  Status pills are outlined and use the palette (mustard pending, teal
+  confirmed, light teal completed, white cancelled). `LeaveReviewModal.vue`
+  matches, with mustard stars.
+- Bug fix: the confirmation page showed "Invalid Date" for check-in and
+  check-out. The controller passes the raw model, so the `date` cast arrives
+  as a full ISO timestamp, and the page appended a local midnight to it. The
+  formatter now keeps only the date part, with a test for the timestamp form.
 - Bug fix: `HotelController` and `ReviewController` sent `reviews_count` and
   `average_rating`, but both pages declare `reviewsCount` and `averageRating`.
   Vue does not map snake_case to camelCase, so the profile always showed
@@ -67,10 +76,9 @@ request: the hotel profile page too, same branch. A fourth: the booking form.
   in users. There is no dedicated owner onboarding page yet.
 
 ## Not done
-- The booking confirmation, booking detail, my bookings, reviews list, pets,
-  profile, dashboard and auth pages keep their grey cards inside the new
-  chrome. Restyling them is a follow-up; the booking confirmation and my
-  bookings pages are the natural next ones since the booking form leads there.
+- The booking detail, reviews list, pets, profile, dashboard and auth pages
+  keep their grey cards inside the new chrome. Restyling them is a follow-up;
+  the booking detail page is the natural next one since my bookings links to it.
 - The design canvas still shows all three directions; it was not trimmed to
   the chosen one.
 
@@ -80,17 +88,19 @@ request: the hotel profile page too, same branch. A fourth: the booking form.
 - Intake: ../intake/fontsource-bricolage-grotesque.md
 
 ## Verified
-- `bun run test`: 28 files, 229 tests passed (new specs for the card, the
-  bold search bar, both featured-section branches, and the empty-array sort
-  default).
+- `bun run test`: 28 files, 230 tests passed (new specs for the card, the
+  bold search bar, both featured-section branches, the empty-array sort
+  default, and the confirmation page's timestamp dates).
 - `bun run lint`: 0 errors, 7 warnings, one fewer than `dev` (the existing
   `require-default-prop` pattern).
 - `composer test` in Docker: 377 passed, including the renamed review prop
   assertions. `vendor/bin/pint --test`: pass.
-- Headless Chromium screenshots of the landing, search, hotel profile and
-  booking form pages at 1440px and 400px wide, plus the search empty state
-  (the booking form was captured through the DevTools protocol with a
-  throwaway logged-in session, deleted afterwards): no horizontal overflow, headline
+- Headless Chromium screenshots of the landing, search, hotel profile,
+  booking form, booking confirmation and my bookings pages at 1440px and
+  400px wide, plus the search empty state (the signed-in pages were captured
+  through the DevTools protocol with a throwaway user, pet and four bookings
+  in the local Docker database, all deleted afterwards): no horizontal overflow, headline
   on two lines on desktop, fields and sidebar stack on phone, sort select
   shows "Newest first", the profile's review summary shows the average and
-  count.
+  count, the confirmation page shows real dates, my bookings shows all four
+  status pills.
