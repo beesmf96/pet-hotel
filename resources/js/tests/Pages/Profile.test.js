@@ -102,3 +102,67 @@ describe('Profile page — password card', () => {
         expect(w.text()).toContain('The current password is incorrect.')
     })
 })
+
+describe('Profile page — profile form', () => {
+    it('patches /profile on submit', async () => {
+        const w = mount(ProfilePage, { props: { user } })
+        await w.findAll('form')[0].trigger('submit')
+        expect(formState.patch).toHaveBeenCalledWith('/profile')
+    })
+
+    it('disables the save button while processing', () => {
+        formState.processing = true
+        const w = mount(ProfilePage, { props: { user } })
+        expect(w.findAll('form')[0].find('button[type="submit"]').attributes('disabled')).toBeDefined()
+        formState.processing = false
+    })
+
+    it('renders validation errors for name, phone, and preferred location', () => {
+        formState.errors = {
+            name: 'Name is required.',
+            phone: 'Phone is invalid.',
+            preferred_location: 'Location is too long.',
+        }
+        const w = mount(ProfilePage, { props: { user } })
+        expect(w.text()).toContain('Name is required.')
+        expect(w.text()).toContain('Phone is invalid.')
+        expect(w.text()).toContain('Location is too long.')
+    })
+})
+
+describe('Profile page — password form callbacks', () => {
+    const submitPassword = async () => {
+        const w = mount(ProfilePage, { props: { user, hasPassword: true } })
+        await w.findAll('form')[1].trigger('submit')
+        return passwordFormState.put.mock.calls.at(-1)[1]
+    }
+
+    it('clears the whole form on success', async () => {
+        passwordFormState.reset.mockClear()
+        const options = await submitPassword()
+        options.onSuccess()
+        expect(passwordFormState.reset).toHaveBeenCalledWith()
+    })
+
+    it('clears the password fields on error so nothing stale is resubmitted', async () => {
+        passwordFormState.reset.mockClear()
+        const options = await submitPassword()
+        options.onError()
+        expect(passwordFormState.reset).toHaveBeenCalledWith(
+            'current_password',
+            'password',
+            'password_confirmation',
+        )
+    })
+
+    it('keeps scroll position on submit', async () => {
+        const options = await submitPassword()
+        expect(options.preserveScroll).toBe(true)
+    })
+
+    it('shows Saved! after a successful password change', () => {
+        passwordFormState.recentlySuccessful = true
+        const w = mount(ProfilePage, { props: { user, hasPassword: true } })
+        expect(w.findAll('form')[1].text()).toContain('Saved!')
+    })
+})
