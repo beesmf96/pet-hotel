@@ -2,7 +2,7 @@
 
 **Pet Hotel** — a pet boarding marketplace. Customers search, book, and review
 boarding stays; hotel owners manage listings through a Filament panel. Feature
-roadmap and status: `docs/tasks.md`.
+roadmap and status: `docs-src/tasks.md`.
 
 This file records what you cannot infer from the code: workflow, decisions, and
 traps. For everything else — naming, structure, style — match the surrounding code.
@@ -38,7 +38,7 @@ composer test         # Clears config cache, then PHPUnit
 bun run test          # Vitest
 bun run lint          # ESLint (bun run lint:fix to autofix)
 vendor/bin/pint       # PHP formatter
-php docs/build.php    # renders stakeholder docs → docs/html/
+php docs-src/build.php # renders stakeholder docs → docs/ (the GitHub Pages site)
 ```
 
 Docker: `docker compose up -d` (add `--profile dev` for the Vite container). **Always pass
@@ -93,7 +93,7 @@ when a page gains a prop-driven `v-if` branch, add one test per branch.
 
 1. Tests exist for the new behaviour, and `composer test` passes
 2. `vendor/bin/pint`; for frontend changes, `bun run lint`
-3. A session log entry in `docs/log/` (rules: `docs/paper-trail.md`). Add an ADR, knowledge
+3. A session log entry in `docs-src/log/` (rules: `docs-src/paper-trail.md`). Add an ADR, knowledge
    entry, or intake entry only when the bar there is met. Write an intake entry **before**
    adding any package, binary, image, or action.
 
@@ -101,9 +101,10 @@ The log is the primary source for any recap of past work — read it before git 
 
 ## Docs
 
-Markdown under `docs/` is coder-facing by default. Only files with `audience: stakeholder`
-render to `docs/html/`. Never hand-edit a generated `.html` — the hand-written exceptions
-are listed in `STATIC_DOCS` in `docs/build.php`.
+`docs/` is the GitHub Pages site (served from `main:/docs`) and holds HTML only — never put
+markdown there, and keep its `.nojekyll`. Markdown lives under `docs-src/` and is coder-facing by
+default. Only files with `audience: stakeholder` render to `docs/`. Never hand-edit a
+generated `.html` — the hand-written exceptions are listed in `STATIC_DOCS` in `docs-src/build.php`.
 
 ## Shipping work
 

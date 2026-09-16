@@ -11,17 +11,17 @@ Records written **after** work is done. Plans in `.claude/plans/` say what we
 intended. These say what happened, what we decided, what we learnt, and what we
 let in. They are the primary source when someone asks for a recap of past work.
 
-All four live under `docs/` as markdown, one file per entry, and are
-coder-facing: they are read in the repo and never rendered to `docs/html/`.
+All four live under `docs-src/` as markdown, one file per entry, and are
+coder-facing: they are read in the repo and never rendered to `docs/`.
 Each folder has a `_template.md` to copy. `ls` the folder for the index; the
 file names carry the date or number.
 
 | Collection | Folder | Written when | File name |
 |---|---|---|---|
-| Session log | `docs/log/` | Every completed task | `YYYY-MM-DD-{slug}.md` |
-| Decision record (ADR) | `docs/adr/` | A decision meets the bar below | `NNNN-{slug}.md` |
-| Knowledge entry | `docs/knowledge/` | We learnt something non-obvious | `{slug}.md` |
-| Dependency intake | `docs/intake/` | Before adding any dependency | `{name}.md` |
+| Session log | `docs-src/log/` | Every completed task | `YYYY-MM-DD-{slug}.md` |
+| Decision record (ADR) | `docs-src/adr/` | A decision meets the bar below | `NNNN-{slug}.md` |
+| Knowledge entry | `docs-src/knowledge/` | We learnt something non-obvious | `{slug}.md` |
+| Dependency intake | `docs-src/intake/` | Before adding any dependency | `{name}.md` |
 
 ## Session log
 
@@ -32,7 +32,7 @@ what was left out, what other records it produced, and how it was verified.
 A task too small to fill that template does not get an entry. A commit message
 is enough for it.
 
-**Recap rule.** To answer "what did we do", read `docs/log/` by date first.
+**Recap rule.** To answer "what did we do", read `docs-src/log/` by date first.
 Fall back to git history only for detail the log does not carry.
 
 ## Decision record
