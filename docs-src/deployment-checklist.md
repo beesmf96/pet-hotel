@@ -24,16 +24,11 @@ Production should track `main`.
 
 These have to be true in the code before Cloud can run it.
 
-- [ ] **S3 driver installed.** Cloud object storage is S3-compatible and needs
-      the Flysystem adapter, which is **not yet in `composer.json`**. Write the
-      intake entry in `docs-src/intake/` first (see `docs-src/paper-trail.md`),
-      then:
-
-      ```bash
-      composer require league/flysystem-aws-s3-v3 "^3.0" --with-all-dependencies
-      ```
-
-      Without it, `PHOTO_DISK=s3` throws on the first upload.
+- [x] **S3 driver installed.** Cloud object storage is S3-compatible and needs
+      the Flysystem adapter. `league/flysystem-aws-s3-v3` has been in
+      `composer.json` since 2026-09-16 (intake:
+      `docs-src/intake/flysystem-aws-s3-v3.md`). Without it, `PHOTO_DISK=s3`
+      throws on the first upload.
 
 - [ ] `composer.lock` and `bun.lock` are committed and up to date. Cloud reads
       the lock files at build time.
@@ -165,8 +160,8 @@ Pick one:
 - [ ] **Managed queue (recommended).** Canvas → **Add compute → Managed queue**.
       Name it `default`, Flex class, 256 MiB, 0 to 3 workers. Deploying sets
       `QUEUE_CONNECTION=cloud` for you. Failed jobs appear under
-      **Monitoring → Queues**. Requires `aws/aws-sdk-php` in `composer.json`
-      (it is not there yet; add it the same way as step 1, intake entry first).
+      **Monitoring → Queues**. Requires `aws/aws-sdk-php`, which the S3
+      adapter from step 1 already pulls in.
 - [ ] **Or a background process on the App cluster.** Click the App cluster →
       **Background processes → New background process → Queue worker**.
       Connection `redis`, queue `default`, 1 process. Set

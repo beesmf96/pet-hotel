@@ -15,7 +15,8 @@ the same audit of `docs/booking-flow.html`, with "MYR wins" for the
 currency and a fix for the search-card rating. A third follow-up asked for the
 same audit of the SRS and PID, with "redis should be true" for the cache. A
 fourth asked for the deployment checklist, and to remove the task list from the
-index and, if possible, altogether "since it is already done".
+index and, if possible, altogether "since it is already done". A fifth asked to
+"fix the dev env photo disk too" after the live CSP showed no bucket origin.
 
 ## Done
 - Docs: `docs/user_guide.html` (a hand-written page in `STATIC_DOCS`, not
@@ -67,6 +68,14 @@ index and, if possible, altogether "since it is already done".
   to the log; the PID milestones table stays as the summary. ADR-0001 keeps
   its historical mention, as ADRs are not edited after acceptance. The file
   remains in git history.
+- Infra: added `league/flysystem-aws-s3-v3` (^3.0, 3.35.3 installed; pulls
+  in `aws/aws-sdk-php` 3.395.3, `aws/aws-crt-php`, `mtdowling/jmespath.php`,
+  `symfony/filesystem`). The `s3` disk was configured and `PHOTO_DISK=s3`
+  was documented, but the adapter was never installed, so the `dev`
+  environment could not have switched. Intake entry written first. Smoke
+  test: with placeholder credentials `Storage::disk('s3')` boots the
+  `AwsS3V3Adapter` and builds `AWS_URL`-based URLs. `composer audit` clean.
+  Checklist step 1 is now ticked and step 6 no longer asks for the SDK.
 - Infra: `.env.docker` set `CACHE_DRIVER=redis`, a key Laravel no longer
   reads, so the Docker cache silently fell back to the database store. Now
   `CACHE_STORE=redis`. A running stack needs the same change in its `.env`.
@@ -85,6 +94,10 @@ index and, if possible, altogether "since it is already done".
   assertions updated from `$` to `RM`.
 
 ## Not done
+- The Cloud dashboard half of the photo-disk fix cannot be done from the
+  repository: attach a Laravel Object Storage bucket to `dev`, set
+  `PHOTO_DISK=s3` and `AWS_URL`, redeploy, then upload a photo and confirm
+  the CSP `img-src` lists the bucket. Steps 3 and 4 of the checklist.
 - No screenshots were retaken; the guide has none.
 - The guide still says nothing about admin bulk delete on bookings and
   photos beyond what was already there; those were judged fine as-is.
@@ -92,10 +105,12 @@ index and, if possible, altogether "since it is already done".
 ## Produced
 - ADR: none
 - Knowledge: none
-- Intake: none
+- Intake: ../intake/flysystem-aws-s3-v3.md
 
 ## Verified
-- `composer test` in the app container: 375 passed, 1309 assertions.
+- `composer test` in the app container: 375 passed, 1309 assertions (rerun
+  after the S3 adapter install, same result).
+- `composer audit`: no advisories.
 - `vendor/bin/pint --dirty`: clean.
 - `bun run test`: 222 passed across 28 files.
 - `bun run lint`: 0 errors, 7 warnings, all present on `dev` before this
