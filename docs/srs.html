@@ -19,11 +19,11 @@
 <tbody>
 <tr>
 <td>Document version</td>
-<td>1.0</td>
+<td>1.1</td>
 </tr>
 <tr>
 <td>Date</td>
-<td>2026-08-09</td>
+<td>2026-09-16</td>
 </tr>
 <tr>
 <td>Status</td>
@@ -179,7 +179,7 @@ tests that verify it.</li>
 </tr>
 <tr>
 <td>FR-05</td>
-<td>A user shall register and sign in with a Google account. An account created this way has no password and shall remain usable without one.</td>
+<td>A user shall register and sign in with a Google account. An account created this way is verified on creation, has no password, and shall remain usable without one.</td>
 <td>S</td>
 <td><code>auth.google</code>, <code>auth.google.callback</code> · <code>tests/Feature/Auth/GoogleAuthTest.php</code></td>
 </tr>
@@ -207,6 +207,12 @@ tests that verify it.</li>
 <td>A customer shall view and update their name, phone, and preferred location.</td>
 <td>M</td>
 <td><code>profile.edit</code>, <code>profile.update</code> · <code>tests/Feature/UserTest.php</code></td>
+</tr>
+<tr>
+<td>FR-07a</td>
+<td>A customer shall change their password after confirming the current one. An account with no password (Google only) shall set one without a current-password check. The endpoint is rate limited to 5 requests per minute.</td>
+<td>S</td>
+<td><code>profile.password.update</code> · <code>tests/Feature/Auth/ChangePasswordTest.php</code></td>
 </tr>
 <tr>
 <td>FR-08</td>
@@ -247,13 +253,13 @@ tests that verify it.</li>
 </tr>
 <tr>
 <td>FR-12</td>
-<td>A guest shall filter results by pet type, price range, facilities, and stay dates.</td>
+<td>A guest shall filter results by pet type, price range, and facilities. Stay dates entered in the search bar are carried to the booking form but do not filter results — see OI-6.</td>
 <td>M</td>
 <td><code>HotelSearchController</code> · <code>tests/Feature/HotelSearchTest.php</code></td>
 </tr>
 <tr>
 <td>FR-13</td>
-<td>A guest shall sort results by rating, ascending price, descending price, or distance. Distance sorting requires coordinates.</td>
+<td>A guest shall sort results by newest, ascending price, or descending price. The backend also accepts a distance sort given coordinates, but no control exposes it — see OI-3.</td>
 <td>S</td>
 <td><code>HotelSearchController</code> · <code>tests/Feature/HotelSearchTest.php</code></td>
 </tr>
@@ -271,7 +277,7 @@ tests that verify it.</li>
 </tr>
 <tr>
 <td>FR-16</td>
-<td>A guest shall view a hotel profile by slug, showing description, photo gallery, facilities, policies, per-pet-type pricing, and rating summary.</td>
+<td>A guest shall view a hotel profile by slug, showing description, photo gallery, facilities, policies, per-pet-type pricing, rating summary, and a map when the hotel has coordinates.</td>
 <td>M</td>
 <td><code>GET /hotels/{slug}</code> · <code>tests/Feature/HotelTest.php</code></td>
 </tr>
@@ -286,6 +292,12 @@ tests that verify it.</li>
 <td>A guest shall view a hotel's availability calendar for a date range. Availability is served as JSON to the calendar widget.</td>
 <td>M</td>
 <td><code>GET /hotels/{slug}/availability</code> · <code>tests/Feature/HotelAvailabilityTest.php</code></td>
+</tr>
+<tr>
+<td>FR-18a</td>
+<td>The landing page shall show up to four active hotels ranked by average rating.</td>
+<td>C</td>
+<td><code>GET /</code> · <code>tests/Feature/LandingPageTest.php</code></td>
 </tr>
 </tbody>
 </table></div>
@@ -344,7 +356,7 @@ tests that verify it.</li>
 </tr>
 <tr>
 <td>FR-26</td>
-<td>A customer shall cancel their own booking where the hotel's policy allows.</td>
+<td>A customer shall cancel their own booking while it is still <code>pending</code>. Confirmed bookings are cancelled by the hotel or an administrator.</td>
 <td>M</td>
 <td><code>bookings.cancel</code> · <code>tests/Feature/BookingTest.php</code></td>
 </tr>
@@ -369,7 +381,7 @@ tests that verify it.</li>
 <tbody>
 <tr>
 <td>FR-28</td>
-<td>A customer shall submit one review per booking, with a 1–5 star rating and a comment, only after a confirmed and completed stay.</td>
+<td>A customer shall submit one review per booking, with a 1–5 star rating and an optional comment, only once the booking status is <code>completed</code>.</td>
 <td>M</td>
 <td><code>reviews.store</code> · <code>tests/Feature/ReviewTest.php</code></td>
 </tr>
@@ -461,13 +473,13 @@ tests that verify it.</li>
 </tr>
 <tr>
 <td>FR-39</td>
-<td>An administrator shall list and filter bookings by status, and confirm or cancel any booking. Both actions fire the corresponding notification.</td>
+<td>An administrator shall list and filter bookings by status, view any booking, and confirm or cancel any booking. Both actions fire the corresponding notification. Prices are shown in MYR.</td>
 <td>M</td>
 <td><code>BookingResource</code> · <code>tests/Feature/Filament/Admin/BookingResourceTest.php</code></td>
 </tr>
 <tr>
 <td>FR-40</td>
-<td>An administrator shall view a read-only list of users with their pets.</td>
+<td>An administrator shall view a read-only list of users, and open any user to see their pets.</td>
 <td>S</td>
 <td><code>UserResource</code> · <code>tests/Feature/Filament/Admin/UserResourceTest.php</code></td>
 </tr>
@@ -537,7 +549,7 @@ tests that verify it.</li>
 </tr>
 <tr>
 <td>NFR-02</td>
-<td>The system shall send security headers including a Content Security Policy on every response. The policy shall permit the configured photo storage host and no other external origin.</td>
+<td>The system shall send security headers including a Content Security Policy on every response. The policy shall permit only the configured photo storage host and the OpenStreetMap tile hosts as external origins.</td>
 <td>M</td>
 <td><code>SecurityHeaders</code> middleware · <code>tests/Feature/SecurityHeadersTest.php</code></td>
 </tr>
@@ -639,7 +651,7 @@ tests that verify it.</li>
 <tbody>
 <tr>
 <td>NFR-14</td>
-<td>Backend line coverage shall not fall below the CI floor (currently 95%).</td>
+<td>Backend line coverage shall not fall below the CI floor (currently 98%). Frontend line coverage shall not fall below its floor (currently 90%).</td>
 <td>M</td>
 <td><code>.github/workflows/ci.yml</code></td>
 </tr>
@@ -690,7 +702,7 @@ tests that verify it.</li>
 </tr>
 <tr>
 <td>NFR-21</td>
-<td>Go-live steps that cannot be enforced from the repository shall be documented in the <a href="deployment-checklist.html">deployment checklist</a>.</td>
+<td>Go-live steps that cannot be enforced from the repository shall be documented in the deployment checklist (<code>docs-src/deployment-checklist.md</code>, coder-facing).</td>
 <td>M</td>
 </tr>
 </tbody>
@@ -833,7 +845,7 @@ constrain the data layer:</p>
 </tbody>
 </table></div>
 <p>Requirements with no MVP ancestor — delivered as post-MVP scope: FR-05 (Google
-sign-in), FR-33/FR-34 (queue hardening), FR-37/FR-43 – FR-45 (panels and owner
+sign-in), FR-07a (password change), FR-33/FR-34 (queue hardening), FR-37/FR-43 – FR-45 (panels and owner
 role), FR-17 (photo URL resolution), NFR-02/NFR-03 (security headers and CSP),
 NFR-14/NFR-15 (CI quality gates).</p>
 <hr />
@@ -849,7 +861,7 @@ NFR-14/NFR-15 (CI quality gates).</p>
 <tbody>
 <tr>
 <td>OI-1</td>
-<td>Cancellation policy is enforced per hotel but the exact rule is not specified here; needs a written rule per policy field.</td>
+<td>The hotel <code>cancellation_policy</code> field is free text shown on the profile and is not enforced; customer cancellation is governed only by booking status (FR-26). Decide whether a machine-readable rule is wanted.</td>
 <td><em>TBC</em></td>
 </tr>
 <tr>
@@ -859,7 +871,7 @@ NFR-14/NFR-15 (CI quality gates).</p>
 </tr>
 <tr>
 <td>OI-3</td>
-<td>Distance sorting (FR-13) depends on coordinates that admins enter manually; no validation requirement exists for them.</td>
+<td>Distance sorting exists in the backend but has no UI control, and depends on coordinates that admins enter manually with no validation. Decide whether to expose it or remove it.</td>
 <td><em>TBC</em></td>
 </tr>
 <tr>
@@ -869,7 +881,12 @@ NFR-14/NFR-15 (CI quality gates).</p>
 </tr>
 <tr>
 <td>OI-5</td>
-<td>A booking for a pet type the hotel has no pricing row for is created with <code>total_price = 0</code> rather than being rejected (FR-21).</td>
+<td>A booking for a pet type the hotel has no pricing row for is created with <code>total_price = 0</code> rather than being rejected (FR-21). The form warns but still submits.</td>
+<td><em>TBC</em></td>
+</tr>
+<tr>
+<td>OI-6</td>
+<td>Check-in and check-out dates in the search bar do not narrow results by availability (FR-12); they are only passed through.</td>
 <td><em>TBC</em></td>
 </tr>
 </tbody>
