@@ -62,17 +62,17 @@ describe('NotificationsDropdown — loading', () => {
 describe('NotificationsDropdown — rendering', () => {
     it('uses the type icon, falling back to a bell', async () => {
         const w = await mountLoaded()
-        const icons = w.findAll('li > span:first-child').map((s) => s.text())
-        expect(icons).toEqual(['✅', '❌', '🔔'])
+        const icons = w.findAll('li > span:first-child').map((s) => s.attributes('data-glyph'))
+        expect(icons).toEqual(['check', 'cross', 'bell'])
     })
 
     it('highlights unread items and shows their dot', async () => {
         const w = await mountLoaded()
         const rows = w.findAll('li')
-        expect(rows[0].classes()).toContain('bg-indigo-50')
-        expect(rows[0].find('span.bg-indigo-500').exists()).toBe(true)
-        expect(rows[1].classes()).not.toContain('bg-indigo-50')
-        expect(rows[1].find('span.bg-indigo-500').exists()).toBe(false)
+        expect(rows[0].classes()).toContain('bg-mustard/30')
+        expect(rows[0].find('span.unread-dot').exists()).toBe(true)
+        expect(rows[1].classes()).not.toContain('bg-mustard/30')
+        expect(rows[1].find('span.unread-dot').exists()).toBe(false)
     })
 })
 
@@ -85,7 +85,7 @@ describe('NotificationsDropdown — mark read', () => {
             method: 'PATCH',
             headers: expect.objectContaining({ 'X-CSRF-TOKEN': 'tok123' }),
         }))
-        expect(w.findAll('li')[0].classes()).not.toContain('bg-indigo-50')
+        expect(w.findAll('li')[0].classes()).not.toContain('bg-mustard/30')
         expect(w.emitted('closed')).toHaveLength(1)
         expect(router.visit).toHaveBeenCalledWith('/bookings/1')
     })

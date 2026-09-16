@@ -23,66 +23,66 @@ function submit() {
     <AuthLayout>
         <template #subtitle>Sign in to your account</template>
 
-        <div v-if="status" class="mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+        <div v-if="status" class="mb-4 text-sm font-semibold bg-teal-light border-2 border-ink rounded-xl px-4 py-3">
             {{ status }}
         </div>
 
         <form class="space-y-5" @submit.prevent="submit">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label class="block text-sm font-bold mb-1.5">Email</label>
                 <input
                     v-model="form.email"
                     type="email"
                     autocomplete="email"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                    class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal"
                 />
-                <p v-if="form.errors.email" class="mt-1 text-xs text-red-600">{{ form.errors.email }}</p>
+                <p v-if="form.errors.email" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.email }}</p>
             </div>
 
             <div>
                 <div class="flex justify-between mb-1">
-                    <label class="block text-sm font-medium text-gray-700">Password</label>
-                    <a href="/forgot-password" class="text-xs text-gray-500 hover:text-gray-900">Forgot password?</a>
+                    <label class="block text-sm font-bold">Password</label>
+                    <a href="/forgot-password" class="text-xs font-semibold text-teal hover:underline">Forgot password?</a>
                 </div>
                 <input
                     v-model="form.password"
                     type="password"
                     autocomplete="current-password"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                    class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal"
                 />
-                <p v-if="form.errors.password" class="mt-1 text-xs text-red-600">{{ form.errors.password }}</p>
+                <p v-if="form.errors.password" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.password }}</p>
             </div>
 
             <div class="flex items-center gap-2">
-                <input id="remember" v-model="form.remember" type="checkbox" class="rounded border-gray-300" />
-                <label for="remember" class="text-sm text-gray-600">Remember me</label>
+                <input id="remember" v-model="form.remember" type="checkbox" class="w-4 h-4 rounded border-2 border-ink accent-teal" />
+                <label for="remember" class="text-sm text-moss">Remember me</label>
             </div>
 
             <button
                 type="submit"
                 :disabled="form.processing"
-                class="w-full bg-gray-900 text-white py-2 rounded-lg text-sm font-medium hover:bg-gray-700 disabled:opacity-50"
+                class="w-full bg-teal text-cream border-3 border-ink py-3 rounded-xl text-sm font-bold shadow-hard hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition disabled:opacity-50"
             >
                 {{ form.processing ? 'Signing in...' : 'Sign in' }}
             </button>
 
             <div class="relative flex items-center">
-                <div class="flex-grow border-t border-gray-200"></div>
-                <span class="mx-3 text-xs text-gray-400 uppercase tracking-wide">or</span>
-                <div class="flex-grow border-t border-gray-200"></div>
+                <div class="flex-grow border-t-2 border-ink/10"></div>
+                <span class="mx-3 text-xs font-bold text-moss uppercase tracking-wide">or</span>
+                <div class="flex-grow border-t-2 border-ink/10"></div>
             </div>
 
             <a
                 href="/auth/google"
-                class="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                class="w-full flex items-center justify-center gap-3 bg-white border-3 border-ink rounded-xl px-3 py-3 text-sm font-bold shadow-hard hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition"
             >
                 <img src="/images/google-logo.svg" alt="Google" class="w-[18px] h-[18px]" />
                 Continue with Google
             </a>
 
-            <p class="text-center text-sm text-gray-600">
+            <p class="text-center text-sm text-moss">
                 Don't have an account?
-                <a href="/register" class="font-medium text-gray-900 hover:underline">Register</a>
+                <a href="/register" class="font-medium text-ink hover:underline">Register</a>
             </p>
         </form>
     </AuthLayout>

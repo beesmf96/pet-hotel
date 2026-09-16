@@ -7,7 +7,7 @@ describe('AuthLayout', () => {
     it('renders the brand link back to the landing page', () => {
         const w = mount(AuthLayout)
         const brand = w.find('a[href="/"]')
-        expect(brand.text()).toBe('Pet Hotel')
+        expect(brand.text()).toBe('PetHotel')
     })
 
     it('renders the default and subtitle slots', () => {

@@ -9,12 +9,12 @@ const user = computed(() => usePage().props.auth.user);
 <template>
     <AppLayout>
         <template #header>
-            <h1 class="text-xl font-semibold text-gray-900">Dashboard</h1>
+            <h1 class="text-3xl sm:text-4xl">Dashboard</h1>
         </template>
 
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 class="text-lg font-medium text-gray-900 mb-2">Welcome back, {{ user.name }}!</h2>
-            <p class="text-sm text-gray-600">You're logged in as {{ user.email }}.</p>
+        <div class="bg-white border-3 border-ink rounded-2xl shadow-hard p-6">
+            <h2 class="font-display font-bold text-2xl mb-2">Welcome back, {{ user.name }}!</h2>
+            <p class="text-moss">You're logged in as {{ user.email }}.</p>
         </div>
     </AppLayout>
 </template>

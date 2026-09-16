@@ -1,6 +1,6 @@
 ---
 title: Customer pages redesign (playful bold)
-description: Rebuilt the landing page, app layout, search, hotel profile, booking form, booking confirmation and my bookings in the "Playful bold" direction chosen from three design proposals.
+description: Rebuilt every customer-facing page in the "Playful bold" direction chosen from three design proposals.
 date: 2026-09-16
 pr: 51
 plan: ~
@@ -15,7 +15,8 @@ proposal, see which one is good?" The user then picked direction B, "Playful
 bold". A second request in the same session: apply the same style to the
 search page, with the shared app layout included, on the same branch. A third
 request: the hotel profile page too, same branch. A fourth: the booking form. A fifth: the booking confirmation and my
-bookings pages.
+bookings pages. Then: finish every remaining customer page first, and look at
+duplicated class strings in one pass afterwards.
 
 ## Done
 - Design: three directions (warm editorial, playful bold, clean marketplace)
@@ -54,6 +55,13 @@ bookings pages.
   Status pills are outlined and use the palette (mustard pending, teal
   confirmed, light teal completed, white cancelled). `LeaveReviewModal.vue`
   matches, with mustard stars.
+- Frontend: the remaining pages moved over in one mapped pass. Booking detail,
+  reviews list, pets, profile, dashboard, the auth layout and all five auth
+  pages, the pet form modal and the notifications dropdown. Inputs, labels,
+  error text, buttons, cards and flash boxes now share the same class
+  bundles as the earlier pages. The pets placeholder and the notification
+  type icons are SVG instead of emoji, with the glyph exposed as a data
+  attribute for the test.
 - Bug fix: the confirmation page showed "Invalid Date" for check-in and
   check-out. The controller passes the raw model, so the `date` cast arrives
   as a full ISO timestamp, and the page appended a local midnight to it. The
@@ -76,9 +84,11 @@ bookings pages.
   in users. There is no dedicated owner onboarding page yet.
 
 ## Not done
-- The booking detail, reviews list, pets, profile, dashboard and auth pages
-  keep their grey cards inside the new chrome. Restyling them is a follow-up;
-  the booking detail page is the natural next one since my bookings links to it.
+- The style is applied by repeating the same class strings in every page.
+  A dedupe pass is agreed for afterwards: shared card, button, status pill,
+  heading and paw icon components, one status colour map, and one date
+  helper. The unused default variant of `SearchBar.vue` goes then too.
+- The Filament panels are untouched.
 - The design canvas still shows all three directions; it was not trimmed to
   the chosen one.
 
@@ -96,8 +106,9 @@ bookings pages.
 - `composer test` in Docker: 377 passed, including the renamed review prop
   assertions. `vendor/bin/pint --test`: pass.
 - Headless Chromium screenshots of the landing, search, hotel profile,
-  booking form, booking confirmation and my bookings pages at 1440px and
-  400px wide, plus the search empty state (the signed-in pages were captured
+  booking form, booking confirmation, my bookings, booking detail, pets,
+  profile, login and register pages at 1440px or 400px wide, plus the search
+  empty state (the signed-in pages were captured
   through the DevTools protocol with a throwaway user, pet and four bookings
   in the local Docker database, all deleted afterwards): no horizontal overflow, headline
   on two lines on desktop, fields and sidebar stack on phone, sort select

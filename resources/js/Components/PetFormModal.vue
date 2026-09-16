@@ -52,85 +52,85 @@ function close() {
 
 <template>
     <Teleport to="body">
-        <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" @click.self="close">
-            <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">
+        <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center bg-ink/60" @click.self="close">
+            <div class="bg-white border-3 border-ink rounded-2xl shadow-hard-lg w-full max-w-md mx-4 p-6">
+                <h2 class="font-display font-bold text-2xl mb-4">
                     {{ pet ? 'Edit Pet' : 'Add Pet' }}
                 </h2>
 
                 <form class="space-y-4" @submit.prevent="submit">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                        <label class="block text-sm font-bold mb-1.5">Name *</label>
                         <input
                             v-model="form.name"
                             type="text"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                            class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal"
                         />
-                        <p v-if="form.errors.name" class="mt-1 text-xs text-red-600">{{ form.errors.name }}</p>
+                        <p v-if="form.errors.name" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.name }}</p>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Species *</label>
+                        <label class="block text-sm font-bold mb-1.5">Species *</label>
                         <input
                             v-model="form.species"
                             type="text"
                             placeholder="e.g. Dog, Cat, Rabbit"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                            class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal"
                         />
-                        <p v-if="form.errors.species" class="mt-1 text-xs text-red-600">{{ form.errors.species }}</p>
+                        <p v-if="form.errors.species" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.species }}</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Breed</label>
+                            <label class="block text-sm font-bold mb-1.5">Breed</label>
                             <input
                                 v-model="form.breed"
                                 type="text"
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                                class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal"
                             />
-                            <p v-if="form.errors.breed" class="mt-1 text-xs text-red-600">{{ form.errors.breed }}</p>
+                            <p v-if="form.errors.breed" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.breed }}</p>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Age (years)</label>
+                            <label class="block text-sm font-bold mb-1.5">Age (years)</label>
                             <input
                                 v-model="form.age"
                                 type="number"
                                 min="0"
                                 max="100"
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                                class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal"
                             />
-                            <p v-if="form.errors.age" class="mt-1 text-xs text-red-600">{{ form.errors.age }}</p>
+                            <p v-if="form.errors.age" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.age }}</p>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Special Needs</label>
+                        <label class="block text-sm font-bold mb-1.5">Special Needs</label>
                         <textarea
                             v-model="form.special_needs"
                             rows="2"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 resize-none"
+                            class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal resize-none"
                         />
-                        <p v-if="form.errors.special_needs" class="mt-1 text-xs text-red-600">
+                        <p v-if="form.errors.special_needs" class="mt-1.5 text-sm font-semibold text-coral">
                             {{ form.errors.special_needs }}
                         </p>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Photo</label>
+                        <label class="block text-sm font-bold mb-1.5">Photo</label>
                         <input
                             type="file"
                             accept="image/*"
-                            class="text-sm text-gray-600"
+                            class="text-sm text-moss"
                             @change="form.photo = $event.target.files[0]"
                         />
-                        <p v-if="form.errors.photo" class="mt-1 text-xs text-red-600">{{ form.errors.photo }}</p>
+                        <p v-if="form.errors.photo" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.photo }}</p>
                     </div>
 
                     <div class="flex justify-end gap-3 pt-2">
                         <button
                             type="button"
-                            class="text-sm text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg border border-gray-300"
+                            class="text-sm font-bold text-ink bg-white border-3 border-ink px-4 py-2.5 rounded-xl shadow-hard hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition"
                             @click="close"
                         >
                             Cancel
@@ -138,7 +138,7 @@ function close() {
                         <button
                             type="submit"
                             :disabled="form.processing"
-                            class="bg-gray-900 text-white text-sm px-5 py-2 rounded-lg hover:bg-gray-700 disabled:opacity-50"
+                            class="bg-teal text-cream border-3 border-ink text-sm font-bold px-5 py-2.5 rounded-xl shadow-hard hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition disabled:opacity-50"
                         >
                             {{ pet ? 'Save Changes' : 'Add Pet' }}
                         </button>

@@ -24,12 +24,12 @@ function logout() {
 
         <div
             v-if="status === 'verification-link-sent'"
-            class="mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3"
+            class="mb-4 text-sm font-semibold bg-teal-light border-2 border-ink rounded-xl px-4 py-3"
         >
             A new verification link has been sent to your email address.
         </div>
 
-        <p class="mb-6 text-sm text-gray-600">
+        <p class="mb-6 text-sm text-moss">
             Thanks for registering! Before getting started, please verify your email address by clicking on the link we
             just sent you. If you didn't receive the email, we'll gladly send another.
         </p>
@@ -37,7 +37,7 @@ function logout() {
         <div class="flex flex-col gap-3">
             <button
                 :disabled="resendForm.processing"
-                class="w-full bg-gray-900 text-white py-2 rounded-lg text-sm font-medium hover:bg-gray-700 disabled:opacity-50"
+                class="w-full bg-teal text-cream border-3 border-ink py-3 rounded-xl text-sm font-bold shadow-hard hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition disabled:opacity-50"
                 @click="resend"
             >
                 {{ resendForm.processing ? 'Sending...' : 'Resend verification email' }}
@@ -45,7 +45,7 @@ function logout() {
 
             <button
                 :disabled="logoutForm.processing"
-                class="w-full text-center text-sm text-gray-600 hover:text-gray-900 disabled:opacity-50"
+                class="w-full text-center text-sm font-semibold text-moss hover:text-teal disabled:opacity-50"
                 @click="logout"
             >
                 Sign out

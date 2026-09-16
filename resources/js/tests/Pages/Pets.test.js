@@ -46,7 +46,7 @@ describe('Pets page — pet card rendering', () => {
     it('shows paw placeholder when pet.photo_url is null', () => {
         const w = mount(PetsPage, { props: { pets: [basePet] } })
         expect(w.find('img').exists()).toBe(false)
-        expect(w.text()).toContain('🐾')
+        expect(w.find('svg').exists()).toBe(true)
     })
 
     it('shows breed when pet.breed is set', () => {

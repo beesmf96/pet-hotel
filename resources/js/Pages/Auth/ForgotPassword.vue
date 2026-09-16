@@ -17,34 +17,34 @@ function submit() {
     <AuthLayout>
         <template #subtitle>Reset your password</template>
 
-        <div v-if="status" class="mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+        <div v-if="status" class="mb-4 text-sm font-semibold bg-teal-light border-2 border-ink rounded-xl px-4 py-3">
             {{ status }}
         </div>
 
-        <p class="mb-5 text-sm text-gray-600">Enter your email and we'll send you a password reset link.</p>
+        <p class="mb-5 text-sm text-moss">Enter your email and we'll send you a password reset link.</p>
 
         <form class="space-y-5" @submit.prevent="submit">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label class="block text-sm font-bold mb-1.5">Email</label>
                 <input
                     v-model="form.email"
                     type="email"
                     autocomplete="email"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                    class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal"
                 />
-                <p v-if="form.errors.email" class="mt-1 text-xs text-red-600">{{ form.errors.email }}</p>
+                <p v-if="form.errors.email" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.email }}</p>
             </div>
 
             <button
                 type="submit"
                 :disabled="form.processing"
-                class="w-full bg-gray-900 text-white py-2 rounded-lg text-sm font-medium hover:bg-gray-700 disabled:opacity-50"
+                class="w-full bg-teal text-cream border-3 border-ink py-3 rounded-xl text-sm font-bold shadow-hard hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition disabled:opacity-50"
             >
                 {{ form.processing ? 'Sending...' : 'Send reset link' }}
             </button>
 
-            <p class="text-center text-sm text-gray-600">
-                <a href="/login" class="font-medium text-gray-900 hover:underline">Back to sign in</a>
+            <p class="text-center text-sm text-moss">
+                <a href="/login" class="font-medium text-ink hover:underline">Back to sign in</a>
             </p>
         </form>
     </AuthLayout>
