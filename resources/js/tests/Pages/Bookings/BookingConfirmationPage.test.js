@@ -25,7 +25,7 @@ describe('BookingConfirmationPage', () => {
         expect(w.text()).toContain('Buddy')
         expect(w.text()).toContain('Thu, Oct 1, 2026')
         expect(w.text()).toContain('Sun, Oct 4, 2026')
-        expect(w.text()).toContain('$135.00')
+        expect(w.text()).toContain('RM 135.00')
     })
 
     it('links to my bookings and back to the hotel search', () => {

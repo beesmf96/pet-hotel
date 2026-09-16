@@ -67,10 +67,10 @@ describe('HotelCard — facilities', () => {
 })
 
 describe('HotelCard — price', () => {
-    it('shows From $X.XX when hotel.price_from is set', () => {
+    it('shows From RM X.XX when hotel.price_from is set', () => {
         const hotel = { ...baseHotel, price_from: '35.00' }
         const w = mount(HotelCard, { props: { hotel } })
-        expect(w.text()).toContain('From $35.00')
+        expect(w.text()).toContain('From RM 35.00')
     })
 
     it('shows Pricing unavailable when hotel.price_from is null', () => {

@@ -66,7 +66,7 @@ function visitHotel() {
             <div class="flex items-center justify-between">
                 <div>
                     <span v-if="hotel.price_from" class="text-sm font-semibold text-gray-900">
-                        From ${{ Number(hotel.price_from).toFixed(2) }}
+                        From RM {{ Number(hotel.price_from).toFixed(2) }}
                     </span>
                     <span v-else class="text-sm text-gray-400">Pricing unavailable</span>
                     <span v-if="hotel.price_from" class="text-xs text-gray-400"> / night</span>

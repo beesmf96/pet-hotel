@@ -1,16 +1,18 @@
 ---
-title: User guide audit
-description: Checked docs/user_guide.html line by line against the code, fixed the stale parts, and corrected the admin bookings currency from USD to MYR.
+title: User guide and booking flow audit
+description: Checked docs/user_guide.html and docs/booking-flow.html against the code, fixed the stale parts, made MYR the currency everywhere, and loaded the average rating for search cards.
 date: 2026-09-16
 pr: 49
 plan: ~
 ---
 
-# User guide audit
+# User guide and booking flow audit
 
 ## Asked
 "audit our user guide html see if it is still as accurate as per our source",
-then "update the guide and fix the USD label too".
+then "update the guide and fix the USD label too". A follow-up asked for
+the same audit of `docs/booking-flow.html`, with "MYR wins" for the
+currency and a fix for the search-card rating.
 
 ## Done
 - Docs: `docs/user_guide.html` (a hand-written page in `STATIC_DOCS`, not
@@ -26,11 +28,25 @@ then "update the guide and fix the USD label too".
   profile page, search-bar dates, hotel map, the "request received"
   notification and email delivery, the `/dashboard` landing page, and the
   admin View actions and filters.
+- Docs: `docs/booking-flow.html` fixed the same way. Sort is by newest or
+  price (no rating or distance), pet type is picked in the search bar, the
+  button is "Request Booking", the hotel owner is not emailed on a new
+  request, panel paths are `/owner` and `/admin`, the decline email carries
+  no reason. Added Google sign-in, self-cancel while pending, the calendar
+  spot decrement on confirm, and the no-pricing warning on the form.
 - Backend: the admin bookings table formatted `total_price` as USD while the
   owner panel and pricing tab use MYR. Changed to MYR.
-- Tests: one new Filament test asserts the admin bookings table renders the
-  price as `MYR 150.00` (the formatter emits a non-breaking space) and not
-  as dollars.
+- Frontend: every customer page showed prices with a dollar sign (hotel
+  card, hotel profile, booking form, confirmation, detail, My Bookings).
+  All now show `RM`.
+- Backend: `HotelSearchController` never loaded `reviews_avg_rating`, so
+  search cards always showed a dash for rating. It now uses `withAvg`, the
+  same as the landing page. Hidden reviews are excluded because the
+  relation already scopes to visible ones.
+- Tests: one Filament test asserts the admin table renders `MYR 150.00`
+  (the formatter emits a non-breaking space); one search test asserts the
+  average rating is returned and ignores hidden reviews; three Vitest
+  assertions updated from `$` to `RM`.
 
 ## Not done
 - No screenshots were retaken; the guide has none.
@@ -43,6 +59,8 @@ then "update the guide and fix the USD label too".
 - Intake: none
 
 ## Verified
-- `composer test` in the app container: 374 passed, 1300 assertions.
+- `composer test` in the app container: 375 passed, 1309 assertions.
 - `vendor/bin/pint --dirty`: clean.
-- No frontend files changed, so ESLint was not run.
+- `bun run test`: 222 passed across 28 files.
+- `bun run lint`: 0 errors, 7 warnings, all present on `dev` before this
+  branch (missing prop defaults and one attribute linebreak).

@@ -117,12 +117,12 @@ function submit() {
 
                     <div v-if="totalPrice !== null" class="space-y-2 text-sm">
                         <div class="flex justify-between text-gray-600">
-                            <span>${{ Number(pricing.price_per_night).toFixed(2) }} × {{ nights }} night{{ nights !== 1 ? 's' : '' }}</span>
-                            <span>${{ totalPrice }}</span>
+                            <span>RM {{ Number(pricing.price_per_night).toFixed(2) }} × {{ nights }} night{{ nights !== 1 ? 's' : '' }}</span>
+                            <span>RM {{ totalPrice }}</span>
                         </div>
                         <div class="border-t border-gray-100 pt-2 flex justify-between font-semibold text-gray-900">
                             <span>Total</span>
-                            <span>${{ totalPrice }}</span>
+                            <span>RM {{ totalPrice }}</span>
                         </div>
                     </div>
 
