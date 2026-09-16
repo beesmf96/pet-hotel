@@ -1,6 +1,6 @@
 ---
 title: Customer pages redesign (playful bold)
-description: Rebuilt every customer-facing page in the "Playful bold" direction chosen from three design proposals.
+description: Rebuilt every customer-facing page and both Filament panels in the "Playful bold" direction chosen from three design proposals.
 date: 2026-09-16
 pr: 51
 plan: ~
@@ -17,7 +17,7 @@ search page, with the shared app layout included, on the same branch. A third
 request: the hotel profile page too, same branch. A fourth: the booking form. A fifth: the booking confirmation and my
 bookings pages. Then: finish every remaining customer page first, and look at
 duplicated class strings in one pass afterwards. Then: do that dedupe pass,
-same branch.
+same branch. Then: the Filament panels too, same branch.
 
 ## Done
 - Design: three directions (warm editorial, playful bold, clean marketplace)
@@ -77,6 +77,19 @@ same branch.
   removed and the bar is built on the shared components. Net effect: 41
   files, about 140 fewer lines, every button, input, card, pill and notice
   defined once.
+- Filament: one Vite theme for both panels at `resources/css/filament/theme.css`,
+  imported from Filament's own theme entry so its class names are the hook.
+  Cream ground, ink borders on the topbar and sidebar, mustard active nav item,
+  outlined cards with the hard shadow on sections, tables, stat tiles, the
+  login card, modals and dropdowns, bold outlined buttons and fields,
+  Bricolage Grotesque on headings. Two section variants are left unstyled on
+  purpose: the lazy-widget loading wrapper and "not contained" sections, which
+  Filament uses to group stat tiles; styling either double-frames every stat.
+  Both providers get `viteTheme`, `brandName('PetHotel')`, a shared brand
+  partial at `resources/views/filament/brand.blade.php` with the panel name,
+  `Color::hex` primaries (coral for admin, teal for owner) with a Stone gray
+  palette, and `darkMode(false)` so there is one look to maintain. The theme
+  is a Vite input, so CI's existing `bun run build` step covers it.
 - Bug fix: the confirmation page showed "Invalid Date" for check-in and
   check-out. The controller passes the raw model, so the `date` cast arrives
   as a full ISO timestamp, and the page appended a local midnight to it. The
@@ -99,7 +112,6 @@ same branch.
   in users. There is no dedicated owner onboarding page yet.
 
 ## Not done
-- The Filament panels are untouched.
 - The landing page keeps a few one-off elements inline (the hero pill, the
   footer brand on ink, the three step tiles) since nothing else uses them.
 - The design canvas still shows all three directions; it was not trimmed to
@@ -117,8 +129,10 @@ same branch.
   Ui component plus the date composable).
 - `bun run lint`: 0 errors, 5 warnings, three fewer than `dev` (the existing
   `require-default-prop` pattern).
-- `composer test` in Docker: 377 passed, including the renamed review prop
-  assertions. `vendor/bin/pint --test`: pass.
+- `composer test` in Docker: 383 passed, including the renamed review prop
+  assertions and the new `PanelThemeTest` (theme path, brand, no dark mode,
+  and the brand partial rendering on the owner panel). `vendor/bin/pint
+  --test`: pass.
 - Headless Chromium screenshots of the landing, search, hotel profile,
   booking form, booking confirmation, my bookings, booking detail, pets,
   profile, login and register pages at 1440px or 400px wide, plus the search
@@ -127,7 +141,10 @@ same branch.
   in the local Docker database, all deleted afterwards). Repeated after the
   dedupe pass on landing, search empty state, login, booking form, my
   bookings and pets; the pages render the same, apart from the search sort
-  select which briefly went full width and was fixed with the `full` prop: no horizontal overflow, headline
+  select which briefly went full width and was fixed with the `full` prop.
+  Filament panels: admin login, dashboard, hotels list, hotel edit form and
+  owner bookings at 1440px, hotels list at 400px, with a throwaway admin and
+  owner user deleted afterwards: no horizontal overflow, headline
   on two lines on desktop, fields and sidebar stack on phone, sort select
   shows "Newest first", the profile's review summary shows the average and
   count, the confirmation page shows real dates, my bookings shows all four
