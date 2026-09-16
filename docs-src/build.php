@@ -1,15 +1,18 @@
 <?php
 
 /**
- * Renders the stakeholder-facing docs to docs/html/ and regenerates its index.
+ * Renders the stakeholder-facing docs from docs-src/ to docs/ and regenerates
+ * the index.
  *
- *   php docs/build.php
+ *   php docs-src/build.php
  *
- * Markdown under docs/ is the source of truth and is coder-facing by default.
- * Only files whose frontmatter says `audience: stakeholder` are rendered to
- * HTML; everything else (runbooks, the paper trail, ...) is read as markdown
- * in the repo. Never hand-edit a generated .html file. Pages are styled by
- * docs/html/assets/doc.css, which is hand-maintained.
+ * docs/ is the GitHub Pages site (Settings > Pages serves main:/docs) and
+ * holds HTML only; a .nojekyll file there stops Jekyll from processing it.
+ * Markdown under docs-src/ is the source of truth and is coder-facing by
+ * default. Only files whose frontmatter says `audience: stakeholder` are
+ * rendered to HTML; everything else (runbooks, the paper trail, ...) is read
+ * as markdown in the repo. Never hand-edit a generated .html file. Pages are
+ * styled by docs/assets/doc.css, which is hand-maintained.
  *
  * Optional frontmatter (simple `key: value` lines, no YAML dependency):
  *
@@ -35,11 +38,11 @@ use League\CommonMark\Extension\Table\TableExtension;
 use League\CommonMark\Extension\TaskList\TaskListExtension;
 use League\CommonMark\MarkdownConverter;
 
-const DOCS_DIR = __DIR__;
-const HTML_DIR = __DIR__.'/html';
+const SRC_DIR = __DIR__;
+const HTML_DIR = __DIR__.'/../docs';
 
 /**
- * Hand-written HTML docs that predate this script. They live in docs/html/
+ * Hand-written HTML docs that predate this script. They live in docs/
  * directly, are listed on the index, but never regenerated — convert one to
  * markdown to have it rendered.
  */
@@ -231,7 +234,7 @@ foreach (STATIC_DOCS as $href => $doc) {
     $entries[] = $doc + ['href' => $href];
 }
 
-foreach (glob(DOCS_DIR.'/*.md') as $path) {
+foreach (glob(SRC_DIR.'/*.md') as $path) {
     $slug = basename($path, '.md');
     [$meta, $body] = split_frontmatter(file_get_contents($path));
 
@@ -258,11 +261,11 @@ foreach (glob(DOCS_DIR.'/*.md') as $path) {
         'order' => (int) ($meta['order'] ?? 100),
     ];
 
-    echo "rendered html/{$slug}.html\n";
+    echo "rendered docs/{$slug}.html\n";
 }
 
 usort($entries, fn (array $a, array $b) => [$a['order'], $a['title']] <=> [$b['order'], $b['title']]);
 
 file_put_contents(HTML_DIR.'/index.html', index_page($entries));
 
-echo 'rendered html/index.html ('.count($entries)." docs)\n";
+echo 'rendered docs/index.html ('.count($entries)." docs)\n";
