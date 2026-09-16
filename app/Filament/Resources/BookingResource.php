@@ -57,7 +57,7 @@ class BookingResource extends Resource
                     ->date('d M Y')
                     ->sortable(),
                 TextColumn::make('total_price')
-                    ->money('USD')
+                    ->money('MYR')
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()

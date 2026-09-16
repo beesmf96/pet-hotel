@@ -36,6 +36,16 @@ class BookingResourceTest extends TestCase
             ->assertCanSeeTableRecords($bookings);
     }
 
+    public function test_list_page_shows_total_price_in_ringgit(): void
+    {
+        Booking::factory()->create(['total_price' => 150]);
+
+        Livewire::test(ListBookings::class)
+            ->assertSuccessful()
+            ->assertSee("MYR\u{A0}150.00")
+            ->assertDontSee('$150.00');
+    }
+
     public function test_list_page_can_filter_by_status(): void
     {
         $pending = Booking::factory()->create(['status' => 'pending']);
