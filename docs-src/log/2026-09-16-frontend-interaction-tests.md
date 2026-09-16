@@ -2,7 +2,7 @@
 title: Frontend interaction tests and a coverage floor
 description: Added click and submit tests for the four weakest Vue pages, made Vitest cover every source file, and set a 60% line floor that CI enforces.
 date: 2026-09-16
-pr: ~
+pr: 43
 plan: ~
 ---
 
