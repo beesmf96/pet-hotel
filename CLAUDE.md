@@ -82,6 +82,12 @@ service; any hosted deployment needs its own long-running worker process.
   not follow the 302 to Google. Everything else navigates with `<Link>` / `router.visit()`.
 - **Every page wraps itself in `<AppLayout>` or `<AuthLayout>`.** `Landing.vue` is the one
   `layout: null` page.
+- **Design tokens live in `resources/css/tokens.css` only** — the palette, display font and hard
+  shadows, shared by `app.css` and the Filament theme. Never repeat a hex value or shadow
+  elsewhere. New customer UI uses the components under `resources/js/Components/Ui/` (`UiButton`,
+  `TextInput`, `FormField`, `StatusPill`, `Notice`, `EmptyState`, ...) and the `card-hard` /
+  `field-hard` utilities — no inline class bundles for buttons, fields, cards, pills or notices.
+  Panel styling goes in `resources/css/filament/theme.css`, never in a resource class.
 
 ## Testing
 

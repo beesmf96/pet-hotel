@@ -1,9 +1,9 @@
 ---
 plan: ui-tokens-followup
-status: pending
+status: implemented
 branch: feature/ui-tokens-followup
 pr: ~
-implemented: ~
+implemented: 2026-09-16
 ---
 
 # Feature: UI tokens follow-up
@@ -60,12 +60,12 @@ to inline class bundles. This plan closes both.
 - Log entry in `docs-src/log/`.
 
 ## Acceptance Criteria
-- [ ] Each colour, the display font and the shadows are defined in exactly one
+- [x] Each colour, the display font and the shadows are defined in exactly one
       file, and `grep` for the hex values finds them only there.
-- [ ] `bun run build` succeeds and both stylesheets are emitted.
-- [ ] Vitest and PHPUnit pass unchanged.
-- [ ] Screenshots of the five pages match the previous session's.
-- [ ] CLAUDE.md carries the Ui-components rule.
+- [x] `bun run build` succeeds and both stylesheets are emitted.
+- [x] Vitest and PHPUnit pass unchanged.
+- [x] Screenshots of the five pages match the previous session's.
+- [x] CLAUDE.md carries the Ui-components rule.
 
 ## Edge Cases
 - Tailwind v4 `@theme` may not accept `var()` for colour utilities that need

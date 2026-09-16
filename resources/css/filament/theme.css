@@ -2,51 +2,40 @@
  * Filament theme for both panels (/admin and /owner), in the same "Playful
  * bold" direction as the customer pages: cream ground, ink outlines with a
  * hard offset shadow, Bricolage Grotesque for headings. Colours per panel
- * (primary) come from ->colors() in the panel providers; everything shared
- * lives here. Dark mode is disabled on the panels, so there are no dark rules.
+ * (primary) come from ->colors() in the panel providers; the palette, display
+ * font and hard shadows from ../tokens.css; everything else lives here. Dark
+ * mode is disabled on the panels, so there are no dark rules.
  */
 @import '../../../vendor/filament/filament/resources/css/theme.css';
-@import '@fontsource-variable/bricolage-grotesque';
+@import '../tokens.css';
 
 @source '../../../app/Filament/**/*';
 @source '../../../resources/views/filament/**/*';
 
-:root {
-    --ph-ink: #1f2a26;
-    --ph-cream: #fff8e7;
-    --ph-teal: #0f766e;
-    --ph-mustard: #ffcf3f;
-    --ph-coral: #ff8a5b;
-    --ph-moss: #4b5753;
-    --ph-shadow: 4px 4px 0 0 var(--ph-ink);
-    --ph-shadow-sm: 3px 3px 0 0 var(--ph-ink);
-    --ph-display: 'Bricolage Grotesque Variable', 'Arial Black', ui-sans-serif, system-ui, sans-serif;
-}
-
 @layer components {
     /* Ground and chrome */
     .fi-body {
-        background-color: var(--ph-cream);
-        color: var(--ph-ink);
+        background-color: var(--color-cream);
+        color: var(--color-ink);
     }
 
     .fi-topbar {
-        background-color: var(--ph-cream);
+        background-color: var(--color-cream);
         box-shadow: none;
         --tw-ring-color: transparent;
-        border-bottom: 3px solid var(--ph-ink);
+        border-bottom: 3px solid var(--color-ink);
     }
 
     .fi-sidebar {
-        background-color: var(--ph-cream);
-        border-inline-end: 3px solid var(--ph-ink);
+        background-color: var(--color-cream);
+        border-inline-end: 3px solid var(--color-ink);
     }
 
     .fi-sidebar-header {
-        background-color: var(--ph-cream);
+        background-color: var(--color-cream);
         box-shadow: none;
         --tw-ring-color: transparent;
-        border-bottom: 3px solid var(--ph-ink);
+        border-bottom: 3px solid var(--color-ink);
     }
 
     .fi-sidebar-item-btn {
@@ -55,18 +44,18 @@
     }
 
     .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
-        background-color: var(--ph-mustard);
-        border: 2px solid var(--ph-ink);
-        box-shadow: var(--ph-shadow-sm);
+        background-color: var(--color-mustard);
+        border: 2px solid var(--color-ink);
+        box-shadow: var(--shadow-hard-sm);
     }
 
     .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-label,
     .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-icon {
-        color: var(--ph-ink);
+        color: var(--color-ink);
     }
 
     .fi-sidebar-group-label {
-        color: var(--ph-moss);
+        color: var(--color-moss);
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.06em;
@@ -79,14 +68,14 @@
     .fi-modal-heading,
     .fi-simple-header-heading,
     .fi-wi-stats-overview-stat-value {
-        font-family: var(--ph-display);
+        font-family: var(--font-display);
         font-weight: 800;
         letter-spacing: -0.02em;
-        color: var(--ph-ink);
+        color: var(--color-ink);
     }
 
     .fi-logo {
-        font-family: var(--ph-display);
+        font-family: var(--font-display);
         font-weight: 800;
     }
 
@@ -101,9 +90,9 @@
     .fi-modal-window,
     .fi-dropdown-panel {
         background-color: white;
-        border: 3px solid var(--ph-ink);
+        border: 3px solid var(--color-ink);
         border-radius: 1rem;
-        box-shadow: var(--ph-shadow);
+        box-shadow: var(--shadow-hard);
         --tw-ring-color: transparent;
         --tw-shadow: 0 0 #0000;
     }
@@ -114,33 +103,33 @@
 
     .fi-section-header,
     .fi-ta-header {
-        border-bottom-color: color-mix(in oklab, var(--ph-ink) 10%, transparent);
+        border-bottom-color: color-mix(in oklab, var(--color-ink) 10%, transparent);
     }
 
     .fi-ta-header-cell {
         font-weight: 700;
-        color: var(--ph-moss);
+        color: var(--color-moss);
         text-transform: uppercase;
         letter-spacing: 0.06em;
         font-size: 0.7rem;
     }
 
     .fi-ta-row:hover {
-        background-color: color-mix(in oklab, var(--ph-mustard) 25%, white);
+        background-color: color-mix(in oklab, var(--color-mustard) 25%, white);
     }
 
     .fi-wi-stats-overview-stat-label,
     .fi-wi-stats-overview-stat-description {
-        color: var(--ph-moss);
+        color: var(--color-moss);
         font-weight: 600;
     }
 
     /* Controls */
     .fi-btn {
-        border: 2px solid var(--ph-ink);
+        border: 2px solid var(--color-ink);
         border-radius: 0.75rem;
         font-weight: 700;
-        box-shadow: var(--ph-shadow-sm);
+        box-shadow: var(--shadow-hard-sm);
         --tw-ring-color: transparent;
         --tw-shadow: 0 0 #0000;
         transition: transform 75ms, box-shadow 75ms;
@@ -153,7 +142,7 @@
 
     .fi-btn.fi-size-xs,
     .fi-btn.fi-size-sm {
-        box-shadow: 2px 2px 0 0 var(--ph-ink);
+        box-shadow: 2px 2px 0 0 var(--color-ink);
     }
 
     .fi-btn.fi-size-xs:hover,
@@ -164,7 +153,7 @@
     .fi-input-wrp,
     .fi-select-input,
     .fi-fo-file-upload {
-        border: 2px solid var(--ph-ink);
+        border: 2px solid var(--color-ink);
         border-radius: 0.75rem;
         box-shadow: none;
         --tw-ring-color: transparent;
@@ -172,18 +161,18 @@
     }
 
     .fi-input-wrp:focus-within {
-        --tw-ring-color: var(--ph-teal);
+        --tw-ring-color: var(--color-teal);
     }
 
     .fi-fo-field-label,
     .fi-fo-field-wrp-label,
     .fi-in-entry-label {
         font-weight: 700;
-        color: var(--ph-ink);
+        color: var(--color-ink);
     }
 
     .fi-badge {
-        border: 2px solid var(--ph-ink);
+        border: 2px solid var(--color-ink);
         border-radius: 9999px;
         font-weight: 700;
         --tw-ring-color: transparent;
@@ -199,23 +188,23 @@
     }
 
     .fi-tabs-item.fi-active {
-        background-color: var(--ph-mustard);
-        border: 2px solid var(--ph-ink);
+        background-color: var(--color-mustard);
+        border: 2px solid var(--color-ink);
     }
 
     .fi-pagination-item.fi-active,
     .fi-pagination-item[aria-current='page'] {
-        border: 2px solid var(--ph-ink);
-        background-color: var(--ph-mustard);
+        border: 2px solid var(--color-ink);
+        background-color: var(--color-mustard);
         border-radius: 0.75rem;
     }
 
     /* Login and other simple pages */
     .fi-simple-layout {
-        background-color: var(--ph-cream);
+        background-color: var(--color-cream);
     }
 
     .fi-simple-main {
-        box-shadow: 8px 8px 0 0 var(--ph-ink);
+        box-shadow: var(--shadow-hard-lg);
     }
 }
