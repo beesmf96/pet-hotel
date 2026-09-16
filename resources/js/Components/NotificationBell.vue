@@ -27,7 +27,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleOutsideClick))
     <div ref="bellRef" class="relative">
         <button
             type="button"
-            class="relative p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+            class="relative p-1.5 rounded-lg text-ink hover:bg-mustard transition-colors"
             aria-label="Notifications"
             @click.stop="toggle"
         >
@@ -37,7 +37,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleOutsideClick))
 
             <span
                 v-if="unreadCount > 0"
-                class="absolute -top-0.5 -right-0.5 min-w-[1.1rem] h-[1.1rem] flex items-center justify-center rounded-full bg-indigo-600 text-white text-[10px] font-bold leading-none px-1"
+                class="absolute -top-0.5 -right-0.5 min-w-[1.1rem] h-[1.1rem] flex items-center justify-center rounded-full bg-coral text-ink border border-ink text-[10px] font-bold leading-none px-1"
             >
                 {{ unreadCount > 99 ? '99+' : unreadCount }}
             </span>

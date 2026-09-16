@@ -5,7 +5,7 @@ import { describe, it, expect, vi } from 'vitest'
 vi.mock('@/Components/Hotels/SearchBar.vue', () => ({
     default: { name: 'SearchBar', template: '<div data-testid="search-bar" />' },
 }))
-vi.mock('@/Components/Hotels/FeaturedHotelCard.vue', () => ({
+vi.mock('@/Components/Hotels/HotelCard.vue', () => ({
     default: { template: '<div data-testid="hotel-card" />' },
 }))
 

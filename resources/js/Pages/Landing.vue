@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { router, usePage, useForm } from '@inertiajs/vue3';
 import SearchBar from '@/Components/Hotels/SearchBar.vue';
-import FeaturedHotelCard from '@/Components/Hotels/FeaturedHotelCard.vue';
+import HotelCard from '@/Components/Hotels/HotelCard.vue';
 
 const props = defineProps({
     featuredHotels: Array,
@@ -117,7 +117,7 @@ function handleSearch(params) {
                     >All hotels</a>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-                    <FeaturedHotelCard
+                    <HotelCard
                         v-for="(hotel, index) in featuredHotels"
                         :key="hotel.id"
                         :hotel="hotel"

@@ -56,37 +56,37 @@ function clearFilters() {
 </script>
 
 <template>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-5">
-        <h2 class="text-sm font-semibold text-gray-900">Filters</h2>
+    <div class="bg-white border-3 border-ink rounded-2xl shadow-hard p-4 space-y-5">
+        <h2 class="font-display font-bold text-lg">Filters</h2>
 
         <div>
-            <p class="text-xs text-gray-500 uppercase tracking-wide mb-2">Price per night</p>
+            <p class="text-xs font-bold uppercase tracking-wide text-moss mb-2">Price per night</p>
             <div class="flex gap-2">
                 <div class="flex-1">
-                    <label class="block text-xs text-gray-400 mb-1">Min $</label>
+                    <label class="block text-xs font-semibold text-moss mb-1">Min RM</label>
                     <input
                         v-model="priceMin"
                         type="number"
                         min="0"
                         placeholder="0"
-                        class="w-full border border-gray-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                        class="w-full border-2 border-ink rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal"
                     />
                 </div>
                 <div class="flex-1">
-                    <label class="block text-xs text-gray-400 mb-1">Max $</label>
+                    <label class="block text-xs font-semibold text-moss mb-1">Max RM</label>
                     <input
                         v-model="priceMax"
                         type="number"
                         min="0"
                         placeholder="Any"
-                        class="w-full border border-gray-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                        class="w-full border-2 border-ink rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal"
                     />
                 </div>
             </div>
         </div>
 
         <div>
-            <p class="text-xs text-gray-500 uppercase tracking-wide mb-2">Facilities</p>
+            <p class="text-xs font-bold uppercase tracking-wide text-moss mb-2">Facilities</p>
             <div class="space-y-2">
                 <label
                     v-for="facility in FACILITIES"
@@ -97,22 +97,22 @@ function clearFilters() {
                         v-model="selectedFacilities"
                         type="checkbox"
                         :value="facility.value"
-                        class="rounded border-gray-300 text-gray-900 focus:ring-gray-900"
+                        class="w-4 h-4 rounded border-2 border-ink accent-teal focus:ring-teal"
                     />
-                    <span class="text-sm text-gray-700">{{ facility.label }}</span>
+                    <span class="text-sm font-medium">{{ facility.label }}</span>
                 </label>
             </div>
         </div>
 
         <div class="space-y-2 pt-1">
             <button
-                class="w-full bg-gray-900 text-white text-sm py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                class="w-full bg-teal text-cream border-3 border-ink text-sm font-bold py-2 rounded-xl shadow-hard hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition"
                 @click="applyFilters"
             >
                 Apply Filters
             </button>
             <button
-                class="w-full text-sm text-gray-500 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                class="w-full text-sm font-semibold text-moss py-2 rounded-xl hover:bg-cream transition-colors"
                 @click="clearFilters"
             >
                 Clear Filters

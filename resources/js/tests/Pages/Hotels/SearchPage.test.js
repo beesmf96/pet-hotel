@@ -150,3 +150,10 @@ describe('SearchPage — pagination clicks', () => {
         expect(labels).toContain('Next »')
     })
 })
+
+describe('SearchPage — empty filters prop', () => {
+    it('defaults the sort to latest when filters arrive as an empty array', () => {
+        const w = mount(SearchPage, { props: { hotels: makeHotels(1), filters: [] } })
+        expect(w.find('select').element.value).toBe('latest')
+    })
+})

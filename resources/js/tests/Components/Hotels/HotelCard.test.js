@@ -5,89 +5,73 @@ vi.mock('@inertiajs/vue3', () => ({
     router: { visit: vi.fn() },
 }))
 
+import { router } from '@inertiajs/vue3'
 import HotelCard from '@/Components/Hotels/HotelCard.vue'
 
-const baseHotel = {
-    id: 1,
-    name: 'Paws Inn',
-    slug: 'paws-inn',
-    city: 'Singapore',
-    cover_photo_url: null,
-    facilities: [],
-    price_from: null,
-    reviews_avg_rating: null,
-}
+const baseHotel = { id: 3, name: 'The Bark Lodge', slug: 'the-bark-lodge', city: 'Bangsar' }
 
-describe('HotelCard — cover photo', () => {
-    it('shows img when hotel.cover_photo_url is set', () => {
-        const hotel = { ...baseHotel, cover_photo_url: 'https://cdn.example.com/paws.jpg' }
-        const w = mount(HotelCard, { props: { hotel } })
-        expect(w.find('img').exists()).toBe(true)
+describe('HotelCard — photo', () => {
+    it('renders the cover photo when present', () => {
+        const w = mount(HotelCard, { props: { hotel: { ...baseHotel, cover_photo_url: '/p.jpg' } } })
+        expect(w.find('img').attributes('src')).toBe('/p.jpg')
     })
 
-    it('shows 🏨 placeholder when hotel.cover_photo_url is null', () => {
+    it('renders a tinted placeholder without a photo', () => {
         const w = mount(HotelCard, { props: { hotel: baseHotel } })
         expect(w.find('img').exists()).toBe(false)
-        expect(w.text()).toContain('🏨')
+        expect(w.find('svg').exists()).toBe(true)
+    })
+})
+
+describe('HotelCard — rating and price', () => {
+    it('shows the rating to one decimal', () => {
+        const w = mount(HotelCard, { props: { hotel: { ...baseHotel, reviews_avg_rating: '4.8333' } } })
+        expect(w.text()).toContain('4.8')
+    })
+
+    it('marks an unrated hotel as New', () => {
+        const w = mount(HotelCard, { props: { hotel: baseHotel } })
+        expect(w.text()).toContain('New')
+    })
+
+    it('shows the nightly price without decimals', () => {
+        const w = mount(HotelCard, { props: { hotel: { ...baseHotel, price_from: '70.00' } } })
+        expect(w.text()).toContain('RM 70')
+        expect(w.text()).toContain('/ night')
+    })
+
+    it('says pricing on request without a price', () => {
+        const w = mount(HotelCard, { props: { hotel: baseHotel } })
+        expect(w.text()).toContain('Pricing on request')
     })
 })
 
 describe('HotelCard — facilities', () => {
-    it('shows facilities list when hotel.facilities has entries', () => {
-        const hotel = {
-            ...baseHotel,
-            facilities: [{ id: 1, type: 'grooming' }, { id: 2, type: 'play_area' }],
-        }
-        const w = mount(HotelCard, { props: { hotel } })
-        expect(w.text()).toContain('Grooming')
+    it('renders no chips without facilities', () => {
+        const w = mount(HotelCard, { props: { hotel: { ...baseHotel, facilities: [] } } })
+        expect(w.text()).not.toContain('Grooming')
     })
 
-    it('shows +N more badge when facilities > 3', () => {
-        const hotel = {
-            ...baseHotel,
-            facilities: [
-                { id: 1, type: 'grooming' },
-                { id: 2, type: 'play_area' },
-                { id: 3, type: 'vet_care' },
-                { id: 4, type: 'webcam' },
-            ],
-        }
-        const w = mount(HotelCard, { props: { hotel } })
+    it('shows up to three labelled chips and a count for the rest', () => {
+        const facilities = [
+            { id: 1, type: 'grooming' },
+            { id: 2, type: 'play_area' },
+            { id: 3, type: 'webcam' },
+            { id: 4, type: 'vet_care' },
+        ]
+        const w = mount(HotelCard, { props: { hotel: { ...baseHotel, facilities } } })
+        expect(w.text()).toContain('Grooming')
+        expect(w.text()).toContain('Play area')
+        expect(w.text()).toContain('Webcam')
+        expect(w.text()).not.toContain('Vet care')
         expect(w.text()).toContain('+1 more')
     })
-
-    it('does not show +N more when facilities <= 3', () => {
-        const hotel = {
-            ...baseHotel,
-            facilities: [{ id: 1, type: 'grooming' }, { id: 2, type: 'play_area' }],
-        }
-        const w = mount(HotelCard, { props: { hotel } })
-        expect(w.text()).not.toContain('more')
-    })
 })
 
-describe('HotelCard — price', () => {
-    it('shows From RM X.XX when hotel.price_from is set', () => {
-        const hotel = { ...baseHotel, price_from: '35.00' }
-        const w = mount(HotelCard, { props: { hotel } })
-        expect(w.text()).toContain('From RM 35.00')
-    })
-
-    it('shows Pricing unavailable when hotel.price_from is null', () => {
+describe('HotelCard — navigation', () => {
+    it('visits the hotel page on click', async () => {
         const w = mount(HotelCard, { props: { hotel: baseHotel } })
-        expect(w.text()).toContain('Pricing unavailable')
-    })
-})
-
-describe('HotelCard — rating', () => {
-    it('shows formatted rating when hotel.reviews_avg_rating is set', () => {
-        const hotel = { ...baseHotel, reviews_avg_rating: '4.5' }
-        const w = mount(HotelCard, { props: { hotel } })
-        expect(w.text()).toContain('4.5')
-    })
-
-    it('shows — when hotel.reviews_avg_rating is null', () => {
-        const w = mount(HotelCard, { props: { hotel: baseHotel } })
-        expect(w.text()).toContain('—')
+        await w.trigger('click')
+        expect(router.visit).toHaveBeenCalledWith('/hotels/the-bark-lodge')
     })
 })

@@ -11,7 +11,9 @@ const props = defineProps({
     filters: Object,
 });
 
-const sort = ref(props.filters.sort || 'latest');
+// With no query string the filters prop is an empty array, whose `.sort` is
+// the Array method rather than a string. Only accept a real string value.
+const sort = ref(typeof props.filters.sort === 'string' && props.filters.sort ? props.filters.sort : 'latest');
 
 const SORT_OPTIONS = [
     { value: 'latest', label: 'Newest first' },
@@ -51,25 +53,27 @@ function decodeLabel(label) {
 <template>
     <AppLayout>
         <template #header>
-            <h1 class="text-xl font-semibold text-gray-900">Find a Pet Hotel</h1>
+            <h1 class="text-3xl sm:text-4xl">Find a pet hotel</h1>
         </template>
 
         <div class="space-y-6">
-            <SearchBar :filters="filters" @search="handleSearch" />
+            <div class="bg-white border-3 border-ink rounded-2xl shadow-hard-lg p-4 sm:p-5">
+                <SearchBar :filters="filters" variant="bold" @search="handleSearch" />
+            </div>
 
-            <div class="flex gap-6 items-start">
-                <aside class="w-56 flex-shrink-0">
+            <div class="flex flex-col md:flex-row gap-6 items-start">
+                <aside class="w-full md:w-60 shrink-0">
                     <FilterSidebar :filters="filters" @apply="applyFilters" />
                 </aside>
 
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center justify-between mb-4">
-                        <p class="text-sm text-gray-500">
+                <div class="flex-1 min-w-0 w-full">
+                    <div class="flex items-center justify-between gap-4 mb-5">
+                        <p class="text-sm font-semibold text-moss">
                             {{ hotels.total }} hotel{{ hotels.total !== 1 ? 's' : '' }} found
                         </p>
                         <select
                             v-model="sort"
-                            class="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900"
+                            class="text-sm font-semibold border-2 border-ink rounded-xl px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-teal"
                         >
                             <option v-for="opt in SORT_OPTIONS" :key="opt.value" :value="opt.value">
                                 {{ opt.label }}
@@ -79,32 +83,40 @@ function decodeLabel(label) {
 
                     <div
                         v-if="hotels.data.length > 0"
-                        class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"
+                        class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 pr-2 pb-2"
                     >
                         <HotelCard v-for="hotel in hotels.data" :key="hotel.id" :hotel="hotel" />
                     </div>
 
-                    <div v-else class="text-center py-20">
-                        <div class="text-6xl mb-4">🐾</div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-1">No hotels found</h3>
-                        <p class="text-sm text-gray-500">Try adjusting your search or filters.</p>
+                    <div v-else class="bg-white border-3 border-ink rounded-2xl shadow-hard text-center py-16 px-6 flex flex-col items-center gap-3">
+                        <span class="w-14 h-14 rounded-2xl bg-mustard border-3 border-ink flex items-center justify-center">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <circle cx="5.5" cy="9" r="2" />
+                                <circle cx="9.5" cy="5" r="2" />
+                                <circle cx="14.5" cy="5" r="2" />
+                                <circle cx="18.5" cy="9" r="2" />
+                                <path d="M12 11c-3 0-6 3-6 6 0 1.7 1.3 3 3 3 1 0 2-.5 3-.5s2 .5 3 .5c1.7 0 3-1.3 3-3 0-3-3-6-6-6z" />
+                            </svg>
+                        </span>
+                        <h3 class="font-display font-bold text-xl">No hotels found</h3>
+                        <p class="text-sm text-moss">Try adjusting your search or filters.</p>
                     </div>
 
                     <div
                         v-if="hotels.last_page > 1"
-                        class="mt-6 flex items-center justify-center flex-wrap gap-1"
+                        class="mt-8 flex items-center justify-center flex-wrap gap-2"
                     >
                         <button
                             v-for="link in hotels.links"
                             :key="link.label"
                             :disabled="!link.url"
-                            class="px-3 py-1.5 text-sm rounded-lg"
+                            class="px-3 py-1.5 text-sm font-semibold rounded-xl border-2 transition"
                             :class="[
                                 link.active
-                                    ? 'bg-gray-900 text-white'
+                                    ? 'bg-ink text-cream border-ink'
                                     : link.url
-                                    ? 'text-gray-600 hover:bg-gray-100 cursor-pointer'
-                                    : 'text-gray-300 cursor-not-allowed',
+                                    ? 'bg-white text-ink border-ink hover:bg-mustard cursor-pointer'
+                                    : 'bg-transparent text-moss/50 border-transparent cursor-not-allowed',
                             ]"
                             @click="visitPage(link.url)"
                         >{{ decodeLabel(link.label) }}</button>
