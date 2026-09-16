@@ -68,18 +68,20 @@ return [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            // Laravel Cloud injects AWS_REGION and AWS_ENDPOINT_URL; the
-            // Laravel names come first so a hand-set value still wins.
-            'region' => env('AWS_DEFAULT_REGION', env('AWS_REGION')),
+            'region' => env('AWS_DEFAULT_REGION'),
             'bucket' => env('AWS_BUCKET'),
             'url' => env('AWS_URL'),
-            'endpoint' => env('AWS_ENDPOINT', env('AWS_ENDPOINT_URL')),
+            'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            // This disk is for S3-compatible hosts other than Laravel Cloud.
+            // Cloud registers its own disk at boot from LARAVEL_CLOUD_DISK_CONFIG
+            // under the bucket's Disk name, and PHOTO_DISK points at that.
+            //
             // No 'visibility' here on purpose. Setting it to 'public' makes every
             // write send an x-amz-acl: public-read header, which Cloudflare R2
-            // (Laravel Cloud Object Storage) rejects with NotImplemented. Object
-            // access is governed by the bucket's own visibility; make the bucket
-            // public and the URLs work without a signed request.
+            // rejects with NotImplemented. Object access is governed by the
+            // bucket's own visibility; make the bucket public and the URLs work
+            // without a signed request.
             'throw' => false,
             'report' => false,
         ],

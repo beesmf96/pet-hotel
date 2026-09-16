@@ -30,5 +30,8 @@ was missing until the same day.
 ## How to apply
 Leave `visibility` out of the `s3` disk. Use `store()`, never
 `storePublicly()`, and let the bucket's visibility decide. Make the Cloud
-bucket public so `Storage::url()` links work. `tests/Feature/UploadDiskTest.php`
+bucket public so `Storage::url()` links work. On Cloud the disk to point
+`PHOTO_DISK` at is the bucket's Disk name: Laravel's `CloudBootstrapper`
+registers it from `LARAVEL_CLOUD_DISK_CONFIG` with no `visibility` and with
+`url` already filled in, so no `AWS_*` variable is needed. `tests/Feature/UploadDiskTest.php`
 pins both rules. Log: `../log/2026-09-16-user-guide-audit.md`.

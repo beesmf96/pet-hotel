@@ -83,9 +83,14 @@ index and, if possible, altogether "since it is already done". A fifth asked to
   and the disk now also reads Cloud's `AWS_REGION` and `AWS_ENDPOINT_URL`
   names as fallbacks. Two tests pin the rules. Knowledge entry written.
 - Docs: checklist step 3 now explains the **Disk name** field (3 to 40
-  lowercase characters, so `s3` is refused; use `photos`, default disk off)
-  and the `FILESYSTEM_DISK` override if Cloud injects the bucket's name.
-  CLAUDE.md upload trap extended.
+  lowercase characters, so `s3` is refused; use `photos`). The user's
+  attach screen showed what Cloud really injects: `FILESYSTEM_DISK` and a
+  `LARAVEL_CLOUD_DISK_CONFIG` JSON, no `AWS_*` at all. Laravel's
+  `CloudBootstrapper` registers a disk under that name at boot, `url`
+  included. So `PHOTO_DISK=photos`, not `s3`, and `AWS_URL` is not needed.
+  Checklist steps 3 and 4, CLAUDE.md, `.env.example`, the `s3` disk comment,
+  and the knowledge entry all say so now; the `AWS_REGION`/`AWS_ENDPOINT_URL`
+  fallbacks added earlier were removed as they rested on a wrong guess.
 - Infra: `.env.docker` set `CACHE_DRIVER=redis`, a key Laravel no longer
   reads, so the Docker cache silently fell back to the database store. Now
   `CACHE_STORE=redis`. A running stack needs the same change in its `.env`.
