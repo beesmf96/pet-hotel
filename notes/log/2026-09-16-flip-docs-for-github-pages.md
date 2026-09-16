@@ -2,7 +2,7 @@
 title: Flip docs/ and notes/ for GitHub Pages
 description: docs/ is now the published HTML site and all markdown moved to notes/, because Pages serves main:/docs and was rendering the paper trail.
 date: 2026-09-16
-pr: ~
+pr: 41
 plan: ~
 ---
 
