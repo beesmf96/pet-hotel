@@ -4,7 +4,7 @@ import path from 'path';
 
 // Coverage floor for `bun run test --run --coverage` (CI runs it that way). Raise it
 // as coverage improves; never lower it to make a red build pass.
-const MIN_COVERAGE = 60;
+const MIN_COVERAGE = 90;
 
 export default defineConfig({
     plugins: [vue()],
