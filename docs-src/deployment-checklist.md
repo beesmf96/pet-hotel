@@ -24,14 +24,11 @@ Production should track `main`.
 
 These have to be true in the code before Cloud can run it.
 
-- [ ] **S3 driver installed.** Cloud object storage is S3-compatible and needs
-      the Flysystem adapter, which is **not yet in `composer.json`**:
-
-      ```bash
-      composer require league/flysystem-aws-s3-v3 "^3.0" --with-all-dependencies
-      ```
-
-      Without it, `PHOTO_DISK=s3` throws on the first upload.
+- [x] **S3 driver installed.** Cloud object storage is S3-compatible and needs
+      the Flysystem adapter. `league/flysystem-aws-s3-v3` has been in
+      `composer.json` since 2026-09-16 (intake:
+      `docs-src/intake/flysystem-aws-s3-v3.md`). Without it, `PHOTO_DISK=s3`
+      throws on the first upload.
 
 - [ ] `composer.lock` and `bun.lock` are committed and up to date. Cloud reads
       the lock files at build time.
@@ -47,7 +44,7 @@ In Cloud: **Applications → your app → New environment** (or **Replicate** th
 - [ ] Name: `production` (the name becomes part of the free `*.laravel.cloud` URL)
 - [ ] Region: same as the `dev` environment
 - [ ] Branch: `main`
-- [ ] PHP version: 8.3 or newer (`composer.json` requires `^8.3`)
+- [ ] PHP version: 8.4, to match the Docker image (`composer.json` requires `^8.3`)
 - [ ] **Push to deploy** stays on. Every merge to `main` then deploys itself.
 
 ---
@@ -163,8 +160,8 @@ Pick one:
 - [ ] **Managed queue (recommended).** Canvas → **Add compute → Managed queue**.
       Name it `default`, Flex class, 256 MiB, 0 to 3 workers. Deploying sets
       `QUEUE_CONNECTION=cloud` for you. Failed jobs appear under
-      **Monitoring → Queues**. Requires `aws/aws-sdk-php` in `composer.json`
-      (it is not there yet; add it the same way as step 1).
+      **Monitoring → Queues**. Requires `aws/aws-sdk-php`, which the S3
+      adapter from step 1 already pulls in.
 - [ ] **Or a background process on the App cluster.** Click the App cluster →
       **Background processes → New background process → Queue worker**.
       Connection `redis`, queue `default`, 1 process. Set
@@ -190,8 +187,9 @@ the `dev` environment.
       with a one-year `max-age`; enabling it twice adds nothing and the header
       is very hard to walk back.
 
-The free `*.laravel.cloud` URL carries `X-Robots-Tag: noindex`, so search engines
-only index the custom domain.
+Check whether the free `*.laravel.cloud` URL sends `X-Robots-Tag: noindex`. On
+2026-09-16 the `dev` URL did not, so add the header yourself if you want search
+engines to index only the custom domain.
 
 ### Google OAuth for this environment
 

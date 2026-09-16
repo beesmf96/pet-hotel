@@ -45,7 +45,7 @@ function formatDate(dateStr) {
                 </div>
                 <div class="border-t border-gray-100 pt-3 flex justify-between">
                     <span class="text-gray-500">Total</span>
-                    <span class="font-semibold text-gray-900">${{ Number(booking.total_price).toFixed(2) }}</span>
+                    <span class="font-semibold text-gray-900">RM {{ Number(booking.total_price).toFixed(2) }}</span>
                 </div>
             </div>
 

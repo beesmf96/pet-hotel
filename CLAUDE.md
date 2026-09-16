@@ -1,8 +1,8 @@
 # CLAUDE.md
 
 **Pet Hotel** — a pet boarding marketplace. Customers search, book, and review
-boarding stays; hotel owners manage listings through a Filament panel. Feature
-roadmap and status: `docs-src/tasks.md`.
+boarding stays; hotel owners manage listings through a Filament panel. The MVP is
+delivered; what shipped and when is in `docs-src/log/`.
 
 This file records what you cannot infer from the code: workflow, decisions, and
 traps. For everything else — naming, structure, style — match the surrounding code.

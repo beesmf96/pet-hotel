@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\PetHotel;
 use App\Models\PetHotelFacility;
 use App\Models\PetHotelPricing;
+use App\Models\Review;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -171,6 +172,20 @@ class HotelSearchTest extends TestCase
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->where('hotels.data.0.price_from', 40)
+            );
+    }
+
+    public function test_results_include_average_rating(): void
+    {
+        $hotel = $this->makeHotel();
+        Review::factory()->create(['hotel_id' => $hotel->id, 'rating' => 5]);
+        Review::factory()->create(['hotel_id' => $hotel->id, 'rating' => 4]);
+        Review::factory()->create(['hotel_id' => $hotel->id, 'rating' => 1, 'is_visible' => false]);
+
+        $this->get('/hotels')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('hotels.data.0.reviews_avg_rating', 4.5)
             );
     }
 

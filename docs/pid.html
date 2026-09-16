@@ -23,11 +23,11 @@
 </tr>
 <tr>
 <td>Document version</td>
-<td>1.0</td>
+<td>1.1</td>
 </tr>
 <tr>
 <td>Date</td>
-<td>2026-08-08</td>
+<td>2026-09-16</td>
 </tr>
 <tr>
 <td>Status</td>
@@ -69,11 +69,6 @@ point for scope decisions and the baseline against which delivery is measured.</
 <td>MVP requirements</td>
 <td><code>docs/pet-hotel-boarding-mvp-v1.html</code></td>
 <td>Original functional / non-functional requirements</td>
-</tr>
-<tr>
-<td>Task list</td>
-<td><code>docs-src/tasks.md</code></td>
-<td>Work breakdown, Modules 0–9</td>
 </tr>
 <tr>
 <td>User guide</td>
@@ -122,7 +117,7 @@ each request — which keeps the MVP simple and avoids payment integration.</p>
 <tr>
 <td>O1</td>
 <td>Let customers find suitable pet hotels</td>
-<td>Search with location, date, pet-type, price filters and rating/price/distance sorting</td>
+<td>Search by city with pet-type, price, and facility filters; sort by newest or price</td>
 </tr>
 <tr>
 <td>O2</td>
@@ -142,7 +137,7 @@ each request — which keeps the MVP simple and avoids payment integration.</p>
 <tr>
 <td>O5</td>
 <td>Ship something maintainable</td>
-<td>≥95% backend line coverage enforced in CI; linting and formatting gates on every PR</td>
+<td>Backend line coverage ≥98% and frontend ≥90% enforced in CI; linting and formatting gates on every PR</td>
 </tr>
 </tbody>
 </table></div>
@@ -151,11 +146,11 @@ each request — which keeps the MVP simple and avoids payment integration.</p>
 <h3><a id="41-in-scope" href="#content-41-in-scope" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>4.1 In scope</h3>
 <p><strong>Customer (pet owner)</strong></p>
 <ul>
-<li>Registration, email verification, login, password reset, Google sign-in</li>
+<li>Registration, email verification, login, password reset, Google sign-in, password change (or set, for Google-only accounts)</li>
 <li>Profile management (contact details, preferred location)</li>
 <li>Pet profiles with photo upload</li>
 <li>Hotel search with filters and sorting; paginated results</li>
-<li>Hotel profile pages — description, photos, pricing per pet type, facilities, policies</li>
+<li>Hotel profile pages — description, photos, pricing per pet type, facilities, policies, map</li>
 <li>Availability calendar per hotel</li>
 <li>Booking request submission, booking history, booking detail, cancellation</li>
 <li>Reviews and ratings after a completed stay</li>
@@ -168,7 +163,7 @@ each request — which keeps the MVP simple and avoids payment integration.</p>
 <li>Booking management — filter, confirm, cancel</li>
 <li>Read-only user list with pets</li>
 <li>Review moderation (visibility toggle, delete)</li>
-<li>Dashboard widgets — bookings today, pending bookings, new users this week</li>
+<li>Dashboard widgets — check-ins today, pending bookings, new users this week</li>
 </ul>
 <p><strong>Hotel owner</strong></p>
 <ul>
@@ -178,10 +173,10 @@ each request — which keeps the MVP simple and avoids payment integration.</p>
 <p><strong>Platform</strong></p>
 <ul>
 <li>Dockerised local environment (app, nginx, PostgreSQL, Redis, Mailpit, Vite)</li>
-<li>Redis-backed queue for notification jobs</li>
+<li>Redis for queue, cache, and sessions; a dedicated queue worker container for notification jobs</li>
 <li>Configurable photo storage disk (local or S3-compatible)</li>
 <li>Security hardening — security headers, CSP, dependency advisory clearance</li>
-<li>CI pipeline on every PR and push to <code>main</code></li>
+<li>CI pipeline on every PR to, and push to, <code>main</code> or <code>dev</code></li>
 </ul>
 <h3><a id="42-out-of-scope" href="#content-42-out-of-scope" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>4.2 Out of scope</h3>
 <div class="table-wrap"><table>
@@ -283,7 +278,7 @@ documented XHR widgets (hotel availability, notifications).</li>
 <tr>
 <td>D6</td>
 <td>Automated test suite</td>
-<td>PHPUnit and Vitest green; backend line coverage ≥95%</td>
+<td>PHPUnit and Vitest green; backend line coverage ≥98%, frontend ≥90%</td>
 </tr>
 <tr>
 <td>D7</td>
@@ -353,7 +348,7 @@ documented XHR widgets (hotel availability, notifications).</li>
 <tbody>
 <tr>
 <td>Backend</td>
-<td>Laravel 13.8 (PHP 8.3+)</td>
+<td>Laravel 13 (PHP 8.4 in Docker; <code>^8.3</code> required)</td>
 </tr>
 <tr>
 <td>Frontend</td>
@@ -361,7 +356,7 @@ documented XHR widgets (hotel availability, notifications).</li>
 </tr>
 <tr>
 <td>SPA bridge</td>
-<td>Inertia.js 3.1</td>
+<td>Inertia.js 3</td>
 </tr>
 <tr>
 <td>Admin UI</td>
@@ -376,7 +371,7 @@ documented XHR widgets (hotel availability, notifications).</li>
 <td>PostgreSQL 16 (Docker); SQLite locally and in tests</td>
 </tr>
 <tr>
-<td>Queue</td>
+<td>Queue, cache, sessions</td>
 <td>Redis</td>
 </tr>
 <tr>
@@ -398,22 +393,27 @@ documented XHR widgets (hotel availability, notifications).</li>
 </tbody>
 </table></div>
 <h3><a id="72-delivery-method" href="#content-72-delivery-method" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>7.2 Delivery method</h3>
-<p>Work is broken into modules (see <code>docs-src/tasks.md</code>) delivered incrementally. Each
-change is developed on a <code>feature/{name}</code> branch, opened as a pull request to
-<code>main</code>, and merged only after human review. Larger pieces of work carry a plan file
-in <code>.claude/plans/</code>.</p>
+<p>Work was broken into modules (see §8) delivered incrementally. Each
+change is developed on a <code>feature/{name}</code> branch cut from <code>dev</code>, opened as a pull
+request to <code>dev</code>, and merged only after human review. <code>main</code> receives a release pull
+request from <code>dev</code> when the product owner asks for one. Larger pieces of work carry a
+plan file in <code>.claude/plans/</code>, and every completed task gets a session log entry in
+<code>docs-src/log/</code>.</p>
 <h3><a id="73-quality-gates" href="#content-73-quality-gates" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>7.3 Quality gates</h3>
 <p>Every pull request must pass:</p>
 <ol>
 <li><code>vendor/bin/pint --test</code> — PHP formatting</li>
-<li>PHPUnit with pcov coverage, failing below <code>MIN_COVERAGE</code> (currently 95)</li>
+<li>PHPUnit with pcov coverage, failing below <code>MIN_COVERAGE</code> (currently 98)</li>
+<li><code>composer audit</code> and <code>bun audit</code> — dependency advisories</li>
 <li><code>bun run lint</code> — ESLint</li>
-<li><code>bun run test --run</code> — Vitest</li>
+<li><code>bun run test --run</code> — Vitest, failing below its own coverage floor (currently 90)</li>
 </ol>
 <p>The coverage floor is raised as coverage improves and is never lowered to turn a
 build green.</p>
 <hr />
 <h2><a id="8-work-breakdown-and-milestones" href="#content-8-work-breakdown-and-milestones" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>8. Work Breakdown and Milestones</h2>
+<p>The module-by-module task list was retired on 2026-09-16 once every item was
+delivered. The session log in <code>docs-src/log/</code> is now the record of what shipped.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -475,8 +475,9 @@ build green.</p>
 </tbody>
 </table></div>
 <p>Post-MVP work delivered outside the original module list: Google OAuth, hotel-owner
-panel, object storage for photos, OWASP security hardening, and test-coverage
-raising. Dates for each milestone are <em>TBC</em> — reconstruct from git history if a
+panel, path-based panel routing, object storage for photos, OWASP security hardening,
+queue worker hardening, password change, the paper trail (session log, ADRs,
+knowledge, intake), and backend and frontend coverage raising. Dates for each milestone are <em>TBC</em> — reconstruct from git history if a
 dated schedule is required.</p>
 <hr />
 <h2><a id="9-risks" href="#content-9-risks" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>9. Risks</h2>
@@ -588,6 +589,12 @@ document and, where implementation work follows, a plan file in <code>.claude/pl
 <td>1.0</td>
 <td>2026-08-08</td>
 <td>Initial baseline</td>
+<td><em>TBC</em></td>
+</tr>
+<tr>
+<td>1.1</td>
+<td>2026-09-16</td>
+<td>Audit against the code: sorting claims, coverage floors, branching model, CI triggers, stack versions, post-MVP list; task list retired</td>
 <td><em>TBC</em></td>
 </tr>
 </tbody>

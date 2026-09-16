@@ -95,7 +95,7 @@ function cancelBooking() {
                     </div>
                     <div class="border-t border-gray-100 pt-3 flex justify-between">
                         <dt class="font-semibold text-gray-900">Total</dt>
-                        <dd class="font-semibold text-gray-900">${{ Number(booking.total_price).toFixed(2) }}</dd>
+                        <dd class="font-semibold text-gray-900">RM {{ Number(booking.total_price).toFixed(2) }}</dd>
                     </div>
                 </dl>
             </div>

@@ -172,7 +172,7 @@ function nextPhoto() {
                             >
                                 <span class="text-gray-700">{{ petTypeLabels[price.pet_type] }}</span>
                                 <span class="font-medium text-gray-900">
-                                    ${{ Number(price.price_per_night).toFixed(2) }}<span class="text-gray-400 font-normal"> / night</span>
+                                    RM {{ Number(price.price_per_night).toFixed(2) }}<span class="text-gray-400 font-normal"> / night</span>
                                 </span>
                             </li>
                         </ul>

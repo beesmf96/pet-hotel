@@ -205,7 +205,7 @@ describe('HotelProfilePage — facilities, policies, and pricing', () => {
         const hotel = { ...baseHotel, pricing: [{ id: 1, pet_type: 'dog', price_per_night: '45.5' }] }
         const w = mount(HotelProfilePage, { props: { ...baseProps, hotel } })
         expect(w.text()).toContain('Dog')
-        expect(w.text()).toContain('$45.50')
+        expect(w.text()).toContain('RM 45.50')
         expect(w.text()).toContain('/ night')
     })
 

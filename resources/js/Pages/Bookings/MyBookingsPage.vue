@@ -76,7 +76,7 @@ function closeReview() {
                             >
                                 {{ statusConfig[booking.status]?.label ?? booking.status }}
                             </span>
-                            <p class="text-sm font-semibold text-gray-900">${{ Number(booking.total_price).toFixed(2) }}</p>
+                            <p class="text-sm font-semibold text-gray-900">RM {{ Number(booking.total_price).toFixed(2) }}</p>
                         </div>
                     </div>
                 </Link>

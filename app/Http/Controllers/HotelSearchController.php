@@ -15,6 +15,7 @@ class HotelSearchController extends Controller
         $query = PetHotel::query()
             ->where('is_active', true)
             ->with(['facilities'])
+            ->withAvg('reviews', 'rating')
             ->addSelect([
                 'price_from' => PetHotelPricing::selectRaw('MIN(price_per_night)')
                     ->whereColumn('hotel_id', 'pet_hotels.id'),
