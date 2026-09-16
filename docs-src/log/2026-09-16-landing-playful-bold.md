@@ -1,12 +1,12 @@
 ---
-title: Landing, search and hotel profile redesign (playful bold)
-description: Rebuilt the landing page, the app layout, the search page and the hotel profile in the "Playful bold" direction chosen from three design proposals.
+title: Customer pages redesign (playful bold)
+description: Rebuilt the landing page, app layout, search, hotel profile and booking form in the "Playful bold" direction chosen from three design proposals.
 date: 2026-09-16
 pr: 51
 plan: ~
 ---
 
-# Landing, search and hotel profile redesign (playful bold)
+# Customer pages redesign (playful bold)
 
 ## Asked
 "i want to explore the landing page design, where currently might be less
@@ -14,7 +14,7 @@ attractive for a pet hotel searching platform. can we have 3 different design
 proposal, see which one is good?" The user then picked direction B, "Playful
 bold". A second request in the same session: apply the same style to the
 search page, with the shared app layout included, on the same branch. A third
-request: the hotel profile page too, same branch.
+request: the hotel profile page too, same branch. A fourth: the booking form.
 
 ## Done
 - Design: three directions (warm editorial, playful bold, clean marketplace)
@@ -43,6 +43,12 @@ request: the hotel profile page too, same branch.
 - Frontend: `ReviewList.vue` stars are mustard on ink; `AvailabilityCalendar.vue`
   got the new frame, month buttons and legend. Its day-cell colours are
   unchanged because the booking form shares the component.
+- Frontend: `BookingFormPage.vue` restyled. Outlined cards, bold inputs,
+  coral error text, and the price summary is now a teal card with the total
+  in display type and both action buttons inside it. Buttons stack on phones.
+- Frontend: `AvailabilityCalendar.vue` selected check-in and check-out cells
+  are now ink on cream, and the nights in between are mustard. The
+  available, limited, full and past cell colours are unchanged.
 - Bug fix: `HotelController` and `ReviewController` sent `reviews_count` and
   `average_rating`, but both pages declare `reviewsCount` and `averageRating`.
   Vue does not map snake_case to camelCase, so the profile always showed
@@ -61,9 +67,10 @@ request: the hotel profile page too, same branch.
   in users. There is no dedicated owner onboarding page yet.
 
 ## Not done
-- The booking, reviews list, pets, profile and dashboard pages keep their grey
-  cards inside the new chrome. Restyling them is a follow-up; the booking form
-  is the natural next one since Book Now leads straight into it.
+- The booking confirmation, booking detail, my bookings, reviews list, pets,
+  profile, dashboard and auth pages keep their grey cards inside the new
+  chrome. Restyling them is a follow-up; the booking confirmation and my
+  bookings pages are the natural next ones since the booking form leads there.
 - The design canvas still shows all three directions; it was not trimmed to
   the chosen one.
 
@@ -80,8 +87,10 @@ request: the hotel profile page too, same branch.
   `require-default-prop` pattern).
 - `composer test` in Docker: 377 passed, including the renamed review prop
   assertions. `vendor/bin/pint --test`: pass.
-- Headless Chromium screenshots of the landing, search and hotel profile
-  pages at 1440px and 400px wide, plus the search empty state: no horizontal overflow, headline
+- Headless Chromium screenshots of the landing, search, hotel profile and
+  booking form pages at 1440px and 400px wide, plus the search empty state
+  (the booking form was captured through the DevTools protocol with a
+  throwaway logged-in session, deleted afterwards): no horizontal overflow, headline
   on two lines on desktop, fields and sidebar stack on phone, sort select
   shows "Newest first", the profile's review summary shows the average and
   count.

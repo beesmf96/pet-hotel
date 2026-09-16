@@ -68,7 +68,7 @@ function cellClass(cell) {
 
     // Priority 1: selected endpoint wins over everything
     if (isSelectedEndpoint) {
-        return 'bg-gray-900 text-white ring-2 ring-gray-900 cursor-pointer';
+        return 'bg-ink text-cream ring-2 ring-ink font-bold cursor-pointer';
     }
 
     // Priority 2: unavailable states (blocked/full/past) — not clickable
@@ -81,7 +81,7 @@ function cellClass(cell) {
 
     // Priority 3: in-range highlight
     if (isInRange) {
-        return 'bg-gray-100 text-gray-800' + (props.selectable ? ' cursor-pointer' : '');
+        return 'bg-mustard text-ink font-medium' + (props.selectable ? ' cursor-pointer' : '');
     }
 
     // Priority 4: availability status with today ring (today ring skipped when selected)
@@ -203,7 +203,7 @@ onMounted(fetchMonth);
             <div
                 v-for="(cell, i) in calendarDays"
                 :key="i"
-                class="h-9 rounded-lg flex items-center justify-center text-sm"
+                class="h-9 rounded-lg flex items-center justify-center text-sm transition-colors"
                 :class="cell ? cellClass(cell) : ''"
                 @click="cell && handleCellClick(cell)"
             >

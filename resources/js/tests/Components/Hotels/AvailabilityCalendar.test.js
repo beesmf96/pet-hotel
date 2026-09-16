@@ -159,8 +159,8 @@ describe('AvailabilityCalendar — visual state classes', () => {
         await flushPromises()
         const cells = w.findAll('[class*="grid-cols-7"] > div')
         const checkInCell = cells.find((c) => c.text() === '20')
-        expect(checkInCell.classes()).toContain('bg-gray-900')
-        expect(checkInCell.classes()).toContain('text-white')
+        expect(checkInCell.classes()).toContain('bg-ink')
+        expect(checkInCell.classes()).toContain('text-cream')
     })
 
     it('applies in-range class to dates between checkIn and checkOut', async () => {
@@ -175,6 +175,6 @@ describe('AvailabilityCalendar — visual state classes', () => {
         await flushPromises()
         const cells = w.findAll('[class*="grid-cols-7"] > div')
         const rangeCell = cells.find((c) => c.text() === '20')
-        expect(rangeCell.classes()).toContain('bg-gray-100')
+        expect(rangeCell.classes()).toContain('bg-mustard')
     })
 })
