@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from 'vue';
+import SectionTitle from '@/Components/Ui/SectionTitle.vue';
+import UiButton from '@/Components/Ui/UiButton.vue';
 
 const props = defineProps({
     filters: Object,
@@ -12,9 +14,7 @@ const priceMax = ref(props.filters.price_max || '');
 
 const parsedFacilities = (() => {
     if (!props.filters.facilities) return [];
-    return Array.isArray(props.filters.facilities)
-        ? props.filters.facilities
-        : props.filters.facilities.split(',');
+    return Array.isArray(props.filters.facilities) ? props.filters.facilities : props.filters.facilities.split(',');
 })();
 
 const selectedFacilities = ref(parsedFacilities);
@@ -56,8 +56,8 @@ function clearFilters() {
 </script>
 
 <template>
-    <div class="bg-white border-3 border-ink rounded-2xl shadow-hard p-4 space-y-5">
-        <h2 class="font-display font-bold text-lg">Filters</h2>
+    <div class="card-hard p-4 space-y-5">
+        <SectionTitle size="sm">Filters</SectionTitle>
 
         <div>
             <p class="text-xs font-bold uppercase tracking-wide text-moss mb-2">Price per night</p>
@@ -105,12 +105,7 @@ function clearFilters() {
         </div>
 
         <div class="space-y-2 pt-1">
-            <button
-                class="w-full bg-teal text-cream border-3 border-ink text-sm font-bold py-2 rounded-xl shadow-hard hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition"
-                @click="applyFilters"
-            >
-                Apply Filters
-            </button>
+            <UiButton size="sm" block @click="applyFilters"> Apply Filters </UiButton>
             <button
                 class="w-full text-sm font-semibold text-moss py-2 rounded-xl hover:bg-cream transition-colors"
                 @click="clearFilters"

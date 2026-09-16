@@ -1,5 +1,6 @@
 <script setup>
 import { router } from '@inertiajs/vue3';
+import PawIcon from '@/Components/Ui/PawIcon.vue';
 
 const props = defineProps({
     hotel: Object,
@@ -25,7 +26,7 @@ function visitHotel() {
 
 <template>
     <div
-        class="bg-white border-3 border-ink rounded-2xl shadow-hard-lg overflow-hidden cursor-pointer flex flex-col hover:-translate-y-1 transition"
+        class="card-hard-lg overflow-hidden cursor-pointer flex flex-col hover:-translate-y-1 transition"
         @click="visitHotel"
     >
         <img
@@ -39,13 +40,7 @@ function visitHotel() {
             class="w-full h-48 border-b-3 border-ink flex items-center justify-center"
             :class="photoTints[(hotel.id ?? 0) % photoTints.length]"
         >
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <circle cx="5.5" cy="9" r="2" />
-                <circle cx="9.5" cy="5" r="2" />
-                <circle cx="14.5" cy="5" r="2" />
-                <circle cx="18.5" cy="9" r="2" />
-                <path d="M12 11c-3 0-6 3-6 6 0 1.7 1.3 3 3 3 1 0 2-.5 3-.5s2 .5 3 .5c1.7 0 3-1.3 3-3 0-3-3-6-6-6z" />
-            </svg>
+            <PawIcon :size="40" />
         </div>
 
         <div class="p-5 flex flex-col gap-2.5">

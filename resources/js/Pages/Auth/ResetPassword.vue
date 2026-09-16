@@ -1,6 +1,9 @@
 <script setup>
 import AuthLayout from '@/Layouts/AuthLayout.vue';
 import { useForm } from '@inertiajs/vue3';
+import FormField from '@/Components/Ui/FormField.vue';
+import TextInput from '@/Components/Ui/TextInput.vue';
+import UiButton from '@/Components/Ui/UiButton.vue';
 
 const props = defineProps({
     token: { type: String, required: true },
@@ -26,45 +29,21 @@ function submit() {
         <template #subtitle>Choose a new password</template>
 
         <form class="space-y-5" @submit.prevent="submit">
-            <div>
-                <label class="block text-sm font-bold mb-1.5">Email</label>
-                <input
-                    v-model="form.email"
-                    type="email"
-                    autocomplete="email"
-                    class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal"
-                />
-                <p v-if="form.errors.email" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.email }}</p>
-            </div>
+            <FormField label="Email" :error="form.errors.email">
+                <TextInput v-model="form.email" type="email" autocomplete="email" />
+            </FormField>
 
-            <div>
-                <label class="block text-sm font-bold mb-1.5">New Password</label>
-                <input
-                    v-model="form.password"
-                    type="password"
-                    autocomplete="new-password"
-                    class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal"
-                />
-                <p v-if="form.errors.password" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.password }}</p>
-            </div>
+            <FormField label="New Password" :error="form.errors.password">
+                <TextInput v-model="form.password" type="password" autocomplete="new-password" />
+            </FormField>
 
-            <div>
-                <label class="block text-sm font-bold mb-1.5">Confirm New Password</label>
-                <input
-                    v-model="form.password_confirmation"
-                    type="password"
-                    autocomplete="new-password"
-                    class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal"
-                />
-            </div>
+            <FormField label="Confirm New Password">
+                <TextInput v-model="form.password_confirmation" type="password" autocomplete="new-password" />
+            </FormField>
 
-            <button
-                type="submit"
-                :disabled="form.processing"
-                class="w-full bg-teal text-cream border-3 border-ink py-3 rounded-xl text-sm font-bold shadow-hard hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition disabled:opacity-50"
-            >
+            <UiButton block type="submit" :disabled="form.processing">
                 {{ form.processing ? 'Resetting...' : 'Reset password' }}
-            </button>
+            </UiButton>
         </form>
     </AuthLayout>
 </template>

@@ -24,7 +24,8 @@ const { formatDate } = useFormatDate();
                     :key="i"
                     class="text-lg leading-none"
                     :class="starType(Math.round(averageRating), i) === 'filled' ? 'text-mustard' : 'text-ink/15'"
-                >★</span>
+                    >★</span
+                >
             </div>
             <span class="font-display font-bold text-lg">{{ averageRating }}</span>
             <span class="text-sm text-moss">
@@ -47,7 +48,8 @@ const { formatDate } = useFormatDate();
                             :key="i"
                             class="text-sm leading-none"
                             :class="starType(review.rating, i) === 'filled' ? 'text-mustard' : 'text-ink/15'"
-                        >★</span>
+                            >★</span
+                        >
                     </div>
                     <span class="text-xs text-moss">{{ formatDate(review.created_at) }}</span>
                 </div>

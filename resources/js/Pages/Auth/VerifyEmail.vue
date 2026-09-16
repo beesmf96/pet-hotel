@@ -1,6 +1,8 @@
 <script setup>
 import AuthLayout from '@/Layouts/AuthLayout.vue';
 import { useForm } from '@inertiajs/vue3';
+import UiButton from '@/Components/Ui/UiButton.vue';
+import Notice from '@/Components/Ui/Notice.vue';
 
 defineProps({
     status: { type: String, default: null },
@@ -22,12 +24,9 @@ function logout() {
     <AuthLayout>
         <template #subtitle>Verify your email</template>
 
-        <div
-            v-if="status === 'verification-link-sent'"
-            class="mb-4 text-sm font-semibold bg-teal-light border-2 border-ink rounded-xl px-4 py-3"
+        <Notice v-if="status === 'verification-link-sent'" class="mb-4"
+            >A new verification link has been sent to your email address.</Notice
         >
-            A new verification link has been sent to your email address.
-        </div>
 
         <p class="mb-6 text-sm text-moss">
             Thanks for registering! Before getting started, please verify your email address by clicking on the link we
@@ -35,13 +34,9 @@ function logout() {
         </p>
 
         <div class="flex flex-col gap-3">
-            <button
-                :disabled="resendForm.processing"
-                class="w-full bg-teal text-cream border-3 border-ink py-3 rounded-xl text-sm font-bold shadow-hard hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition disabled:opacity-50"
-                @click="resend"
-            >
+            <UiButton block :disabled="resendForm.processing" @click="resend">
                 {{ resendForm.processing ? 'Sending...' : 'Resend verification email' }}
-            </button>
+            </UiButton>
 
             <button
                 :disabled="logoutForm.processing"

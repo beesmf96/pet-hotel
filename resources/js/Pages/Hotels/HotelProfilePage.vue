@@ -5,6 +5,9 @@ import HotelMap from '@/Components/Hotels/HotelMap.vue';
 import ReviewList from '@/Components/Hotels/ReviewList.vue';
 import { ref, computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
+import PawIcon from '@/Components/Ui/PawIcon.vue';
+import SectionTitle from '@/Components/Ui/SectionTitle.vue';
+import UiButton from '@/Components/Ui/UiButton.vue';
 
 const props = defineProps({
     hotel: { type: Object, required: true },
@@ -47,8 +50,7 @@ const activePhotoIndex = ref(0);
 
 function prevPhoto() {
     if (allPhotos.value.length === 0) return;
-    activePhotoIndex.value =
-        (activePhotoIndex.value - 1 + allPhotos.value.length) % allPhotos.value.length;
+    activePhotoIndex.value = (activePhotoIndex.value - 1 + allPhotos.value.length) % allPhotos.value.length;
 }
 
 function nextPhoto() {
@@ -62,13 +64,15 @@ function nextPhoto() {
         <template #header>
             <div class="flex flex-col gap-1">
                 <h1 class="text-3xl sm:text-4xl leading-tight">{{ hotel.name }}</h1>
-                <p class="font-sans font-medium tracking-normal text-sm text-moss">{{ hotel.address }}, {{ hotel.city }}</p>
+                <p class="font-sans font-medium tracking-normal text-sm text-moss">
+                    {{ hotel.address }}, {{ hotel.city }}
+                </p>
             </div>
         </template>
 
         <div class="space-y-6">
             <!-- Photo Gallery -->
-            <div class="bg-white border-3 border-ink rounded-2xl shadow-hard-lg overflow-hidden">
+            <div class="card-hard-lg overflow-hidden">
                 <div v-if="allPhotos.length > 0" class="relative">
                     <img
                         :src="allPhotos[activePhotoIndex].src"
@@ -90,7 +94,9 @@ function nextPhoto() {
                         >
                             ›
                         </button>
-                        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 bg-ink/60 rounded-full px-2 py-1.5">
+                        <div
+                            class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 bg-ink/60 rounded-full px-2 py-1.5"
+                        >
                             <button
                                 v-for="(_, i) in allPhotos"
                                 :key="i"
@@ -102,27 +108,21 @@ function nextPhoto() {
                     </template>
                 </div>
                 <div v-else class="w-full h-64 sm:h-96 bg-teal-light flex items-center justify-center text-ink">
-                    <svg width="56" height="56" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <circle cx="5.5" cy="9" r="2" />
-                        <circle cx="9.5" cy="5" r="2" />
-                        <circle cx="14.5" cy="5" r="2" />
-                        <circle cx="18.5" cy="9" r="2" />
-                        <path d="M12 11c-3 0-6 3-6 6 0 1.7 1.3 3 3 3 1 0 2-.5 3-.5s2 .5 3 .5c1.7 0 3-1.3 3-3 0-3-3-6-6-6z" />
-                    </svg>
+                    <PawIcon :size="56" />
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 space-y-6">
                     <!-- Description -->
-                    <div class="bg-white border-3 border-ink rounded-2xl shadow-hard p-6">
-                        <h2 class="font-display font-bold text-2xl mb-3">About</h2>
+                    <div class="card-hard p-6">
+                        <SectionTitle class="mb-3">About</SectionTitle>
                         <p class="text-[15px] text-moss leading-relaxed whitespace-pre-line">{{ hotel.description }}</p>
                     </div>
 
                     <!-- Facilities -->
-                    <div v-if="hotel.facilities.length > 0" class="bg-white border-3 border-ink rounded-2xl shadow-hard p-6">
-                        <h2 class="font-display font-bold text-2xl mb-4">Facilities</h2>
+                    <div v-if="hotel.facilities.length > 0" class="card-hard p-6">
+                        <SectionTitle class="mb-4">Facilities</SectionTitle>
                         <div class="flex flex-wrap gap-2.5">
                             <span
                                 v-for="facility in hotel.facilities"
@@ -135,8 +135,8 @@ function nextPhoto() {
                     </div>
 
                     <!-- Policies -->
-                    <div v-if="hotel.policy" class="bg-white border-3 border-ink rounded-2xl shadow-hard p-6">
-                        <h2 class="font-display font-bold text-2xl mb-4">Policies</h2>
+                    <div v-if="hotel.policy" class="card-hard p-6">
+                        <SectionTitle class="mb-4">Policies</SectionTitle>
                         <div class="grid grid-cols-2 gap-4 mb-4">
                             <div class="bg-cream border-2 border-ink rounded-xl p-4">
                                 <p class="text-xs font-bold uppercase tracking-wide text-moss mb-1">Check-in</p>
@@ -157,9 +157,9 @@ function nextPhoto() {
                 <!-- Sidebar: Pricing + Ratings -->
                 <div class="space-y-6">
                     <!-- Pricing + Book Now -->
-                    <div class="bg-white border-3 border-ink rounded-2xl shadow-hard p-6">
+                    <div class="card-hard p-6">
                         <template v-if="hotel.pricing.length > 0">
-                            <h2 class="font-display font-bold text-2xl mb-3">Pricing</h2>
+                            <SectionTitle class="mb-3">Pricing</SectionTitle>
                             <ul class="divide-y-2 divide-ink/10 mb-5">
                                 <li
                                     v-for="price in hotel.pricing"
@@ -168,27 +168,27 @@ function nextPhoto() {
                                 >
                                     <span class="font-semibold">{{ petTypeLabels[price.pet_type] }}</span>
                                     <span class="font-display font-bold text-lg">
-                                        RM {{ Number(price.price_per_night).toFixed(2) }}<span class="font-sans text-sm font-medium text-moss"> / night</span>
+                                        RM {{ Number(price.price_per_night).toFixed(2)
+                                        }}<span class="font-sans text-sm font-medium text-moss"> / night</span>
                                     </span>
                                 </li>
                             </ul>
                         </template>
-                        <Link
-                            :href="`/hotels/${hotel.slug}/book`"
-                            class="block w-full text-center bg-teal text-cream border-3 border-ink font-bold px-6 py-3 rounded-xl shadow-hard hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition"
-                        >
-                            Book Now
-                        </Link>
+                        <UiButton as="link" size="lg" block :href="`/hotels/${hotel.slug}/book`"> Book Now </UiButton>
                     </div>
 
                     <!-- Availability Calendar -->
                     <AvailabilityCalendar :hotel-slug="hotel.slug" />
 
                     <!-- Location -->
-                    <div v-if="hotel.lat != null && hotel.lng != null"
-                         class="bg-white border-3 border-ink rounded-2xl shadow-hard p-6">
-                        <h2 class="font-display font-bold text-2xl mb-3">Location</h2>
-                        <HotelMap :lat="hotel.lat" :lng="hotel.lng" :name="hotel.name" class="mb-3 border-2 border-ink" />
+                    <div v-if="hotel.lat != null && hotel.lng != null" class="card-hard p-6">
+                        <SectionTitle class="mb-3">Location</SectionTitle>
+                        <HotelMap
+                            :lat="hotel.lat"
+                            :lng="hotel.lng"
+                            :name="hotel.name"
+                            class="mb-3 border-2 border-ink"
+                        />
                         <p class="text-sm text-moss">{{ hotel.address }}, {{ hotel.city }}</p>
                         <a
                             :href="`https://maps.google.com/?q=${hotel.lat},${hotel.lng}`"
@@ -199,15 +199,15 @@ function nextPhoto() {
                             Open in Google Maps ↗
                         </a>
                     </div>
-                    <div v-else class="bg-white border-3 border-ink rounded-2xl shadow-hard p-6">
-                        <h2 class="font-display font-bold text-2xl mb-2">Location</h2>
+                    <div v-else class="card-hard p-6">
+                        <SectionTitle class="mb-2">Location</SectionTitle>
                         <p class="text-sm text-moss">{{ hotel.address }}, {{ hotel.city }}</p>
                     </div>
 
                     <!-- Reviews -->
-                    <div class="bg-white border-3 border-ink rounded-2xl shadow-hard p-6">
+                    <div class="card-hard p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <h2 class="font-display font-bold text-2xl">Reviews</h2>
+                            <SectionTitle>Reviews</SectionTitle>
                             <Link
                                 v-if="reviewsCount > 5"
                                 :href="`/hotels/${hotel.slug}/reviews`"
@@ -216,11 +216,7 @@ function nextPhoto() {
                                 View all {{ reviewsCount }}
                             </Link>
                         </div>
-                        <ReviewList
-                            :reviews="reviews"
-                            :average-rating="averageRating"
-                            :reviews-count="reviewsCount"
-                        />
+                        <ReviewList :reviews="reviews" :average-rating="averageRating" :reviews-count="reviewsCount" />
                     </div>
                 </div>
             </div>

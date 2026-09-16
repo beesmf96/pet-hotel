@@ -1,6 +1,10 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
 import { watch } from 'vue';
+import FormField from '@/Components/Ui/FormField.vue';
+import SectionTitle from '@/Components/Ui/SectionTitle.vue';
+import TextInput from '@/Components/Ui/TextInput.vue';
+import UiButton from '@/Components/Ui/UiButton.vue';
 
 const props = defineProps({
     show: Boolean,
@@ -53,95 +57,48 @@ function close() {
 <template>
     <Teleport to="body">
         <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center bg-ink/60" @click.self="close">
-            <div class="bg-white border-3 border-ink rounded-2xl shadow-hard-lg w-full max-w-md mx-4 p-6">
-                <h2 class="font-display font-bold text-2xl mb-4">
+            <div class="card-hard-lg w-full max-w-md mx-4 p-6">
+                <SectionTitle class="mb-4">
                     {{ pet ? 'Edit Pet' : 'Add Pet' }}
-                </h2>
+                </SectionTitle>
 
                 <form class="space-y-4" @submit.prevent="submit">
-                    <div>
-                        <label class="block text-sm font-bold mb-1.5">Name *</label>
-                        <input
-                            v-model="form.name"
-                            type="text"
-                            class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal"
-                        />
-                        <p v-if="form.errors.name" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.name }}</p>
-                    </div>
+                    <FormField label="Name *" :error="form.errors.name">
+                        <TextInput v-model="form.name" type="text" />
+                    </FormField>
 
-                    <div>
-                        <label class="block text-sm font-bold mb-1.5">Species *</label>
-                        <input
-                            v-model="form.species"
-                            type="text"
-                            placeholder="e.g. Dog, Cat, Rabbit"
-                            class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal"
-                        />
-                        <p v-if="form.errors.species" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.species }}</p>
-                    </div>
+                    <FormField label="Species *" :error="form.errors.species">
+                        <TextInput v-model="form.species" type="text" placeholder="e.g. Dog, Cat, Rabbit" />
+                    </FormField>
 
                     <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-sm font-bold mb-1.5">Breed</label>
-                            <input
-                                v-model="form.breed"
-                                type="text"
-                                class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal"
-                            />
-                            <p v-if="form.errors.breed" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.breed }}</p>
-                        </div>
+                        <FormField label="Breed" :error="form.errors.breed">
+                            <TextInput v-model="form.breed" type="text" />
+                        </FormField>
 
-                        <div>
-                            <label class="block text-sm font-bold mb-1.5">Age (years)</label>
-                            <input
-                                v-model="form.age"
-                                type="number"
-                                min="0"
-                                max="100"
-                                class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal"
-                            />
-                            <p v-if="form.errors.age" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.age }}</p>
-                        </div>
+                        <FormField label="Age (years)" :error="form.errors.age">
+                            <TextInput v-model="form.age" type="number" min="0" max="100" />
+                        </FormField>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-bold mb-1.5">Special Needs</label>
-                        <textarea
-                            v-model="form.special_needs"
-                            rows="2"
-                            class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal resize-none"
-                        />
-                        <p v-if="form.errors.special_needs" class="mt-1.5 text-sm font-semibold text-coral">
-                            {{ form.errors.special_needs }}
-                        </p>
-                    </div>
+                    <FormField label="Special Needs" :error="form.errors.special_needs">
+                        <TextInput v-model="form.special_needs" as="textarea" rows="2" />
+                    </FormField>
 
-                    <div>
-                        <label class="block text-sm font-bold mb-1.5">Photo</label>
+                    <FormField label="Photo" :error="form.errors.photo">
                         <input
                             type="file"
                             accept="image/*"
                             class="text-sm text-moss"
                             @change="form.photo = $event.target.files[0]"
                         />
-                        <p v-if="form.errors.photo" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.photo }}</p>
-                    </div>
+                    </FormField>
 
                     <div class="flex justify-end gap-3 pt-2">
-                        <button
-                            type="button"
-                            class="text-sm font-bold text-ink bg-white border-3 border-ink px-4 py-2.5 rounded-xl shadow-hard hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition"
-                            @click="close"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            :disabled="form.processing"
-                            class="bg-teal text-cream border-3 border-ink text-sm font-bold px-5 py-2.5 rounded-xl shadow-hard hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition disabled:opacity-50"
-                        >
+                        <UiButton variant="white" type="button" @click="close"> Cancel </UiButton>
+                        <UiButton type="submit" :disabled="form.processing">
                             {{ pet ? 'Save Changes' : 'Add Pet' }}
-                        </button>
+                        </UiButton>
                     </div>
                 </form>
             </div>

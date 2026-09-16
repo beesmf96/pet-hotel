@@ -1,6 +1,10 @@
 <script setup>
 import AuthLayout from '@/Layouts/AuthLayout.vue';
 import { useForm } from '@inertiajs/vue3';
+import FormField from '@/Components/Ui/FormField.vue';
+import TextInput from '@/Components/Ui/TextInput.vue';
+import UiButton from '@/Components/Ui/UiButton.vue';
+import Notice from '@/Components/Ui/Notice.vue';
 
 defineProps({
     status: { type: String, default: null },
@@ -23,48 +27,35 @@ function submit() {
     <AuthLayout>
         <template #subtitle>Sign in to your account</template>
 
-        <div v-if="status" class="mb-4 text-sm font-semibold bg-teal-light border-2 border-ink rounded-xl px-4 py-3">
-            {{ status }}
-        </div>
+        <Notice v-if="status" class="mb-4">{{ status }}</Notice>
 
         <form class="space-y-5" @submit.prevent="submit">
-            <div>
-                <label class="block text-sm font-bold mb-1.5">Email</label>
-                <input
-                    v-model="form.email"
-                    type="email"
-                    autocomplete="email"
-                    class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal"
-                />
-                <p v-if="form.errors.email" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.email }}</p>
-            </div>
+            <FormField label="Email" :error="form.errors.email">
+                <TextInput v-model="form.email" type="email" autocomplete="email" />
+            </FormField>
 
-            <div>
-                <div class="flex justify-between mb-1">
-                    <label class="block text-sm font-bold">Password</label>
-                    <a href="/forgot-password" class="text-xs font-semibold text-teal hover:underline">Forgot password?</a>
-                </div>
-                <input
-                    v-model="form.password"
-                    type="password"
-                    autocomplete="current-password"
-                    class="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal"
-                />
-                <p v-if="form.errors.password" class="mt-1.5 text-sm font-semibold text-coral">{{ form.errors.password }}</p>
-            </div>
+            <FormField label="Password" :error="form.errors.password">
+                <template #aside>
+                    <a href="/forgot-password" class="text-xs font-semibold text-teal hover:underline"
+                        >Forgot password?</a
+                    >
+                </template>
+                <TextInput v-model="form.password" type="password" autocomplete="current-password" />
+            </FormField>
 
             <div class="flex items-center gap-2">
-                <input id="remember" v-model="form.remember" type="checkbox" class="w-4 h-4 rounded border-2 border-ink accent-teal" />
+                <input
+                    id="remember"
+                    v-model="form.remember"
+                    type="checkbox"
+                    class="w-4 h-4 rounded border-2 border-ink accent-teal"
+                />
                 <label for="remember" class="text-sm text-moss">Remember me</label>
             </div>
 
-            <button
-                type="submit"
-                :disabled="form.processing"
-                class="w-full bg-teal text-cream border-3 border-ink py-3 rounded-xl text-sm font-bold shadow-hard hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition disabled:opacity-50"
-            >
+            <UiButton block type="submit" :disabled="form.processing">
                 {{ form.processing ? 'Signing in...' : 'Sign in' }}
-            </button>
+            </UiButton>
 
             <div class="relative flex items-center">
                 <div class="flex-grow border-t-2 border-ink/10"></div>
@@ -72,13 +63,10 @@ function submit() {
                 <div class="flex-grow border-t-2 border-ink/10"></div>
             </div>
 
-            <a
-                href="/auth/google"
-                class="w-full flex items-center justify-center gap-3 bg-white border-3 border-ink rounded-xl px-3 py-3 text-sm font-bold shadow-hard hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition"
-            >
+            <UiButton as="a" variant="white" block href="/auth/google">
                 <img src="/images/google-logo.svg" alt="Google" class="w-[18px] h-[18px]" />
                 Continue with Google
-            </a>
+            </UiButton>
 
             <p class="text-center text-sm text-moss">
                 Don't have an account?

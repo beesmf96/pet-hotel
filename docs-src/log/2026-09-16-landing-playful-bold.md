@@ -16,7 +16,8 @@ bold". A second request in the same session: apply the same style to the
 search page, with the shared app layout included, on the same branch. A third
 request: the hotel profile page too, same branch. A fourth: the booking form. A fifth: the booking confirmation and my
 bookings pages. Then: finish every remaining customer page first, and look at
-duplicated class strings in one pass afterwards.
+duplicated class strings in one pass afterwards. Then: do that dedupe pass,
+same branch.
 
 ## Done
 - Design: three directions (warm editorial, playful bold, clean marketplace)
@@ -62,6 +63,20 @@ duplicated class strings in one pass afterwards.
   bundles as the earlier pages. The pets placeholder and the notification
   type icons are SVG instead of emoji, with the glyph exposed as a data
   attribute for the test.
+- Frontend, dedupe pass: shared pieces under `resources/js/Components/Ui/`.
+  `UiButton` (variant, size, block, renders as button, anchor or Inertia
+  Link), `TextInput` (input, textarea or select, one field style, `full`
+  width prop), `FormField` (label, control, error, optional aside and label
+  suffix slots), `StatusPill` (the single booking status to colour map),
+  `EmptyState`, `Notice` (flash and status messages), `SectionTitle`,
+  `PawIcon` and `BrandMark`. Two Tailwind utilities in `app.css` for the
+  pure-styling cases, `card-hard` / `card-hard-lg` and `field-hard`, so
+  cards need no wrapper component. `useFormatDate` gained a `weekday` option
+  and handles ISO timestamps; the two page-local copies are gone. The
+  `SearchBar` default variant, unused since the search page moved over, is
+  removed and the bar is built on the shared components. Net effect: 41
+  files, about 140 fewer lines, every button, input, card, pill and notice
+  defined once.
 - Bug fix: the confirmation page showed "Invalid Date" for check-in and
   check-out. The controller passes the raw model, so the `date` cast arrives
   as a full ISO timestamp, and the page appended a local midnight to it. The
@@ -84,11 +99,9 @@ duplicated class strings in one pass afterwards.
   in users. There is no dedicated owner onboarding page yet.
 
 ## Not done
-- The style is applied by repeating the same class strings in every page.
-  A dedupe pass is agreed for afterwards: shared card, button, status pill,
-  heading and paw icon components, one status colour map, and one date
-  helper. The unused default variant of `SearchBar.vue` goes then too.
 - The Filament panels are untouched.
+- The landing page keeps a few one-off elements inline (the hero pill, the
+  footer brand on ink, the three step tiles) since nothing else uses them.
 - The design canvas still shows all three directions; it was not trimmed to
   the chosen one.
 
@@ -98,10 +111,11 @@ duplicated class strings in one pass afterwards.
 - Intake: ../intake/fontsource-bricolage-grotesque.md
 
 ## Verified
-- `bun run test`: 28 files, 230 tests passed (new specs for the card, the
+- `bun run test`: 35 files, 259 tests passed (new specs for the card, the
   bold search bar, both featured-section branches, the empty-array sort
-  default, and the confirmation page's timestamp dates).
-- `bun run lint`: 0 errors, 7 warnings, one fewer than `dev` (the existing
+  default, the confirmation page's timestamp dates, and one spec per shared
+  Ui component plus the date composable).
+- `bun run lint`: 0 errors, 5 warnings, three fewer than `dev` (the existing
   `require-default-prop` pattern).
 - `composer test` in Docker: 377 passed, including the renamed review prop
   assertions. `vendor/bin/pint --test`: pass.
@@ -110,7 +124,10 @@ duplicated class strings in one pass afterwards.
   profile, login and register pages at 1440px or 400px wide, plus the search
   empty state (the signed-in pages were captured
   through the DevTools protocol with a throwaway user, pet and four bookings
-  in the local Docker database, all deleted afterwards): no horizontal overflow, headline
+  in the local Docker database, all deleted afterwards). Repeated after the
+  dedupe pass on landing, search empty state, login, booking form, my
+  bookings and pets; the pages render the same, apart from the search sort
+  select which briefly went full width and was fixed with the `full` prop: no horizontal overflow, headline
   on two lines on desktop, fields and sidebar stack on phone, sort select
   shows "Newest first", the profile's review summary shows the average and
   count, the confirmation page shows real dates, my bookings shows all four

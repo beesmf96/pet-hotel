@@ -5,6 +5,8 @@ import SearchBar from '@/Components/Hotels/SearchBar.vue';
 import FilterSidebar from '@/Components/Hotels/FilterSidebar.vue';
 import { router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
+import TextInput from '@/Components/Ui/TextInput.vue';
+import EmptyState from '@/Components/Ui/EmptyState.vue';
 
 const props = defineProps({
     hotels: Object,
@@ -22,23 +24,35 @@ const SORT_OPTIONS = [
 ];
 
 function handleSearch(searchParams) {
-    router.get('/hotels', { ...props.filters, ...searchParams, sort: sort.value }, {
-        preserveState: false,
-    });
+    router.get(
+        '/hotels',
+        { ...props.filters, ...searchParams, sort: sort.value },
+        {
+            preserveState: false,
+        },
+    );
 }
 
 function applyFilters(newFilters) {
-    router.get('/hotels', { ...newFilters, sort: sort.value }, {
-        preserveState: true,
-        preserveScroll: true,
-    });
+    router.get(
+        '/hotels',
+        { ...newFilters, sort: sort.value },
+        {
+            preserveState: true,
+            preserveScroll: true,
+        },
+    );
 }
 
 watch(sort, (value) => {
-    router.get('/hotels', { ...props.filters, sort: value }, {
-        preserveState: true,
-        preserveScroll: true,
-    });
+    router.get(
+        '/hotels',
+        { ...props.filters, sort: value },
+        {
+            preserveState: true,
+            preserveScroll: true,
+        },
+    );
 });
 
 function visitPage(url) {
@@ -57,8 +71,8 @@ function decodeLabel(label) {
         </template>
 
         <div class="space-y-6">
-            <div class="bg-white border-3 border-ink rounded-2xl shadow-hard-lg p-4 sm:p-5">
-                <SearchBar :filters="filters" variant="bold" @search="handleSearch" />
+            <div class="card-hard-lg p-4 sm:p-5">
+                <SearchBar :filters="filters" @search="handleSearch" />
             </div>
 
             <div class="flex flex-col md:flex-row gap-6 items-start">
@@ -71,14 +85,11 @@ function decodeLabel(label) {
                         <p class="text-sm font-semibold text-moss">
                             {{ hotels.total }} hotel{{ hotels.total !== 1 ? 's' : '' }} found
                         </p>
-                        <select
-                            v-model="sort"
-                            class="text-sm font-semibold border-2 border-ink rounded-xl px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-teal"
-                        >
+                        <TextInput v-model="sort" :full="false" as="select">
                             <option v-for="opt in SORT_OPTIONS" :key="opt.value" :value="opt.value">
                                 {{ opt.label }}
                             </option>
-                        </select>
+                        </TextInput>
                     </div>
 
                     <div
@@ -88,24 +99,9 @@ function decodeLabel(label) {
                         <HotelCard v-for="hotel in hotels.data" :key="hotel.id" :hotel="hotel" />
                     </div>
 
-                    <div v-else class="bg-white border-3 border-ink rounded-2xl shadow-hard text-center py-16 px-6 flex flex-col items-center gap-3">
-                        <span class="w-14 h-14 rounded-2xl bg-mustard border-3 border-ink flex items-center justify-center">
-                            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                <circle cx="5.5" cy="9" r="2" />
-                                <circle cx="9.5" cy="5" r="2" />
-                                <circle cx="14.5" cy="5" r="2" />
-                                <circle cx="18.5" cy="9" r="2" />
-                                <path d="M12 11c-3 0-6 3-6 6 0 1.7 1.3 3 3 3 1 0 2-.5 3-.5s2 .5 3 .5c1.7 0 3-1.3 3-3 0-3-3-6-6-6z" />
-                            </svg>
-                        </span>
-                        <h3 class="font-display font-bold text-xl">No hotels found</h3>
-                        <p class="text-sm text-moss">Try adjusting your search or filters.</p>
-                    </div>
+                    <EmptyState v-else title="No hotels found" message="Try adjusting your search or filters." />
 
-                    <div
-                        v-if="hotels.last_page > 1"
-                        class="mt-8 flex items-center justify-center flex-wrap gap-2"
-                    >
+                    <div v-if="hotels.last_page > 1" class="mt-8 flex items-center justify-center flex-wrap gap-2">
                         <button
                             v-for="link in hotels.links"
                             :key="link.label"
@@ -115,11 +111,13 @@ function decodeLabel(label) {
                                 link.active
                                     ? 'bg-ink text-cream border-ink'
                                     : link.url
-                                    ? 'bg-white text-ink border-ink hover:bg-mustard cursor-pointer'
-                                    : 'bg-transparent text-moss/50 border-transparent cursor-not-allowed',
+                                      ? 'bg-white text-ink border-ink hover:bg-mustard cursor-pointer'
+                                      : 'bg-transparent text-moss/50 border-transparent cursor-not-allowed',
                             ]"
                             @click="visitPage(link.url)"
-                        >{{ decodeLabel(link.label) }}</button>
+                        >
+                            {{ decodeLabel(link.label) }}
+                        </button>
                     </div>
                 </div>
             </div>

@@ -13,7 +13,7 @@ const loading = ref(true);
 
 onMounted(async () => {
     const res = await fetch('/notifications', {
-        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
         credentials: 'same-origin',
     });
     if (res.ok) {
@@ -27,12 +27,12 @@ async function markRead(id, url) {
         method: 'PATCH',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Accept': 'application/json',
+            Accept: 'application/json',
         },
         credentials: 'same-origin',
     });
 
-    const n = notifications.value.find(n => n.id === id);
+    const n = notifications.value.find((n) => n.id === id);
     if (n) n.read_at = new Date().toISOString();
 
     if (url) {
@@ -46,11 +46,13 @@ async function markAllRead() {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Accept': 'application/json',
+            Accept: 'application/json',
         },
         credentials: 'same-origin',
     });
-    notifications.value.forEach(n => { n.read_at = new Date().toISOString(); });
+    notifications.value.forEach((n) => {
+        n.read_at = new Date().toISOString();
+    });
 }
 
 // Tint and glyph per notification type; the bell is the fallback.
@@ -63,11 +65,11 @@ const styleFor = (type) => typeStyle[type] ?? { tint: 'bg-teal-light', glyph: 'b
 </script>
 
 <template>
-    <div class="absolute right-0 mt-2 w-80 bg-white border-3 border-ink rounded-2xl shadow-hard-lg z-50 overflow-hidden">
+    <div class="absolute right-0 mt-2 w-80 card-hard-lg z-50 overflow-hidden">
         <div class="flex items-center justify-between px-4 py-3 border-b border-ink/10">
             <span class="font-display font-bold text-xl">Notifications</span>
             <button
-                v-if="notifications.some(n => !n.read_at)"
+                v-if="notifications.some((n) => !n.read_at)"
                 class="text-xs font-bold text-teal hover:underline"
                 @click="markAllRead"
             >
@@ -94,15 +96,73 @@ const styleFor = (type) => typeStyle[type] ?? { tint: 'bg-teal-light', glyph: 'b
                     :class="styleFor(n.type).tint"
                     :data-glyph="styleFor(n.type).glyph"
                 >
-                    <svg v-if="styleFor(n.type).glyph === 'check'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
-                    <svg v-else-if="styleFor(n.type).glyph === 'cross'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
-                    <svg v-else-if="styleFor(n.type).glyph === 'clock'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
-                    <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0" /></svg>
+                    <svg
+                        v-if="styleFor(n.type).glyph === 'check'"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
+                        <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                    <svg
+                        v-else-if="styleFor(n.type).glyph === 'cross'"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        aria-hidden="true"
+                    >
+                        <path d="M6 6l12 12M18 6L6 18" />
+                    </svg>
+                    <svg
+                        v-else-if="styleFor(n.type).glyph === 'clock'"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        aria-hidden="true"
+                    >
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 7v5l3 2" />
+                    </svg>
+                    <svg
+                        v-else
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
+                        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0" />
+                    </svg>
                 </span>
                 <div class="flex-1 min-w-0">
                     <p class="text-sm text-ink leading-snug">{{ n.message }}</p>
                     <p class="text-xs text-moss mt-0.5">
-                        {{ new Date(n.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) }}
+                        {{
+                            new Date(n.created_at).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                            })
+                        }}
                     </p>
                 </div>
                 <span v-if="!n.read_at" class="unread-dot mt-1.5 h-2 w-2 rounded-full bg-coral shrink-0" />

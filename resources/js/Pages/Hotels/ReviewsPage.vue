@@ -25,15 +25,14 @@ const props = defineProps({
             </div>
         </template>
 
-        <div class="bg-white border-3 border-ink rounded-2xl shadow-hard p-6 max-w-3xl">
-            <ReviewList
-                :reviews="reviews.data"
-                :average-rating="averageRating"
-                :reviews-count="reviewsCount"
-            />
+        <div class="card-hard p-6 max-w-3xl">
+            <ReviewList :reviews="reviews.data" :average-rating="averageRating" :reviews-count="reviewsCount" />
 
             <!-- Pagination -->
-            <div v-if="reviews.last_page > 1" class="flex items-center justify-between mt-6 pt-4 border-t-2 border-ink/10">
+            <div
+                v-if="reviews.last_page > 1"
+                class="flex items-center justify-between mt-6 pt-4 border-t-2 border-ink/10"
+            >
                 <Link
                     v-if="reviews.prev_page_url"
                     :href="reviews.prev_page_url"
@@ -43,9 +42,7 @@ const props = defineProps({
                 </Link>
                 <span v-else class="text-sm text-moss/40">← Previous</span>
 
-                <span class="text-xs text-moss">
-                    Page {{ reviews.current_page }} of {{ reviews.last_page }}
-                </span>
+                <span class="text-xs text-moss"> Page {{ reviews.current_page }} of {{ reviews.last_page }} </span>
 
                 <Link
                     v-if="reviews.next_page_url"

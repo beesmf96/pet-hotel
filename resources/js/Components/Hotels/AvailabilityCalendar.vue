@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
+import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 
 const props = defineProps({
     hotelSlug: {
@@ -61,9 +62,8 @@ const calendarDays = computed(() => {
 function cellClass(cell) {
     const isToday = cell.date === todayKey;
     const isSelectedEndpoint = props.selectable && (cell.date === checkIn.value || cell.date === checkOut.value);
-    const isInRange = props.selectable
-        && checkIn.value && checkOut.value
-        && cell.date > checkIn.value && cell.date < checkOut.value;
+    const isInRange =
+        props.selectable && checkIn.value && checkOut.value && cell.date > checkIn.value && cell.date < checkOut.value;
     const isPast = props.selectable && cell.date < todayKey;
 
     // Priority 1: selected endpoint wins over everything
@@ -88,7 +88,11 @@ function cellClass(cell) {
     const ring = isToday ? 'ring-2 ' : '';
 
     if (cell.available_spots !== null && cell.available_spots <= 3) {
-        return ring + 'ring-orange-400 bg-orange-50 text-orange-700 font-medium' + (props.selectable ? ' cursor-pointer' : '');
+        return (
+            ring +
+            'ring-orange-400 bg-orange-50 text-orange-700 font-medium' +
+            (props.selectable ? ' cursor-pointer' : '')
+        );
     }
     return ring + 'ring-green-400 bg-green-50 text-green-700 font-medium' + (props.selectable ? ' cursor-pointer' : '');
 }
@@ -165,8 +169,8 @@ onMounted(fetchMonth);
 </script>
 
 <template>
-    <div class="bg-white border-3 border-ink rounded-2xl shadow-hard p-6">
-        <h2 class="font-display font-bold text-2xl mb-4">Availability</h2>
+    <div class="card-hard p-6">
+        <SectionTitle class="mb-4">Availability</SectionTitle>
 
         <!-- Month navigation -->
         <div class="flex items-center justify-between mb-4">
@@ -192,7 +196,8 @@ onMounted(fetchMonth);
                 v-for="d in ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']"
                 :key="d"
                 class="text-center text-xs text-moss font-bold py-1"
-            >{{ d }}</span>
+                >{{ d }}</span
+            >
         </div>
 
         <!-- Calendar grid -->
