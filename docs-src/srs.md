@@ -10,11 +10,11 @@ order: 12
 
 | Field | Value |
 |-------|-------|
-| Document version | 1.0 |
-| Date | 2026-08-09 |
+| Document version | 1.1 |
+| Date | 2026-09-16 |
 | Status | Baselined against the delivered MVP |
 | Supersedes | `docs/pet-hotel-boarding-mvp-v1.html` (retained as the original scope statement) |
-| Related | [Project Initiation Document](pid.html) · [Task List](tasks.html) |
+| Related | [Project Initiation Document](pid.html) |
 
 ---
 
@@ -84,7 +84,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | FR-02 | The system shall send a verification email on registration and shall deny access to customer features until the address is verified. | M | `verification.*` routes, `verified` middleware · `tests/Feature/Auth/EmailVerificationTest.php` |
 | FR-03 | A registered user shall log in with email and password, and shall log out. | M | `POST /login`, `POST /logout` · `tests/Feature/Auth/AuthTest.php` |
 | FR-04 | A user shall reset a forgotten password through an emailed, signed link. | M | `password.request`, `password.reset`, `password.update` · `tests/Feature/Auth/PasswordResetTest.php` |
-| FR-05 | A user shall register and sign in with a Google account. An account created this way has no password and shall remain usable without one. | S | `auth.google`, `auth.google.callback` · `tests/Feature/Auth/GoogleAuthTest.php` |
+| FR-05 | A user shall register and sign in with a Google account. An account created this way is verified on creation, has no password, and shall remain usable without one. | S | `auth.google`, `auth.google.callback` · `tests/Feature/Auth/GoogleAuthTest.php` |
 | FR-06 | Authentication endpoints shall be rate limited to 5 requests per minute per client. | M | `throttle:5,1` on auth routes · `tests/Feature/Auth/AuthTest.php` |
 
 ### 3.2 Profiles
@@ -92,6 +92,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | ID | Requirement | Pri | Traces to |
 |----|-------------|-----|-----------|
 | FR-07 | A customer shall view and update their name, phone, and preferred location. | M | `profile.edit`, `profile.update` · `tests/Feature/UserTest.php` |
+| FR-07a | A customer shall change their password after confirming the current one. An account with no password (Google only) shall set one without a current-password check. The endpoint is rate limited to 5 requests per minute. | S | `profile.password.update` · `tests/Feature/Auth/ChangePasswordTest.php` |
 | FR-08 | A customer shall create, edit, and delete pet profiles holding name, species, breed, age, and special needs. | M | `pets.*` · `tests/Feature/PetTest.php` |
 | FR-09 | A customer shall upload a photo for a pet. Uploads shall be written to the configured photo disk. | S | `PetController` · `tests/Feature/UploadDiskTest.php` |
 | FR-10 | A customer shall access and modify only their own pets. | M | `PetPolicy` · `tests/Unit/Policies/PetPolicyTest.php` |
@@ -101,13 +102,14 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | ID | Requirement | Pri | Traces to |
 |----|-------------|-----|-----------|
 | FR-11 | A guest shall search hotels by city. | M | `GET /hotels` · `tests/Feature/HotelSearchTest.php` |
-| FR-12 | A guest shall filter results by pet type, price range, facilities, and stay dates. | M | `HotelSearchController` · `tests/Feature/HotelSearchTest.php` |
-| FR-13 | A guest shall sort results by rating, ascending price, descending price, or distance. Distance sorting requires coordinates. | S | `HotelSearchController` · `tests/Feature/HotelSearchTest.php` |
+| FR-12 | A guest shall filter results by pet type, price range, and facilities. Stay dates entered in the search bar are carried to the booking form but do not filter results — see OI-6. | M | `HotelSearchController` · `tests/Feature/HotelSearchTest.php` |
+| FR-13 | A guest shall sort results by newest, ascending price, or descending price. The backend also accepts a distance sort given coordinates, but no control exposes it — see OI-3. | S | `HotelSearchController` · `tests/Feature/HotelSearchTest.php` |
 | FR-14 | Search results shall be paginated at 15 per page. | M | `HotelSearchController` · `tests/Feature/HotelSearchTest.php` |
 | FR-15 | The system shall show an empty state when no hotel matches the criteria. | S | `SearchPage.vue` · Vitest component suite |
-| FR-16 | A guest shall view a hotel profile by slug, showing description, photo gallery, facilities, policies, per-pet-type pricing, and rating summary. | M | `GET /hotels/{slug}` · `tests/Feature/HotelTest.php` |
+| FR-16 | A guest shall view a hotel profile by slug, showing description, photo gallery, facilities, policies, per-pet-type pricing, rating summary, and a map when the hotel has coordinates. | M | `GET /hotels/{slug}` · `tests/Feature/HotelTest.php` |
 | FR-17 | Photo references shall be resolved to URLs on the disk they were written to before reaching the page. | M | `PhotoUrl` support class · `tests/Unit/Support/PhotoUrlTest.php`, `tests/Feature/HotelPhotoUrlTest.php` |
 | FR-18 | A guest shall view a hotel's availability calendar for a date range. Availability is served as JSON to the calendar widget. | M | `GET /hotels/{slug}/availability` · `tests/Feature/HotelAvailabilityTest.php` |
+| FR-18a | The landing page shall show up to four active hotels ranked by average rating. | C | `GET /` · `tests/Feature/LandingPageTest.php` |
 
 ### 3.4 Booking
 
@@ -120,14 +122,14 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | FR-23 | Available spots shall be adjusted as a side effect of a booking status change, in the `Booking` model only. | M | `Booking::booted()` · `tests/Feature/BookingTest.php` |
 | FR-24 | A customer shall view a confirmation screen stating the request is pending. | M | `bookings.confirmation` · `tests/Feature/BookingTest.php` |
 | FR-25 | A customer shall list their bookings with status badges and open any one for detail. | M | `bookings.index`, `bookings.show` · `tests/Feature/BookingTest.php` |
-| FR-26 | A customer shall cancel their own booking where the hotel's policy allows. | M | `bookings.cancel` · `tests/Feature/BookingTest.php` |
+| FR-26 | A customer shall cancel their own booking while it is still `pending`. Confirmed bookings are cancelled by the hotel or an administrator. | M | `bookings.cancel` · `tests/Feature/BookingTest.php` |
 | FR-27 | A customer shall access only their own bookings. | M | `BookingPolicy` · `tests/Unit/Policies/BookingPolicyTest.php` |
 
 ### 3.5 Reviews
 
 | ID | Requirement | Pri | Traces to |
 |----|-------------|-----|-----------|
-| FR-28 | A customer shall submit one review per booking, with a 1–5 star rating and a comment, only after a confirmed and completed stay. | M | `reviews.store` · `tests/Feature/ReviewTest.php` |
+| FR-28 | A customer shall submit one review per booking, with a 1–5 star rating and an optional comment, only once the booking status is `completed`. | M | `reviews.store` · `tests/Feature/ReviewTest.php` |
 | FR-29 | Review submission shall be rate limited to 5 requests per 10 minutes. | S | `throttle:5,10` · `tests/Feature/ReviewTest.php` |
 | FR-30 | A guest shall read a hotel's visible reviews, paginated. Hidden reviews shall never appear publicly. | M | `reviews.index` · `tests/Feature/ReviewTest.php` |
 | FR-31 | A hotel's average rating shall be derived from its visible reviews. | M | `PetHotel` model · `tests/Unit/Models/PetHotelTest.php` |
@@ -148,8 +150,8 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 |----|-------------|-----|-----------|
 | FR-37 | Only users with `is_admin` shall reach the admin panel at `/admin`. | M | `User::canAccessPanel()` · `tests/Feature/Filament/PanelRoutingTest.php` |
 | FR-38 | An administrator shall create, edit, and delete hotels, including photos, pricing tiers, policies, and owner assignment. | M | `HotelResource` · `tests/Feature/Filament/Admin/HotelResourceTest.php` |
-| FR-39 | An administrator shall list and filter bookings by status, and confirm or cancel any booking. Both actions fire the corresponding notification. | M | `BookingResource` · `tests/Feature/Filament/Admin/BookingResourceTest.php` |
-| FR-40 | An administrator shall view a read-only list of users with their pets. | S | `UserResource` · `tests/Feature/Filament/Admin/UserResourceTest.php` |
+| FR-39 | An administrator shall list and filter bookings by status, view any booking, and confirm or cancel any booking. Both actions fire the corresponding notification. Prices are shown in MYR. | M | `BookingResource` · `tests/Feature/Filament/Admin/BookingResourceTest.php` |
+| FR-40 | An administrator shall view a read-only list of users, and open any user to see their pets. | S | `UserResource` · `tests/Feature/Filament/Admin/UserResourceTest.php` |
 | FR-41 | An administrator shall toggle a review's visibility and delete reviews. | M | `ReviewResource` · `tests/Feature/Filament/Admin/ReviewResourceTest.php` |
 | FR-42 | The admin dashboard shall show bookings checking in today, pending bookings, and users created in the last 7 days. | C | Widgets · `tests/Feature/Filament/Admin/WidgetsTest.php` |
 
@@ -170,7 +172,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | ID | Requirement | Pri | Traces to |
 |----|-------------|-----|-----------|
 | NFR-01 | All state-changing requests shall be CSRF protected, except the documented CSP report endpoint. | M | `bootstrap/app.php` · `tests/Feature/CspReportTest.php` |
-| NFR-02 | The system shall send security headers including a Content Security Policy on every response. The policy shall permit the configured photo storage host and no other external origin. | M | `SecurityHeaders` middleware · `tests/Feature/SecurityHeadersTest.php` |
+| NFR-02 | The system shall send security headers including a Content Security Policy on every response. The policy shall permit only the configured photo storage host and the OpenStreetMap tile hosts as external origins. | M | `SecurityHeaders` middleware · `tests/Feature/SecurityHeadersTest.php` |
 | NFR-03 | CSP violations shall be reportable to a throttled endpoint that writes to the application log. | C | `csp.report` · `tests/Feature/CspReportTest.php` |
 | NFR-04 | Passwords shall be stored hashed; a null password shall never authenticate a user. | M | Laravel hashing · `tests/Feature/Auth/GoogleAuthTest.php` |
 | NFR-05 | Authorization shall be enforced by policy classes, not by view-level hiding alone. | M | `tests/Unit/Policies/*` |
@@ -197,7 +199,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 
 | ID | Requirement | Pri | Traces to |
 |----|-------------|-----|-----------|
-| NFR-14 | Backend line coverage shall not fall below the CI floor (currently 95%). | M | `.github/workflows/ci.yml` |
+| NFR-14 | Backend line coverage shall not fall below the CI floor (currently 98%). Frontend line coverage shall not fall below its floor (currently 90%). | M | `.github/workflows/ci.yml` |
 | NFR-15 | PHP shall be formatted with Pint and JavaScript linted with ESLint; both are enforced in CI. | M | `.github/workflows/ci.yml` |
 | NFR-16 | Pages shall be delivered through Inertia. JSON responses are permitted only for the hotel availability and notification widgets. | M | `CLAUDE.md` |
 | NFR-17 | Availability side effects shall exist in exactly one place, `Booking::booted()`. | M | `tests/Feature/BookingTest.php` |
@@ -209,7 +211,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | NFR-18 | The full stack shall start from a clean checkout with `docker compose up -d`. | M |
 | NFR-19 | Photo storage shall be selectable by configuration; on ephemeral hosting it shall be S3-compatible. | M |
 | NFR-20 | The database shall be PostgreSQL in Docker and production, and SQLite for tests. | M |
-| NFR-21 | Go-live steps that cannot be enforced from the repository shall be documented in the [deployment checklist](deployment-checklist.html). | M |
+| NFR-21 | Go-live steps that cannot be enforced from the repository shall be documented in the deployment checklist (`docs-src/deployment-checklist.md`, coder-facing). | M |
 
 ---
 
@@ -261,7 +263,7 @@ constrain the data layer:
 | C. Defer scalability | NFR-13 |
 
 Requirements with no MVP ancestor — delivered as post-MVP scope: FR-05 (Google
-sign-in), FR-33/FR-34 (queue hardening), FR-37/FR-43 – FR-45 (panels and owner
+sign-in), FR-07a (password change), FR-33/FR-34 (queue hardening), FR-37/FR-43 – FR-45 (panels and owner
 role), FR-17 (photo URL resolution), NFR-02/NFR-03 (security headers and CSP),
 NFR-14/NFR-15 (CI quality gates).
 
@@ -271,8 +273,9 @@ NFR-14/NFR-15 (CI quality gates).
 
 | ID | Item | Owner |
 |----|------|-------|
-| OI-1 | Cancellation policy is enforced per hotel but the exact rule is not specified here; needs a written rule per policy field. | *TBC* |
+| OI-1 | The hotel `cancellation_policy` field is free text shown on the profile and is not enforced; customer cancellation is governed only by booking status (FR-26). Decide whether a machine-readable rule is wanted. | *TBC* |
 | OI-2 | No requirement covers what happens to reviews when a hotel is deleted beyond the cascade in DR-01. | *TBC* |
-| OI-3 | Distance sorting (FR-13) depends on coordinates that admins enter manually; no validation requirement exists for them. | *TBC* |
+| OI-3 | Distance sorting exists in the backend but has no UI control, and depends on coordinates that admins enter manually with no validation. Decide whether to expose it or remove it. | *TBC* |
 | OI-4 | **FR-22 is unimplemented.** A customer can book dates that are fully booked or blocked; spots go negative through `Booking::booted()`. The transaction in `BookingController@store` already takes `lockForUpdate()` on the availability rows, so the capacity check was intended — only the assertion is missing. Needs a fix and a regression test. | *TBC* |
-| OI-5 | A booking for a pet type the hotel has no pricing row for is created with `total_price = 0` rather than being rejected (FR-21). | *TBC* |
+| OI-5 | A booking for a pet type the hotel has no pricing row for is created with `total_price = 0` rather than being rejected (FR-21). The form warns but still submits. | *TBC* |
+| OI-6 | Check-in and check-out dates in the search bar do not narrow results by availability (FR-12); they are only passed through. | *TBC* |

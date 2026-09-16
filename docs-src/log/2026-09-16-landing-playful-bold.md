@@ -1,0 +1,151 @@
+---
+title: Customer pages redesign (playful bold)
+description: Rebuilt every customer-facing page and both Filament panels in the "Playful bold" direction chosen from three design proposals.
+date: 2026-09-16
+pr: 51
+plan: ~
+---
+
+# Customer pages redesign (playful bold)
+
+## Asked
+"i want to explore the landing page design, where currently might be less
+attractive for a pet hotel searching platform. can we have 3 different design
+proposal, see which one is good?" The user then picked direction B, "Playful
+bold". A second request in the same session: apply the same style to the
+search page, with the shared app layout included, on the same branch. A third
+request: the hotel profile page too, same branch. A fourth: the booking form. A fifth: the booking confirmation and my
+bookings pages. Then: finish every remaining customer page first, and look at
+duplicated class strings in one pass afterwards. Then: do that dedupe pass,
+same branch. Then: the Filament panels too, same branch.
+
+## Done
+- Design: three directions (warm editorial, playful bold, clean marketplace)
+  drafted as a design canvas artifact for comparison; B was chosen.
+- Frontend: `Landing.vue` rebuilt in the chosen style. Chunky display type,
+  cream background, thick ink outlines with hard offset shadows, teal, mustard
+  and coral accents. Emoji icons replaced with inline SVG. Decorative shapes
+  hide below the `lg` breakpoint. The featured section hides when there are no
+  hotels.
+- Frontend: `HotelCard.vue` rebuilt in the new style and shared by the landing
+  grid and the search results. Placeholder tint cycles by hotel id, unrated
+  hotels show "New", price shows whole ringgit, long names clamp to two lines.
+- Frontend: `AppLayout.vue` moved to the new palette. Cream ground, ink
+  bottom border on the nav, paw logo, bold Register button. The header strip is
+  now a display-font title on cream instead of a white bar. The pets and
+  profile links hide below the `sm` breakpoint so the nav fits a phone.
+- Frontend: `SearchPage.vue` uses the bold search bar, restyled sort select,
+  empty state with an SVG paw, and outlined pagination buttons. The sidebar
+  stacks above the results on phones.
+- Frontend: `FilterSidebar.vue` restyled to match. Price labels now say RM.
+- Frontend: notification bell badge is coral with an ink border.
+- Frontend: `HotelProfilePage.vue` restyled. Outlined cards with hard
+  shadows, display-font headings, a taller gallery with outlined arrow buttons
+  and an SVG paw placeholder, facility chips without emoji, check-in and
+  check-out times as tiles, and Book Now merged into the pricing card.
+- Frontend: `ReviewList.vue` stars are mustard on ink; `AvailabilityCalendar.vue`
+  got the new frame, month buttons and legend. Its day-cell colours are
+  unchanged because the booking form shares the component.
+- Frontend: `BookingFormPage.vue` restyled. Outlined cards, bold inputs,
+  coral error text, and the price summary is now a teal card with the total
+  in display type and both action buttons inside it. Buttons stack on phones.
+- Frontend: `AvailabilityCalendar.vue` selected check-in and check-out cells
+  are now ink on cream, and the nights in between are mustard. The
+  available, limited, full and past cell colours are unchanged.
+- Frontend: `BookingConfirmationPage.vue` and `MyBookingsPage.vue` restyled.
+  Status pills are outlined and use the palette (mustard pending, teal
+  confirmed, light teal completed, white cancelled). `LeaveReviewModal.vue`
+  matches, with mustard stars.
+- Frontend: the remaining pages moved over in one mapped pass. Booking detail,
+  reviews list, pets, profile, dashboard, the auth layout and all five auth
+  pages, the pet form modal and the notifications dropdown. Inputs, labels,
+  error text, buttons, cards and flash boxes now share the same class
+  bundles as the earlier pages. The pets placeholder and the notification
+  type icons are SVG instead of emoji, with the glyph exposed as a data
+  attribute for the test.
+- Frontend, dedupe pass: shared pieces under `resources/js/Components/Ui/`.
+  `UiButton` (variant, size, block, renders as button, anchor or Inertia
+  Link), `TextInput` (input, textarea or select, one field style, `full`
+  width prop), `FormField` (label, control, error, optional aside and label
+  suffix slots), `StatusPill` (the single booking status to colour map),
+  `EmptyState`, `Notice` (flash and status messages), `SectionTitle`,
+  `PawIcon` and `BrandMark`. Two Tailwind utilities in `app.css` for the
+  pure-styling cases, `card-hard` / `card-hard-lg` and `field-hard`, so
+  cards need no wrapper component. `useFormatDate` gained a `weekday` option
+  and handles ISO timestamps; the two page-local copies are gone. The
+  `SearchBar` default variant, unused since the search page moved over, is
+  removed and the bar is built on the shared components. Net effect: 41
+  files, about 140 fewer lines, every button, input, card, pill and notice
+  defined once.
+- Filament: one Vite theme for both panels at `resources/css/filament/theme.css`,
+  imported from Filament's own theme entry so its class names are the hook.
+  Cream ground, ink borders on the topbar and sidebar, mustard active nav item,
+  outlined cards with the hard shadow on sections, tables, stat tiles, the
+  login card, modals and dropdowns, bold outlined buttons and fields,
+  Bricolage Grotesque on headings. Two section variants are left unstyled on
+  purpose: the lazy-widget loading wrapper and "not contained" sections, which
+  Filament uses to group stat tiles; styling either double-frames every stat.
+  Both providers get `viteTheme`, `brandName('PetHotel')`, a shared brand
+  partial at `resources/views/filament/brand.blade.php` with the panel name,
+  `Color::hex` primaries (coral for admin, teal for owner) with a Stone gray
+  palette, and `darkMode(false)` so there is one look to maintain. The theme
+  is a Vite input, so CI's existing `bun run build` step covers it.
+- Bug fix: the confirmation page showed "Invalid Date" for check-in and
+  check-out. The controller passes the raw model, so the `date` cast arrives
+  as a full ISO timestamp, and the page appended a local midnight to it. The
+  formatter now keeps only the date part, with a test for the timestamp form.
+- Bug fix: `HotelController` and `ReviewController` sent `reviews_count` and
+  `average_rating`, but both pages declare `reviewsCount` and `averageRating`.
+  Vue does not map snake_case to camelCase, so the profile always showed
+  "No reviews yet" and never the "View all" link, and the reviews page never
+  showed its summary. The controllers now send camelCase and the feature
+  tests in `ReviewTest.php` assert the new names.
+- Bug fix found on the way: with no query string the search page's `filters`
+  prop is an empty array, so `filters.sort` was the Array method and the sort
+  select rendered blank. The page now only accepts a string value.
+- Frontend: `SearchBar.vue` gained a `variant="bold"` prop that drops its own
+  box and restyles fields and button. The default look is unchanged.
+- Styling: `app.css` now imports the self-hosted Bricolage Grotesque variable
+  font and defines `--font-display`, the landing palette and two hard-shadow
+  tokens in `@theme`.
+- Owner call to action links to `/register` for guests and `/owner` for signed
+  in users. There is no dedicated owner onboarding page yet.
+
+## Not done
+- The landing page keeps a few one-off elements inline (the hero pill, the
+  footer brand on ink, the three step tiles) since nothing else uses them.
+- The design canvas still shows all three directions; it was not trimmed to
+  the chosen one.
+
+## Produced
+- ADR: none
+- Knowledge: none
+- Intake: ../intake/fontsource-bricolage-grotesque.md
+
+## Verified
+- `bun run test`: 35 files, 259 tests passed (new specs for the card, the
+  bold search bar, both featured-section branches, the empty-array sort
+  default, the confirmation page's timestamp dates, and one spec per shared
+  Ui component plus the date composable).
+- `bun run lint`: 0 errors, 5 warnings, three fewer than `dev` (the existing
+  `require-default-prop` pattern).
+- `composer test` in Docker: 383 passed, including the renamed review prop
+  assertions and the new `PanelThemeTest` (theme path, brand, no dark mode,
+  and the brand partial rendering on the owner panel). `vendor/bin/pint
+  --test`: pass.
+- Headless Chromium screenshots of the landing, search, hotel profile,
+  booking form, booking confirmation, my bookings, booking detail, pets,
+  profile, login and register pages at 1440px or 400px wide, plus the search
+  empty state (the signed-in pages were captured
+  through the DevTools protocol with a throwaway user, pet and four bookings
+  in the local Docker database, all deleted afterwards). Repeated after the
+  dedupe pass on landing, search empty state, login, booking form, my
+  bookings and pets; the pages render the same, apart from the search sort
+  select which briefly went full width and was fixed with the `full` prop.
+  Filament panels: admin login, dashboard, hotels list, hotel edit form and
+  owner bookings at 1440px, hotels list at 400px, with a throwaway admin and
+  owner user deleted afterwards: no horizontal overflow, headline
+  on two lines on desktop, fields and sidebar stack on phone, sort select
+  shows "Newest first", the profile's review summary shows the average and
+  count, the confirmation page shows real dates, my bookings shows all four
+  status pills.

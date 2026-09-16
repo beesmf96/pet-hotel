@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/bricolage-grotesque';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -8,4 +9,51 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Bricolage Grotesque Variable', 'Arial Black', ui-sans-serif, system-ui, sans-serif;
+
+    /* Landing page palette (design direction "Playful bold") */
+    --color-ink: #1f2a26;
+    --color-cream: #fff8e7;
+    --color-teal: #0f766e;
+    --color-teal-light: #d5ece8;
+    --color-coral: #ff8a5b;
+    --color-mustard: #ffcf3f;
+    --color-moss: #4b5753;
+
+    --shadow-hard: 4px 4px 0 0 var(--color-ink);
+    --shadow-hard-lg: 8px 8px 0 0 var(--color-ink);
+}
+
+/* Shared "bold" surfaces. Buttons, pills and icons are Vue components under
+   resources/js/Components/Ui; these two are pure styling, so a utility keeps
+   the markup free of closing-tag churn. */
+@utility card-hard {
+    background-color: white;
+    border: 3px solid var(--color-ink);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-hard);
+}
+
+@utility card-hard-lg {
+    background-color: white;
+    border: 3px solid var(--color-ink);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-hard-lg);
+}
+
+@utility field-hard {
+    background-color: white;
+    border: 2px solid var(--color-ink);
+    border-radius: var(--radius-xl);
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px var(--color-teal);
+    }
+    &:disabled {
+        background-color: var(--color-cream);
+        color: var(--color-moss);
+        border-color: color-mix(in oklab, var(--color-ink) 30%, transparent);
+    }
 }

@@ -329,8 +329,12 @@
     <li>Follow the link to <code>/reset-password/{token}</code> and choose a new password.</li>
   </ol>
 
+  <h3>Sign In with Google</h3>
+  <p>Both the login and register pages offer a <strong>Continue with Google</strong> button. A Google account is verified automatically, so the email verification step is skipped. If you registered with a password and later use Google with the same email, the two are linked to one account.</p>
+  <div class="note"><strong>Note:</strong> After logging in you land on <code>/dashboard</code>, a simple welcome page. Use the navigation bar to reach hotels, pets, bookings, and your profile.</div>
+
   <h3>Log Out</h3>
-  <p>Click the logout control in the navigation. Your session will be invalidated immediately.</p>
+  <p>Click <strong>Sign out</strong> in the navigation bar. Your session will be invalidated immediately.</p>
 
   <hr />
 
@@ -350,6 +354,10 @@
   </div>
   <p>Your <strong>email</strong> is shown for reference but cannot be changed from this page.</p>
 
+  <h3>Change Password</h3>
+  <p>Below the profile form is a <strong>Change Password</strong> section. Enter your current password and a new password of at least 8 characters, confirmed twice.</p>
+  <p>If you only ever signed in with Google, this section is titled <strong>Set a Password</strong> instead and does not ask for a current password. Setting one lets you sign in with your email address as well.</p>
+
   <hr />
 
   <!-- 3 Pets -->
@@ -364,7 +372,7 @@
       <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
       <tbody>
         <tr><td>Name</td><td>Yes</td><td></td></tr>
-        <tr><td>Species</td><td>Yes</td><td>Dog, Cat, Rabbit, Bird, Other</td></tr>
+        <tr><td>Species</td><td>Yes</td><td>Free text, e.g. Dog, Cat, Rabbit. Use the lowercase names <code>dog</code>, <code>cat</code>, <code>rabbit</code>, <code>bird</code>, or <code>other</code> so the pet matches a hotel's pricing when you book</td></tr>
         <tr><td>Breed</td><td>No</td><td></td></tr>
         <tr><td>Age</td><td>No</td><td>In years</td></tr>
         <tr><td>Special Needs</td><td>No</td><td>Dietary, medical, or behavioural notes</td></tr>
@@ -392,10 +400,11 @@
       <thead><tr><th>Filter</th><th>Options</th></tr></thead>
       <tbody>
         <tr><td>City</td><td>Free-text city name</td></tr>
-        <tr><td>Pet Type</td><td>Dog, Cat, Rabbit, Bird, Other</td></tr>
+        <tr><td>Check-in / Check-out</td><td>Optional dates in the search bar</td></tr>
+        <tr><td>Pet Type</td><td>Any, Dog, Cat, Rabbit, Bird, Other</td></tr>
         <tr><td>Price Range</td><td>Min and max price per night</td></tr>
-        <tr><td>Facilities</td><td>Grooming, Play Area, Vet Care, Swimming Pool, Training, Outdoor Walks, Webcam, 24h Care</td></tr>
-        <tr><td>Sort By</td><td>Newest, Price Low→High, Price High→Low, Distance</td></tr>
+        <tr><td>Facilities</td><td>Grooming, Play Area, Vet Care, Swimming Pool, Training, Outdoor Walks, Live Webcam, 24h Care</td></tr>
+        <tr><td>Sort By</td><td>Newest first, Price Low→High, Price High→Low</td></tr>
       </tbody>
     </table>
   </div>
@@ -403,10 +412,10 @@
 
   <h3>Hotel Detail Page</h3>
   <p><span class="route-label">Route</span><span class="route">/hotels/{slug}</span></p>
-  <p>Each hotel page shows: photo gallery, name, address, city, description, facilities, pricing by pet type, check-in/out policy, review summary, and the latest 5 reviews.</p>
+  <p>Each hotel page shows: photo gallery, name, address, city, description, facilities, pricing by pet type, check-in/out policy, a map (when the hotel has coordinates), review summary, and the latest 5 reviews.</p>
 
   <h3>Availability Calendar</h3>
-  <p>Accessible from the hotel detail page. Shows a month-by-month calendar with <strong>Available</strong>, <strong>Blocked</strong>, and <strong>Fully Booked</strong> dates. Navigate between months with the previous/next controls.</p>
+  <p>Accessible from the hotel detail page. Shows a month-by-month calendar with four colours: <strong>Available</strong> (green), <strong>Limited</strong> (orange, 3 or fewer spots left), <strong>Full</strong> (red), and <strong>Unavailable</strong> (grey, blocked by the hotel). Navigate between months with the previous/next controls. The same calendar appears on the booking form, where clicking dates fills in check-in and check-out.</p>
 
   <h3>All Reviews</h3>
   <p><span class="route-label">Route</span><span class="route">/hotels/{slug}/reviews</span></p>
@@ -426,7 +435,7 @@
       <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
       <tbody>
         <tr><td>Pet</td><td>Yes</td><td>Select from your registered pets</td></tr>
-        <tr><td>Check-in Date</td><td>Yes</td><td></td></tr>
+        <tr><td>Check-in Date</td><td>Yes</td><td>Today or later</td></tr>
         <tr><td>Check-out Date</td><td>Yes</td><td>Must be after check-in</td></tr>
         <tr><td>Notes / Special Requests</td><td>No</td><td>Any information for the hotel</td></tr>
       </tbody>
@@ -439,7 +448,7 @@
 
   <h3>Booking Confirmation Page</h3>
   <p><span class="route-label">Route</span><span class="route">/bookings/{booking}/confirmation</span></p>
-  <p>Shows a summary of your booking details and a <span class="badge badge-pending">Pending</span> status badge, meaning the hotel has yet to confirm your stay.</p>
+  <p>Shows a summary of your booking details and a <span class="badge badge-pending">Pending</span> status badge, meaning the hotel has yet to confirm your stay. You also receive a "booking request received" email and in-app notification.</p>
 
   <hr />
 
@@ -466,7 +475,7 @@
   <p>Click any booking to see the full details: hotel address, pet, dates, nights, status, notes, price, and creation time.</p>
 
   <h3>Cancel a Booking</h3>
-  <p>On the booking detail page, a <strong>Cancel</strong> button appears when the booking status is <span class="badge badge-pending">Pending</span>. Confirm the cancellation to remove the booking. Confirmed or completed bookings cannot be cancelled from this screen.</p>
+  <p>On the booking detail page, a <strong>Cancel Booking</strong> button appears when the booking status is <span class="badge badge-pending">Pending</span>. A browser confirmation dialog asks you to confirm; the booking then changes to <span class="badge badge-cancelled">Cancelled</span> and stays in your list. Confirmed or completed bookings cannot be cancelled from this screen.</p>
 
   <hr />
 
@@ -474,9 +483,9 @@
   <h2 class="section-heading" id="p1-s7">7. Leaving a Review</h2>
   <p>After a booking reaches <span class="badge badge-completed">Completed</span> status, you can leave a review for that hotel.</p>
   <ol>
-    <li>Go to <code>/bookings</code> and open the completed booking.</li>
-    <li>Click <strong>Leave a Review</strong> (only visible if the booking is completed and not yet reviewed).</li>
-    <li>Enter a <strong>star rating</strong> and a written <strong>comment</strong>.</li>
+    <li>Go to <code>/bookings</code> and find the completed booking in the list.</li>
+    <li>Click <strong>Leave a review</strong> under the booking card (only shown if the booking is completed and not yet reviewed). Once reviewed, the card shows "Review submitted" instead.</li>
+    <li>In the modal, choose a <strong>star rating</strong> (1–5) and optionally write a <strong>comment</strong>.</li>
     <li>Submit — the review is posted to the hotel's profile immediately (subject to admin visibility settings).</li>
   </ol>
   <p>Each completed booking can only be reviewed once. Reviews are rate-limited to 5 per 10 minutes.</p>
@@ -485,40 +494,40 @@
 
   <!-- 8 Notifications -->
   <h2 class="section-heading" id="p1-s8">8. Notifications</h2>
-  <p>In-app notifications keep you informed about your booking activity.</p>
+  <p>In-app notifications keep you informed about your booking activity. Every notification is also sent to your email address.</p>
 
   <h3>View Notifications</h3>
   <p>Your latest 10 notifications are accessible from the notification bell in the navigation bar. Each notification shows: type and message, timestamp, and read/unread status.</p>
-  <p>You receive notifications when a booking is <strong>confirmed</strong> or <strong>cancelled</strong> by the hotel.</p>
+  <p>You receive a notification when your booking request is <strong>received</strong>, and when the hotel <strong>confirms</strong> or <strong>cancels</strong> it.</p>
 
   <h3>Mark as Read</h3>
   <ul style="padding-left:20px;margin:8px 0 14px">
     <li>Click an individual notification to mark it read.</li>
-    <li>Use <strong>Mark All as Read</strong> to clear the unread count in one action.</li>
+    <li>Use <strong>Mark all read</strong> to clear the unread count in one action.</li>
   </ul>
 
   <!-- ─────── PART 2 ─────── -->
   <div class="part-banner banner-p2">
     <h1>Part 2 — Admin</h1>
-    <p>Superadmin panel at <strong>admin.pet-hotel.local</strong> — full control over hotels, bookings, users, and reviews.</p>
+    <p>Superadmin panel at <strong>/admin</strong> — full control over hotels, bookings, users, and reviews.</p>
   </div>
 
   <!-- 2.1 Accessing -->
   <h2 class="section-heading" id="p2-s1">1. Accessing the Admin Panel</h2>
-  <p><span class="route-label">URL</span><span class="route">admin.pet-hotel.local</span></p>
-  <p>The admin panel uses a <strong>separate login</strong> from the customer-facing site. Log in at <code>/login</code> with an account that has admin privileges.</p>
+  <p><span class="route-label">URL</span><span class="route">/admin</span></p>
+  <p>The admin panel lives on the same site as the customer app but has its own login page at <code>/admin/login</code>. Sign in with an account that has admin privileges.</p>
   <div class="note"><strong>Note:</strong> Regular customer accounts cannot access the admin panel even if they know the URL.</div>
 
   <hr />
 
   <!-- 2.2 Dashboard -->
   <h2 class="section-heading" id="p2-s2">2. Dashboard</h2>
-  <p>The dashboard displays three live stat widgets at a glance:</p>
+  <p>The dashboard displays three live stat widgets at a glance, alongside the standard account and Filament info widgets:</p>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>Widget</th><th>What It Shows</th></tr></thead>
       <tbody>
-        <tr><td>Bookings Today</td><td>Number of bookings with a check-in date of today</td></tr>
+        <tr><td>Check-ins Today</td><td>Number of bookings with a check-in date of today</td></tr>
         <tr><td>Pending Bookings</td><td>Number of bookings currently awaiting confirmation</td></tr>
         <tr><td>New Users This Week</td><td>Number of customer accounts created in the last 7 days</td></tr>
       </tbody>
@@ -579,8 +588,8 @@
   <h3>Owners Tab</h3>
   <p>Link user accounts to this hotel so they can log in at the owner portal.</p>
   <ul style="padding-left:20px;margin:8px 0 14px">
-    <li>Click <strong>Attach</strong> and search by name or email to find a user</li>
-    <li>The user can now log in at <code>owner.pet-hotel.local</code> and manage that hotel's bookings</li>
+    <li>Click <strong>Attach</strong> and search by name or email to find a user — they must already have registered on the customer site</li>
+    <li>The user can now log in at <code>/owner</code> and manage that hotel's bookings</li>
     <li>Click <strong>Detach</strong> on any row to remove a hotel owner's access</li>
   </ul>
   <div class="warn">A user must be attached to at least one hotel before they can log in to the owner panel.</div>
@@ -590,7 +599,7 @@
   <!-- 2.4 Bookings -->
   <h2 class="section-heading" id="p2-s4">4. Managing Bookings</h2>
   <p><span class="route-label">Route</span><span class="route">/bookings</span></p>
-  <p>All customer bookings across all hotels, sorted newest first.</p>
+  <p>All customer bookings across all hotels, sorted newest first. Use the <strong>Status</strong> filter to narrow the list, and the <strong>View</strong> action to open a single booking.</p>
 
   <div class="tbl-wrap">
     <table>
@@ -601,7 +610,7 @@
         <tr><td>Hotel</td><td>Hotel name</td></tr>
         <tr><td>Customer</td><td>Customer's name (toggleable)</td></tr>
         <tr><td>Check In / Check Out</td><td>Formatted dates</td></tr>
-        <tr><td>Total Price</td><td></td></tr>
+        <tr><td>Total Price</td><td>In MYR</td></tr>
         <tr><td>Status</td><td>Colour-coded badge</td></tr>
       </tbody>
     </table>
@@ -632,6 +641,7 @@
       </tbody>
     </table>
   </div>
+  <p>The <strong>View</strong> action opens a user's details together with a list of their pets.</p>
   <div class="note"><strong>Note:</strong> User accounts cannot be created, edited, or deleted from the admin panel — account management is self-service for customers.</div>
 
   <hr />
@@ -639,7 +649,7 @@
   <!-- 2.6 Reviews -->
   <h2 class="section-heading" id="p2-s6">6. Managing Reviews</h2>
   <p><span class="route-label">Route</span><span class="route">/reviews</span></p>
-  <p>All customer reviews across all hotels, sorted newest first.</p>
+  <p>All customer reviews across all hotels, sorted newest first. Filter by <strong>Visible</strong> or <strong>Rating</strong>, and use <strong>View</strong> to read a full review.</p>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>Column</th><th>Notes</th></tr></thead>
@@ -663,15 +673,15 @@
   <!-- ─────── PART 3 ─────── -->
   <div class="part-banner banner-p3">
     <h1>Part 3 — Hotel Owner</h1>
-    <p>Owner portal at <strong>owner.pet-hotel.local</strong> — view and action your hotel's bookings, fully isolated from other hotels.</p>
+    <p>Owner portal at <strong>/owner</strong> — view and action your hotel's bookings, fully isolated from other hotels.</p>
   </div>
 
   <!-- 3.1 Accessing -->
   <h2 class="section-heading" id="p3-s1">1. Accessing the Hotel Owner Panel</h2>
-  <p><span class="route-label">URL</span><span class="route">owner.pet-hotel.local</span></p>
-  <p>The hotel owner panel is a <strong>separate site</strong> from both the customer-facing app and the admin panel. Log in with the email and password assigned to your account by the administrator.</p>
+  <p><span class="route-label">URL</span><span class="route">/owner</span></p>
+  <p>The hotel owner panel has its own login page at <code>/owner/login</code>, separate from the admin panel. Log in with the same email and password you use on the customer site — register there first if you have not already, then ask the administrator to attach your account to your hotel.</p>
   <div class="warn">If you see "No hotel assigned to your account", contact your administrator — your account needs to be linked to a hotel before you can proceed.</div>
-  <div class="note">Regular customer accounts and superadmin accounts cannot log in here.</div>
+  <div class="note">Only accounts attached to at least one hotel can log in here. Regular customer accounts are turned away. If your account is attached to several hotels, the panel shows the first one.</div>
 
   <hr />
 
@@ -695,7 +705,7 @@
 
   <h3>Filter by Status</h3>
   <p>Use the <strong>Status</strong> filter to show only Pending, Confirmed, Cancelled, or Completed bookings.</p>
-  <div class="warn">You only ever see bookings for your hotel. Bookings from other hotels are never visible — this is enforced at the database level, not just the UI.</div>
+  <div class="warn">You only ever see bookings for your hotel. Bookings from other hotels are never visible — this is enforced in the server query, not just the UI.</div>
 
   <hr />
 

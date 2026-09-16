@@ -1,8 +1,11 @@
 <script setup>
 import { ref } from 'vue';
+import FormField from '@/Components/Ui/FormField.vue';
+import TextInput from '@/Components/Ui/TextInput.vue';
+import UiButton from '@/Components/Ui/UiButton.vue';
 
 const props = defineProps({
-    filters: Object,
+    filters: { type: Object, default: () => ({}) },
 });
 
 const emit = defineEmits(['search']);
@@ -32,55 +35,27 @@ function search() {
 </script>
 
 <template>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <div class="flex flex-wrap gap-3 items-end">
-            <div class="flex-1 min-w-48">
-                <label class="block text-xs text-gray-500 mb-1">City</label>
-                <input
-                    v-model="city"
-                    type="text"
-                    placeholder="e.g. Kuala Lumpur"
-                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
-                    @keyup.enter="search"
-                />
-            </div>
+    <div class="flex flex-wrap gap-3 items-end">
+        <FormField label="City" class="flex-1 min-w-48">
+            <TextInput v-model="city" type="text" placeholder="e.g. Kuala Lumpur" @keyup.enter="search" />
+        </FormField>
 
-            <div class="flex-1 min-w-40">
-                <label class="block text-xs text-gray-500 mb-1">Check-in</label>
-                <input
-                    v-model="checkIn"
-                    type="date"
-                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
-                />
-            </div>
+        <FormField label="Check-in" class="flex-1 min-w-40">
+            <TextInput v-model="checkIn" type="date" />
+        </FormField>
 
-            <div class="flex-1 min-w-40">
-                <label class="block text-xs text-gray-500 mb-1">Check-out</label>
-                <input
-                    v-model="checkOut"
-                    type="date"
-                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
-                />
-            </div>
+        <FormField label="Check-out" class="flex-1 min-w-40">
+            <TextInput v-model="checkOut" type="date" />
+        </FormField>
 
-            <div class="flex-1 min-w-40">
-                <label class="block text-xs text-gray-500 mb-1">Pet type</label>
-                <select
-                    v-model="petType"
-                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 bg-white"
-                >
-                    <option v-for="type in PET_TYPES" :key="type.value" :value="type.value">
-                        {{ type.label }}
-                    </option>
-                </select>
-            </div>
+        <FormField label="Pet type" class="flex-1 min-w-40">
+            <TextInput v-model="petType" as="select">
+                <option v-for="type in PET_TYPES" :key="type.value" :value="type.value">
+                    {{ type.label }}
+                </option>
+            </TextInput>
+        </FormField>
 
-            <button
-                class="bg-gray-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
-                @click="search"
-            >
-                Search
-            </button>
-        </div>
+        <UiButton size="lg" @click="search">Let's go</UiButton>
     </div>
 </template>

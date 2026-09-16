@@ -1,13 +1,17 @@
+<script setup>
+import BrandMark from '@/Components/Ui/BrandMark.vue';
+</script>
+
 <template>
-    <div class="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4">
+    <div class="min-h-screen flex flex-col items-center justify-center bg-cream text-ink font-sans py-12 px-4">
         <div class="w-full max-w-md">
             <div class="text-center mb-8">
-                <a href="/" class="text-2xl font-bold text-gray-900">Pet Hotel</a>
-                <p class="mt-2 text-sm text-gray-600">
+                <BrandMark />
+                <p class="mt-3 text-base font-semibold text-moss">
                     <slot name="subtitle" />
                 </p>
             </div>
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+            <div class="card-hard-lg p-8">
                 <slot />
             </div>
         </div>

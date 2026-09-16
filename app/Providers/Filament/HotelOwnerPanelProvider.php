@@ -25,8 +25,13 @@ class HotelOwnerPanelProvider extends PanelProvider
             ->path('owner')
             ->login()
             ->colors([
-                'primary' => Color::Teal,
+                'primary' => Color::hex('#0f766e'),
+                'gray' => Color::Stone,
             ])
+            ->brandName('PetHotel')
+            ->brandLogo(fn () => view('filament.brand', ['panel' => 'Owner']))
+            ->darkMode(false)
+            ->viteTheme('resources/css/filament/theme.css')
             ->discoverResources(in: app_path('Filament/HotelOwner/Resources'), for: 'App\Filament\HotelOwner\Resources')
             ->authGuard('web')
             ->middleware([

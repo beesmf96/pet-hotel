@@ -11,8 +11,8 @@ order: 10
 | Field | Value |
 |-------|-------|
 | Project name | Pet Hotel — Pet Boarding Marketplace |
-| Document version | 1.0 |
-| Date | 2026-08-08 |
+| Document version | 1.1 |
+| Date | 2026-09-16 |
 | Status | Baselined |
 | Author | *TBC* |
 | Approver / Sponsor | *TBC* |
@@ -33,7 +33,6 @@ Related documents:
 | Document | Location | Covers |
 |----------|----------|--------|
 | MVP requirements | `docs/pet-hotel-boarding-mvp-v1.html` | Original functional / non-functional requirements |
-| Task list | `docs-src/tasks.md` | Work breakdown, Modules 0–9 |
 | User guide | `docs/user_guide.html` | End-user instructions (pet owner, admin, hotel owner) |
 | Booking flow | `docs/booking-flow.html` | Step-by-step booking journey |
 | Deployment checklist | `docs-src/deployment-checklist.md` | Release / go-live steps |
@@ -60,11 +59,11 @@ each request — which keeps the MVP simple and avoids payment integration.
 
 | # | Objective | Success measure |
 |---|-----------|-----------------|
-| O1 | Let customers find suitable pet hotels | Search with location, date, pet-type, price filters and rating/price/distance sorting |
+| O1 | Let customers find suitable pet hotels | Search by city with pet-type, price, and facility filters; sort by newest or price |
 | O2 | Let customers book without phone calls | Booking request submitted online, confirmed by an operator, both parties notified by email and in-app |
 | O3 | Give operators control without developer help | Admin and hotel-owner panels cover hotels, bookings, users, and review moderation |
 | O4 | Build trust between strangers | Reviews restricted to customers with a completed booking; moderation available |
-| O5 | Ship something maintainable | ≥95% backend line coverage enforced in CI; linting and formatting gates on every PR |
+| O5 | Ship something maintainable | Backend line coverage ≥98% and frontend ≥90% enforced in CI; linting and formatting gates on every PR |
 
 ---
 
@@ -74,11 +73,11 @@ each request — which keeps the MVP simple and avoids payment integration.
 
 **Customer (pet owner)**
 
-- Registration, email verification, login, password reset, Google sign-in
+- Registration, email verification, login, password reset, Google sign-in, password change (or set, for Google-only accounts)
 - Profile management (contact details, preferred location)
 - Pet profiles with photo upload
 - Hotel search with filters and sorting; paginated results
-- Hotel profile pages — description, photos, pricing per pet type, facilities, policies
+- Hotel profile pages — description, photos, pricing per pet type, facilities, policies, map
 - Availability calendar per hotel
 - Booking request submission, booking history, booking detail, cancellation
 - Reviews and ratings after a completed stay
@@ -91,7 +90,7 @@ each request — which keeps the MVP simple and avoids payment integration.
 - Booking management — filter, confirm, cancel
 - Read-only user list with pets
 - Review moderation (visibility toggle, delete)
-- Dashboard widgets — bookings today, pending bookings, new users this week
+- Dashboard widgets — check-ins today, pending bookings, new users this week
 
 **Hotel owner**
 
@@ -101,10 +100,10 @@ each request — which keeps the MVP simple and avoids payment integration.
 **Platform**
 
 - Dockerised local environment (app, nginx, PostgreSQL, Redis, Mailpit, Vite)
-- Redis-backed queue for notification jobs
+- Redis for queue, cache, and sessions; a dedicated queue worker container for notification jobs
 - Configurable photo storage disk (local or S3-compatible)
 - Security hardening — security headers, CSP, dependency advisory clearance
-- CI pipeline on every PR and push to `main`
+- CI pipeline on every PR to, and push to, `main` or `dev`
 
 ### 4.2 Out of scope
 
@@ -148,7 +147,7 @@ each request — which keeps the MVP simple and avoids payment integration.
 | D3 | Hotel-owner panel | Owner can view and act on their own hotel's bookings only |
 | D4 | Notification system | Request, confirmation, and cancellation emails plus in-app notifications fire reliably via the queue |
 | D5 | Dockerised environment | `docker compose up -d` yields a working stack from a clean checkout |
-| D6 | Automated test suite | PHPUnit and Vitest green; backend line coverage ≥95% |
+| D6 | Automated test suite | PHPUnit and Vitest green; backend line coverage ≥98%, frontend ≥90% |
 | D7 | CI pipeline | Formatting, linting, tests, and coverage gate enforced on every PR |
 | D8 | Documentation set | PID, requirements, user guide, booking flow, deployment checklist |
 
@@ -173,13 +172,13 @@ each request — which keeps the MVP simple and avoids payment integration.
 
 | Layer | Choice |
 |-------|--------|
-| Backend | Laravel 13.8 (PHP 8.3+) |
+| Backend | Laravel 13 (PHP 8.4 in Docker; `^8.3` required) |
 | Frontend | Vue 3, Vite 8, Tailwind CSS v4 |
-| SPA bridge | Inertia.js 3.1 |
+| SPA bridge | Inertia.js 3 |
 | Admin UI | Filament v4 (two panels) |
 | Auth | Sanctum cookie SPA + Google OAuth via Socialite |
 | Database | PostgreSQL 16 (Docker); SQLite locally and in tests |
-| Queue | Redis |
+| Queue, cache, sessions | Redis |
 | Maps | Leaflet |
 | Package manager | Bun |
 | Tests | PHPUnit 12, Vitest 4 |
@@ -187,19 +186,22 @@ each request — which keeps the MVP simple and avoids payment integration.
 
 ### 7.2 Delivery method
 
-Work is broken into modules (see `docs-src/tasks.md`) delivered incrementally. Each
-change is developed on a `feature/{name}` branch, opened as a pull request to
-`main`, and merged only after human review. Larger pieces of work carry a plan file
-in `.claude/plans/`.
+Work was broken into modules (see §8) delivered incrementally. Each
+change is developed on a `feature/{name}` branch cut from `dev`, opened as a pull
+request to `dev`, and merged only after human review. `main` receives a release pull
+request from `dev` when the product owner asks for one. Larger pieces of work carry a
+plan file in `.claude/plans/`, and every completed task gets a session log entry in
+`docs-src/log/`.
 
 ### 7.3 Quality gates
 
 Every pull request must pass:
 
 1. `vendor/bin/pint --test` — PHP formatting
-2. PHPUnit with pcov coverage, failing below `MIN_COVERAGE` (currently 95)
-3. `bun run lint` — ESLint
-4. `bun run test --run` — Vitest
+2. PHPUnit with pcov coverage, failing below `MIN_COVERAGE` (currently 98)
+3. `composer audit` and `bun audit` — dependency advisories
+4. `bun run lint` — ESLint
+5. `bun run test --run` — Vitest, failing below its own coverage floor (currently 90)
 
 The coverage floor is raised as coverage improves and is never lowered to turn a
 build green.
@@ -207,6 +209,9 @@ build green.
 ---
 
 ## 8. Work Breakdown and Milestones
+
+The module-by-module task list was retired on 2026-09-16 once every item was
+delivered. The session log in `docs-src/log/` is now the record of what shipped.
 
 | # | Milestone | Modules | Status |
 |---|-----------|---------|--------|
@@ -220,8 +225,9 @@ build green.
 | 8 | Admin can confirm bookings | 9a–9e | Complete |
 
 Post-MVP work delivered outside the original module list: Google OAuth, hotel-owner
-panel, object storage for photos, OWASP security hardening, and test-coverage
-raising. Dates for each milestone are *TBC* — reconstruct from git history if a
+panel, path-based panel routing, object storage for photos, OWASP security hardening,
+queue worker hardening, password change, the paper trail (session log, ADRs,
+knowledge, intake), and backend and frontend coverage raising. Dates for each milestone are *TBC* — reconstruct from git history if a
 dated schedule is required.
 
 ---
@@ -273,3 +279,4 @@ document and, where implementation work follows, a plan file in `.claude/plans/`
 | Version | Date | Change | Author |
 |---------|------|--------|--------|
 | 1.0 | 2026-08-08 | Initial baseline | *TBC* |
+| 1.1 | 2026-09-16 | Audit against the code: sorting claims, coverage floors, branching model, CI triggers, stack versions, post-MVP list; task list retired | *TBC* |

@@ -3,6 +3,9 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import PetFormModal from '@/Components/PetFormModal.vue';
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import PawIcon from '@/Components/Ui/PawIcon.vue';
+import UiButton from '@/Components/Ui/UiButton.vue';
+import EmptyState from '@/Components/Ui/EmptyState.vue';
 
 defineProps({
     pets: {
@@ -39,54 +42,48 @@ function deletePet(pet) {
 <template>
     <AppLayout>
         <template #header>
-            <div class="flex items-center justify-between">
-                <h1 class="text-xl font-semibold text-gray-900">My Pets</h1>
-                <button class="bg-gray-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-700" @click="openAdd">
-                    + Add Pet
-                </button>
+            <div class="flex items-center justify-between gap-4">
+                <h1 class="text-3xl sm:text-4xl">My pets</h1>
+                <UiButton variant="mustard" @click="openAdd"> + Add Pet </UiButton>
             </div>
         </template>
 
-        <div v-if="pets.length === 0" class="bg-white rounded-xl shadow-sm border border-gray-200 p-10 text-center">
-            <p class="text-gray-500 text-sm">You haven't added any pets yet.</p>
-            <button class="mt-4 bg-gray-900 text-white text-sm px-5 py-2 rounded-lg hover:bg-gray-700" @click="openAdd">
-                Add your first pet
-            </button>
-        </div>
+        <EmptyState v-if="pets.length === 0" message="You haven't added any pets yet.">
+            <UiButton @click="openAdd"> Add your first pet </UiButton>
+        </EmptyState>
 
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div
-                v-for="pet in pets"
-                :key="pet.id"
-                class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex gap-4"
-            >
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div v-for="pet in pets" :key="pet.id" class="card-hard p-5 flex gap-4">
                 <div class="shrink-0">
                     <img
                         v-if="pet.photo_url"
                         :src="pet.photo_url"
                         :alt="pet.name"
-                        class="w-16 h-16 rounded-full object-cover border border-gray-200"
+                        class="w-16 h-16 rounded-2xl object-cover border-2 border-ink"
                     />
-                    <div v-else class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-2xl">
-                        🐾
+                    <div
+                        v-else
+                        class="w-16 h-16 rounded-2xl bg-teal-light border-2 border-ink flex items-center justify-center text-ink"
+                    >
+                        <PawIcon :size="28" />
                     </div>
                 </div>
 
                 <div class="flex-1 min-w-0">
-                    <h3 class="font-semibold text-gray-900">{{ pet.name }}</h3>
-                    <p class="text-sm text-gray-600">
+                    <h3 class="font-display font-bold text-lg">{{ pet.name }}</h3>
+                    <p class="text-sm text-moss">
                         {{ pet.species }}<span v-if="pet.breed"> · {{ pet.breed }}</span>
                     </p>
-                    <p v-if="pet.age != null" class="text-sm text-gray-500">
+                    <p v-if="pet.age != null" class="text-sm text-moss">
                         {{ pet.age }} yr{{ pet.age !== 1 ? 's' : '' }}
                     </p>
-                    <p v-if="pet.special_needs" class="text-xs text-amber-700 mt-1 truncate">{{ pet.special_needs }}</p>
+                    <p v-if="pet.special_needs" class="text-xs font-semibold text-coral mt-1 truncate">
+                        {{ pet.special_needs }}
+                    </p>
 
                     <div class="flex gap-3 mt-3">
-                        <button class="text-xs text-gray-600 hover:text-gray-900 underline" @click="openEdit(pet)">
-                            Edit
-                        </button>
-                        <button class="text-xs text-red-500 hover:text-red-700 underline" @click="deletePet(pet)">
+                        <button class="text-sm font-bold text-teal hover:underline" @click="openEdit(pet)">Edit</button>
+                        <button class="text-sm font-bold text-coral hover:underline" @click="deletePet(pet)">
                             Remove
                         </button>
                     </div>

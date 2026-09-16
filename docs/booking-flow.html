@@ -313,10 +313,10 @@
       </div>
       <div class="step-body">
         <h3>Browse &amp; Filter Results</h3>
-        <p>Compare hotels by rating, price, and distance. Filter by pet type, facilities, or price range.</p>
+        <p>Compare hotel cards by starting price, rating, and facilities. Sort by newest or by price, and narrow results with the price range and facility filters in the sidebar.</p>
         <div class="details">
-          <span class="chip">Sort by rating / price</span>
-          <span class="chip">Filter sidebar</span>
+          <span class="chip">Sort by newest / price</span>
+          <span class="chip">Price &amp; facility filters</span>
           <span class="chip">Hotel cards</span>
         </div>
       </div>
@@ -349,10 +349,11 @@
       </div>
       <div class="step-body">
         <h3>Sign In or Register</h3>
-        <p>A free account is required to book. Register with your email, or log in if you already have an account.</p>
+        <p>A free account is required to book. Register with your email and verify it, or sign in with Google (no verification step). Log in if you already have an account.</p>
         <div class="details">
           <span class="chip">Email + password</span>
           <span class="chip">Email verification</span>
+          <span class="chip">Continue with Google</span>
         </div>
       </div>
     </div>
@@ -365,7 +366,7 @@
       </div>
       <div class="step-body">
         <h3>Fill in the Booking Form</h3>
-        <p>Select which pet you're booking for, confirm your dates, add any special notes (e.g. diet, medication), and review the total price before submitting.</p>
+        <p>Select which pet you're booking for, confirm your dates, add any special notes (e.g. diet, medication), and review the total price before submitting. The calendar on the form lets you pick dates directly, and the form warns if the hotel has no price listed for your pet's species.</p>
         <div class="details">
           <span class="chip">Select pet profile</span>
           <span class="chip">Check-in / check-out</span>
@@ -383,7 +384,7 @@
       </div>
       <div class="step-body">
         <h3>Submit Booking Request</h3>
-        <p>Tap <strong>Submit Request</strong>. Your booking is created instantly with a <strong>Pending</strong> status — it is not yet confirmed.</p>
+        <p>Tap <strong>Request Booking</strong>. Your booking is created instantly with a <strong>Pending</strong> status — it is not yet confirmed.</p>
         <div class="status-badge status-pending">Pending</div>
       </div>
     </div>
@@ -403,10 +404,9 @@
       </div>
       <div class="step-body">
         <h3>Notification Emails Sent</h3>
-        <p>The system automatically emails you a booking receipt and notifies the hotel owner of the new request. No human action needed at this step.</p>
+        <p>The system automatically emails you a booking receipt and adds an in-app notification. No human action needed at this step. The hotel owner is not emailed; new requests appear in their panel.</p>
         <div class="details">
           <span class="chip">Booking receipt → you</span>
-          <span class="chip">New request alert → hotel owner</span>
           <span class="chip">In-app notification</span>
         </div>
       </div>
@@ -420,7 +420,7 @@
       </div>
       <div class="step-body">
         <h3>Waiting for Review</h3>
-        <p>Your booking is in the queue. You can check its status any time under <strong>My Bookings</strong>. The hotel admin will review and act on your request manually.</p>
+        <p>Your booking is in the queue. You can check its status any time under <strong>My Bookings</strong>. The hotel owner will review and act on your request manually. While it is still pending you can cancel it yourself from the booking page.</p>
         <div class="details">
           <span class="chip">My Bookings page</span>
           <span class="chip">Status: Pending</span>
@@ -443,14 +443,14 @@
       </div>
       <div class="step-body">
         <h3>Hotel Owner Reviews the Request</h3>
-        <p>The hotel owner logs in at <strong>owner.pet-hotel.local</strong>, sees only their hotel's pending bookings, and clicks <strong>Confirm</strong> or <strong>Decline</strong>. Tenant isolation ensures they can never view another hotel's bookings.</p>
+        <p>The hotel owner logs in at <strong>/owner</strong>, sees only their hotel's pending bookings, and clicks <strong>Confirm</strong> or <strong>Decline</strong>. Tenant isolation ensures they can never view another hotel's bookings.</p>
         <div class="details">
-          <span class="chip">owner.pet-hotel.local</span>
+          <span class="chip">/owner</span>
           <span class="chip">Pending filter</span>
           <span class="chip">Confirm / Decline actions</span>
         </div>
         <div style="margin-top:12px;font-size:0.78rem;color:#64748b;">
-          <strong style="color:#475569;">Fallback:</strong> Superadmin can also confirm or cancel any booking via <code style="font-size:0.75rem;background:#f1f5f9;padding:1px 5px;border-radius:4px;border:1px solid #e2e8f0">admin.pet-hotel.local</code>
+          <strong style="color:#475569;">Fallback:</strong> Superadmin can also confirm or cancel any booking via <code style="font-size:0.75rem;background:#f1f5f9;padding:1px 5px;border-radius:4px;border:1px solid #e2e8f0">/admin</code>
         </div>
       </div>
     </div>
@@ -464,12 +464,12 @@
 
       <div class="outcome-card confirmed">
         <h4>✅ Confirmed</h4>
-        <p>Booking status changes to <strong>Confirmed</strong>. You receive a confirmation email and an in-app notification. Your stay is locked in!</p>
+        <p>Booking status changes to <strong>Confirmed</strong>. You receive a confirmation email and an in-app notification. One spot per night is taken off the hotel's availability calendar. Your stay is locked in!</p>
       </div>
 
       <div class="outcome-card cancelled">
         <h4>❌ Declined / Cancelled</h4>
-        <p>Booking status changes to <strong>Cancelled</strong>. You receive a cancellation email explaining the outcome. You can search for another hotel.</p>
+        <p>Booking status changes to <strong>Cancelled</strong>. You receive a cancellation email and an in-app notification. No reason is included, so contact the hotel if you need one. You can search for another hotel.</p>
       </div>
 
     </div>

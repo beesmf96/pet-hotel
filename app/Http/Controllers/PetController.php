@@ -42,7 +42,7 @@ class PetController extends Controller
         $data = $request->safe()->except('photo');
 
         if ($request->hasFile('photo')) {
-            $data['photo'] = $request->file('photo')->storePublicly('pet-photos', $this->disk());
+            $data['photo'] = $request->file('photo')->store('pet-photos', $this->disk());
         }
 
         $request->user()->pets()->create($data);
@@ -60,7 +60,7 @@ class PetController extends Controller
             if ($pet->photo) {
                 Storage::disk($this->disk())->delete($pet->photo);
             }
-            $data['photo'] = $request->file('photo')->storePublicly('pet-photos', $this->disk());
+            $data['photo'] = $request->file('photo')->store('pet-photos', $this->disk());
         }
 
         $pet->update($data);
