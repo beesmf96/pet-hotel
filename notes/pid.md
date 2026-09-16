@@ -33,10 +33,10 @@ Related documents:
 | Document | Location | Covers |
 |----------|----------|--------|
 | MVP requirements | `docs/pet-hotel-boarding-mvp-v1.html` | Original functional / non-functional requirements |
-| Task list | `docs/tasks.md` | Work breakdown, Modules 0–9 |
-| User guide | `docs/html/user_guide.html` | End-user instructions (pet owner, admin, hotel owner) |
-| Booking flow | `docs/html/booking-flow.html` | Step-by-step booking journey |
-| Deployment checklist | `docs/deployment-checklist.md` | Release / go-live steps |
+| Task list | `notes/tasks.md` | Work breakdown, Modules 0–9 |
+| User guide | `docs/user_guide.html` | End-user instructions (pet owner, admin, hotel owner) |
+| Booking flow | `docs/booking-flow.html` | Step-by-step booking journey |
+| Deployment checklist | `notes/deployment-checklist.md` | Release / go-live steps |
 | Stack & domain reference | `CLAUDE.md` | Architecture, domain model, conventions |
 
 ---
@@ -187,7 +187,7 @@ each request — which keeps the MVP simple and avoids payment integration.
 
 ### 7.2 Delivery method
 
-Work is broken into modules (see `docs/tasks.md`) delivered incrementally. Each
+Work is broken into modules (see `notes/tasks.md`) delivered incrementally. Each
 change is developed on a `feature/{name}` branch, opened as a pull request to
 `main`, and merged only after human review. Larger pieces of work carry a plan file
 in `.claude/plans/`.
