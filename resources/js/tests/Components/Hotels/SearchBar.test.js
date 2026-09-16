@@ -53,3 +53,24 @@ describe('SearchBar — emitting a search', () => {
         ])
     })
 })
+
+describe('SearchBar — bold variant', () => {
+    it('drops its own box and relabels the button', () => {
+        const w = mount(SearchBar, { props: { filters: {}, variant: 'bold' } })
+        expect(w.find('button').text()).toBe("Let's go")
+        expect(w.element.className).toBe('')
+    })
+
+    it('keeps the default box and label otherwise', () => {
+        const w = mount(SearchBar, { props: { filters: {} } })
+        expect(w.find('button').text()).toBe('Search')
+        expect(w.element.className).toContain('border-gray-200')
+    })
+
+    it('still emits a search in the bold variant', async () => {
+        const w = mount(SearchBar, { props: { filters: {}, variant: 'bold' } })
+        await w.find('input[type="text"]').setValue('Bedok')
+        await w.find('button').trigger('click')
+        expect(lastSearch(w)).toMatchObject({ city: 'Bedok' })
+    })
+})

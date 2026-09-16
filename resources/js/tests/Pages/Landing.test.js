@@ -3,9 +3,9 @@ import { describe, it, expect, vi } from 'vitest'
 
 // Stub child components that are not under test
 vi.mock('@/Components/Hotels/SearchBar.vue', () => ({
-    default: { template: '<div data-testid="search-bar" />' },
+    default: { name: 'SearchBar', template: '<div data-testid="search-bar" />' },
 }))
-vi.mock('@/Components/Hotels/HotelCard.vue', () => ({
+vi.mock('@/Components/Hotels/FeaturedHotelCard.vue', () => ({
     default: { template: '<div data-testid="hotel-card" />' },
 }))
 
@@ -20,14 +20,14 @@ vi.mock('@inertiajs/vue3', () => ({
     })),
 }))
 
-import { usePage } from '@inertiajs/vue3'
+import { usePage, router } from '@inertiajs/vue3'
 import Landing from '@/Pages/Landing.vue'
 
 // Helper to mount Landing with a given auth.user value
-function mountLanding(user = null) {
+function mountLanding(user = null, featuredHotels = []) {
     usePage.mockReturnValue({ props: { auth: { user } } })
     return mount(Landing, {
-        props: { featuredHotels: [] },
+        props: { featuredHotels },
     })
 }
 
@@ -110,5 +110,29 @@ describe('Landing — authenticated state', () => {
         )
         await signOutBtn.trigger('click')
         expect(mockLogoutPost).toHaveBeenCalledWith('/logout')
+    })
+})
+
+describe('Landing — featured hotels section', () => {
+    it('hides the section when there are no featured hotels', () => {
+        const w = mountLanding(null, [])
+        expect(w.text()).not.toContain('Crowd favourites')
+        expect(w.findAll('[data-testid="hotel-card"]')).toHaveLength(0)
+    })
+
+    it('renders one card per featured hotel', () => {
+        const hotels = [
+            { id: 1, name: 'A', slug: 'a' },
+            { id: 2, name: 'B', slug: 'b' },
+        ]
+        const w = mountLanding(null, hotels)
+        expect(w.text()).toContain('Crowd favourites')
+        expect(w.findAll('[data-testid="hotel-card"]')).toHaveLength(2)
+    })
+
+    it('passes the search to the hotels index', () => {
+        const w = mountLanding(null)
+        w.findComponent({ name: 'SearchBar' }).vm.$emit('search', { city: 'Bedok' })
+        expect(router.get).toHaveBeenCalledWith('/hotels', { city: 'Bedok' })
     })
 })
