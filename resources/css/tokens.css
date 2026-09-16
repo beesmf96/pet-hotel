@@ -1,0 +1,30 @@
+/*
+ * Design tokens for the "Playful bold" direction, shared by the customer
+ * stylesheet (app.css) and the Filament theme (filament/theme.css). Each entry
+ * is a Tailwind v4 theme value, so both builds get the same utilities
+ * (bg-ink, font-display, shadow-hard) and the same CSS custom properties
+ * (--color-ink, --font-display, --shadow-hard) for plain CSS rules.
+ *
+ * `static` emits every property whether or not a utility uses it, which the
+ * Filament theme relies on: its rules read the properties directly.
+ *
+ * Keep this file free of `@import 'tailwindcss'` and `@source`; each entry
+ * stylesheet brings its own.
+ */
+@import '@fontsource-variable/bricolage-grotesque';
+
+@theme static {
+    --font-display: 'Bricolage Grotesque Variable', 'Arial Black', ui-sans-serif, system-ui, sans-serif;
+
+    --color-ink: #1f2a26;
+    --color-cream: #fff8e7;
+    --color-teal: #0f766e;
+    --color-teal-light: #d5ece8;
+    --color-coral: #ff8a5b;
+    --color-mustard: #ffcf3f;
+    --color-moss: #4b5753;
+
+    --shadow-hard-sm: 3px 3px 0 0 var(--color-ink);
+    --shadow-hard: 4px 4px 0 0 var(--color-ink);
+    --shadow-hard-lg: 8px 8px 0 0 var(--color-ink);
+}
