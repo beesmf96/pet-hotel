@@ -76,6 +76,32 @@ index and, if possible, altogether "since it is already done". A fifth asked to
   test: with placeholder credentials `Storage::disk('s3')` boots the
   `AwsS3V3Adapter` and builds `AWS_URL`-based URLs. `composer audit` clean.
   Checklist step 1 is now ticked and step 6 no longer asks for the SDK.
+- Backend: the Cloud docs say R2 rejects writes with a public ACL. The
+  `s3` disk set `'visibility' => 'public'` and `PetController` used
+  `storePublicly()`, so the first upload on Cloud would have failed with
+  `NotImplemented`. Visibility removed from the disk, uploads use `store()`,
+  and the disk now also reads Cloud's `AWS_REGION` and `AWS_ENDPOINT_URL`
+  names as fallbacks. Two tests pin the rules. Knowledge entry written.
+- Docs: checklist step 3 now explains the **Disk name** field (3 to 40
+  lowercase characters, so `s3` is refused; use `photos`). The user's
+  attach screen showed what Cloud really injects: `FILESYSTEM_DISK` and a
+  `LARAVEL_CLOUD_DISK_CONFIG` JSON, no `AWS_*` at all. Laravel's
+  `CloudBootstrapper` registers a disk under that name at boot, `url`
+  included. So `PHOTO_DISK=photos`, not `s3`, and `AWS_URL` is not needed.
+  Checklist steps 3 and 4, CLAUDE.md, `.env.example`, the `s3` disk comment,
+  and the knowledge entry all say so now; the `AWS_REGION`/`AWS_ENDPOINT_URL`
+  fallbacks added earlier were removed as they rested on a wrong guess.
+- Follow-up after the merge: PR #49 was merged before the last three commits
+  (bucket naming, the ACL change, the `PHOTO_DISK=photos` docs), so they ride
+  in the next PR. `dev` redeployed with `PHOTO_DISK=photos`: the CSP
+  `img-src` lists the bucket and a pet photo upload succeeded, notably while
+  still on `storePublicly()`. So this bucket accepted a `public-read` ACL
+  despite the Cloud docs; the `store()` change stays as the documented-safe
+  path. Reading Livewire showed that with the bucket as the default disk,
+  Filament uploads go browser-to-R2 with a presigned URL, which
+  `connect-src 'self'` will block once the CSP is enforced. Checklist step 4
+  now requires `FILESYSTEM_DISK=local`, and step 9 adds an admin photo
+  upload to the re-check list.
 - Infra: `.env.docker` set `CACHE_DRIVER=redis`, a key Laravel no longer
   reads, so the Docker cache silently fell back to the database store. Now
   `CACHE_STORE=redis`. A running stack needs the same change in its `.env`.
@@ -104,7 +130,7 @@ index and, if possible, altogether "since it is already done". A fifth asked to
 
 ## Produced
 - ADR: none
-- Knowledge: none
+- Knowledge: ../knowledge/r2-rejects-public-acl.md
 - Intake: ../intake/flysystem-aws-s3-v3.md
 
 ## Verified

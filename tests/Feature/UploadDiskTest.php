@@ -49,6 +49,33 @@ class UploadDiskTest extends TestCase
         Storage::disk('public')->assertMissing($photo);
     }
 
+    /**
+     * Cloudflare R2, which backs Laravel Cloud Object Storage, rejects any write
+     * that carries a public ACL. Uploads therefore take the disk's own default
+     * visibility and never force 'public' themselves. With the disk defaulting
+     * to private, a forced public write would surface as 'public'.
+     */
+    public function test_a_new_photo_does_not_force_public_visibility(): void
+    {
+        Storage::fake(self::DISK, ['visibility' => 'private']);
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post('/pets', [
+            'name' => 'Rex',
+            'species' => 'dog',
+            'photo' => UploadedFile::fake()->image('rex.jpg'),
+        ]);
+
+        $photo = $user->pets()->first()->photo;
+
+        $this->assertSame('private', Storage::disk(self::DISK)->getVisibility($photo));
+    }
+
+    public function test_the_s3_disk_sets_no_default_visibility(): void
+    {
+        $this->assertArrayNotHasKey('visibility', config('filesystems.disks.s3'));
+    }
+
     public function test_the_index_url_is_built_from_the_configured_disk(): void
     {
         $user = User::factory()->create();

@@ -27,8 +27,8 @@ These have to be true in the code before Cloud can run it.
 - [x] **S3 driver installed.** Cloud object storage is S3-compatible and needs
       the Flysystem adapter. `league/flysystem-aws-s3-v3` has been in
       `composer.json` since 2026-09-16 (intake:
-      `docs-src/intake/flysystem-aws-s3-v3.md`). Without it, `PHOTO_DISK=s3`
-      throws on the first upload.
+      `docs-src/intake/flysystem-aws-s3-v3.md`). Without it, any bucket-backed
+      `PHOTO_DISK` throws on the first upload.
 
 - [ ] `composer.lock` and `bun.lock` are committed and up to date. Cloud reads
       the lock files at build time.
@@ -59,11 +59,27 @@ deploy, so do not type database or cache credentials by hand.
 - [ ] **Cache → Laravel Valkey.** Injects `CACHE_STORE`, `REDIS_HOST`,
       `REDIS_PASSWORD`. Sessions and cache both use it (step 4).
 - [ ] **Add bucket → Laravel Object Storage.** Visibility **public** (pet and
-      hotel photos are shown to everyone). Disk name `s3`. Injects the `AWS_*`
-      credentials and `FILESYSTEM_DISK`.
-- [ ] Copy the bucket's public URL from its settings page. Cloud does **not**
-      inject `AWS_URL`, and the app needs it to build photo URLs and to allow the
-      bucket in the CSP `img-src`.
+      hotel photos are shown to everyone; R2 has no per-object ACLs, so this
+      is the only thing that makes photo URLs work).
+- [ ] **Disk name** `photos`. The field wants 3 to 40 lowercase characters, so
+      `s3` is refused. This name matters: Cloud injects
+      `LARAVEL_CLOUD_DISK_CONFIG`, a JSON list of buckets, and Laravel's
+      `CloudBootstrapper` registers a filesystem disk under each `disk` name at
+      boot (also when config is cached). The disk comes with its credentials,
+      endpoint, and public `url` already set, so none of the `AWS_*` variables
+      are injected or needed. The `s3` disk in `config/filesystems.php` is for
+      any other S3-compatible host.
+- [ ] **Default disk** on or off does not matter, because step 4 overrides it.
+      Cloud injects `FILESYSTEM_DISK=photos` when it is on, and Livewire then
+      sends the admin panel's photo uploads straight from the browser to the R2
+      endpoint with a presigned URL. That request leaves this origin, so the
+      CSP `connect-src 'self'` reports it today and blocks it once enforced.
+      `FILESYSTEM_DISK=local` keeps Livewire's temporary files on the container,
+      where the app moves them into the bucket itself. Customer pet photos never
+      go through Livewire and are unaffected either way.
+- [ ] Set `PHOTO_DISK=photos` in step 4 (the disk name, not `s3`). The app builds
+      photo URLs and the CSP `img-src` from that disk's `url`, which Cloud fills
+      in as `https://<bucket>.laravel.cloud`.
 
 Cloud's own compute is ephemeral: every deploy wipes the container filesystem.
 Anything written to `storage/` is lost, which is why photos must go to the bucket.
@@ -84,8 +100,8 @@ APP_URL=https://your-domain.example       # the real public URL, https
 SESSION_DRIVER=redis
 SESSION_SECURE_COOKIE=true
 CACHE_STORE=redis
-PHOTO_DISK=s3
-AWS_URL=https://...                        # from the bucket settings page (step 3)
+PHOTO_DISK=photos                          # the bucket's Disk name (step 3)
+FILESYSTEM_DISK=local                      # overrides the injected value (step 3)
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 CSP_MODE=report                            # switch to enforce later (step 9)
@@ -99,7 +115,8 @@ CSP_MODE=report                            # switch to enforce later (step 9)
       every user and breaks every encrypted column.
 - [ ] `SESSION_SECURE_COOKIE=true`. `config/session.php` has no default for it,
       so an unset value ships the session cookie without the `Secure` flag.
-- [ ] `PHOTO_DISK=s3` and `AWS_URL` filled in. Step 1 must be done first.
+- [ ] `PHOTO_DISK` set to the bucket's disk name. Step 1 must be done first.
+- [ ] `FILESYSTEM_DISK=local`, so Filament uploads stay inside the CSP.
 - [ ] `GOOGLE_CLIENT_SECRET` from the Google Cloud console, for a client that
       belongs to **this** environment (step 7).
 - [ ] No secret is committed to git. `.env.docker` is tracked on purpose as a
@@ -111,8 +128,10 @@ CSP_MODE=report                            # switch to enforce later (step 9)
   `/auth/google/callback`, which Socialite expands against the request host, so
   one code path works on every environment.
 - `QUEUE_CONNECTION`, unless you choose the worker cluster route in step 6.
-- `DB_*`, `REDIS_*`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_BUCKET`,
-  `AWS_ENDPOINT`. Injected by the attached resources.
+- `DB_*`, `REDIS_*`, `LARAVEL_CLOUD_DISK_CONFIG`, `FILESYSTEM_DISK`. Injected by
+  the attached resources.
+- `AWS_*`. Cloud never sets them; the bucket arrives as a ready-made disk. They
+  only matter for the `s3` disk on a non-Cloud host.
 
 After changing any variable, **redeploy**. Deploys run `config:cache`, so a
 change does nothing until the next deploy.
@@ -229,7 +248,8 @@ so it protects nothing until you enforce it.
 - [ ] Widen `SecurityHeaders::contentSecurityPolicy()` only for legitimate
       sources.
 - [ ] When the log is quiet, set `CSP_MODE=enforce` and redeploy.
-- [ ] Re-check the map, both Filament panels, and a photo upload.
+- [ ] Re-check the map, both Filament panels, a pet photo upload, and a hotel
+      photo upload in the admin panel (the second goes through Livewire).
 
 Policy detail: `.claude/plans/plan-owasp-hardening.md`.
 

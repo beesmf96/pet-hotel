@@ -63,8 +63,12 @@ service; any hosted deployment needs its own long-running worker process.
   `SecurityHeaders::isFilamentRequest()`, which scopes the `'unsafe-eval'` CSP relaxation.
   Owner-panel resources must scope `getEloquentQuery()` to `ownedHotels()`.
 - **All uploads go through `config('filesystems.photos')`.** Never name a disk literally at
-  an upload site or build a URL from a different disk. `PHOTO_DISK` must be `s3` on
-  ephemeral hosting. `SecurityHeaders` reads the same config for the CSP `img-src`.
+  an upload site or build a URL from a different disk. `PHOTO_DISK` must name a
+  bucket-backed disk on ephemeral hosting: on Laravel Cloud that is the bucket's Disk
+  name (`photos`), registered at boot from `LARAVEL_CLOUD_DISK_CONFIG`; elsewhere `s3`.
+  `SecurityHeaders` reads the same config for the CSP `img-src`.
+  Never set `visibility` on the `s3` disk or call `storePublicly()` — Laravel Cloud's
+  bucket is Cloudflare R2, which rejects public ACLs (`docs-src/knowledge/r2-rejects-public-acl.md`).
 - **Customer-facing routes never return `response()->json()`.** The two exceptions are
   XHR-backed widgets: `hotels.availability` and `notifications.*`.
 - **A null `users.password` is the only signal of an OAuth-only account.** `PasswordController`

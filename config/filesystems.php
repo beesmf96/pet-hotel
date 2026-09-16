@@ -73,9 +73,15 @@ return [
             'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
-            // Uploads are served straight to browsers by URL, so objects have to
-            // be readable without a signed request.
-            'visibility' => 'public',
+            // This disk is for S3-compatible hosts other than Laravel Cloud.
+            // Cloud registers its own disk at boot from LARAVEL_CLOUD_DISK_CONFIG
+            // under the bucket's Disk name, and PHOTO_DISK points at that.
+            //
+            // No 'visibility' here on purpose. Setting it to 'public' makes every
+            // write send an x-amz-acl: public-read header, which Cloudflare R2
+            // rejects with NotImplemented. Object access is governed by the
+            // bucket's own visibility; make the bucket public and the URLs work
+            // without a signed request.
             'throw' => false,
             'report' => false,
         ],
