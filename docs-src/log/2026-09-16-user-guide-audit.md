@@ -2,7 +2,7 @@
 title: User guide audit
 description: Checked docs/user_guide.html line by line against the code, fixed the stale parts, and corrected the admin bookings currency from USD to MYR.
 date: 2026-09-16
-pr: ~
+pr: 49
 plan: ~
 ---
 
