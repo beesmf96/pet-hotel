@@ -59,11 +59,17 @@ deploy, so do not type database or cache credentials by hand.
 - [ ] **Cache → Laravel Valkey.** Injects `CACHE_STORE`, `REDIS_HOST`,
       `REDIS_PASSWORD`. Sessions and cache both use it (step 4).
 - [ ] **Add bucket → Laravel Object Storage.** Visibility **public** (pet and
-      hotel photos are shown to everyone). Name it anything from 3 to 40
-      characters, for example `pet-hotel-dev-photos`; the name is only a label
-      in Cloud. The app always uses the Laravel disk called `s3` from
-      `config/filesystems.php`, whatever the bucket is named. Attaching injects
-      the `AWS_*` credentials and `FILESYSTEM_DISK`.
+      hotel photos are shown to everyone; R2 has no per-object ACLs, so this
+      is the only thing that makes photo URLs work).
+- [ ] **Disk name** `photos`. The field wants 3 to 40 lowercase characters, so
+      `s3` is refused. The app does not use this name: it always reads the
+      `s3` disk from `config/filesystems.php`, which picks up the injected
+      `AWS_*` variables. Leave **default disk** off; the default stays `local`.
+- [ ] After attaching, open **General Settings** and check the injected
+      variables. If `FILESYSTEM_DISK` was injected with the bucket's disk name,
+      add a custom `FILESYSTEM_DISK=local` in step 4 to override it: Livewire
+      stores temporary uploads on the default disk, and no disk called
+      `photos` exists in the app.
 - [ ] Copy the bucket's public URL from its settings page. Cloud does **not**
       inject `AWS_URL`, and the app needs it to build photo URLs and to allow the
       bucket in the CSP `img-src`.

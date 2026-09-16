@@ -68,14 +68,18 @@ return [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            'region' => env('AWS_DEFAULT_REGION'),
+            // Laravel Cloud injects AWS_REGION and AWS_ENDPOINT_URL; the
+            // Laravel names come first so a hand-set value still wins.
+            'region' => env('AWS_DEFAULT_REGION', env('AWS_REGION')),
             'bucket' => env('AWS_BUCKET'),
             'url' => env('AWS_URL'),
-            'endpoint' => env('AWS_ENDPOINT'),
+            'endpoint' => env('AWS_ENDPOINT', env('AWS_ENDPOINT_URL')),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
-            // Uploads are served straight to browsers by URL, so objects have to
-            // be readable without a signed request.
-            'visibility' => 'public',
+            // No 'visibility' here on purpose. Setting it to 'public' makes every
+            // write send an x-amz-acl: public-read header, which Cloudflare R2
+            // (Laravel Cloud Object Storage) rejects with NotImplemented. Object
+            // access is governed by the bucket's own visibility; make the bucket
+            // public and the URLs work without a signed request.
             'throw' => false,
             'report' => false,
         ],

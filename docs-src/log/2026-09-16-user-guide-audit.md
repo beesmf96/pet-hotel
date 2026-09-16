@@ -76,6 +76,16 @@ index and, if possible, altogether "since it is already done". A fifth asked to
   test: with placeholder credentials `Storage::disk('s3')` boots the
   `AwsS3V3Adapter` and builds `AWS_URL`-based URLs. `composer audit` clean.
   Checklist step 1 is now ticked and step 6 no longer asks for the SDK.
+- Backend: the Cloud docs say R2 rejects writes with a public ACL. The
+  `s3` disk set `'visibility' => 'public'` and `PetController` used
+  `storePublicly()`, so the first upload on Cloud would have failed with
+  `NotImplemented`. Visibility removed from the disk, uploads use `store()`,
+  and the disk now also reads Cloud's `AWS_REGION` and `AWS_ENDPOINT_URL`
+  names as fallbacks. Two tests pin the rules. Knowledge entry written.
+- Docs: checklist step 3 now explains the **Disk name** field (3 to 40
+  lowercase characters, so `s3` is refused; use `photos`, default disk off)
+  and the `FILESYSTEM_DISK` override if Cloud injects the bucket's name.
+  CLAUDE.md upload trap extended.
 - Infra: `.env.docker` set `CACHE_DRIVER=redis`, a key Laravel no longer
   reads, so the Docker cache silently fell back to the database store. Now
   `CACHE_STORE=redis`. A running stack needs the same change in its `.env`.
@@ -104,7 +114,7 @@ index and, if possible, altogether "since it is already done". A fifth asked to
 
 ## Produced
 - ADR: none
-- Knowledge: none
+- Knowledge: ../knowledge/r2-rejects-public-acl.md
 - Intake: ../intake/flysystem-aws-s3-v3.md
 
 ## Verified
