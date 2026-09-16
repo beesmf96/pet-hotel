@@ -59,8 +59,11 @@ deploy, so do not type database or cache credentials by hand.
 - [ ] **Cache → Laravel Valkey.** Injects `CACHE_STORE`, `REDIS_HOST`,
       `REDIS_PASSWORD`. Sessions and cache both use it (step 4).
 - [ ] **Add bucket → Laravel Object Storage.** Visibility **public** (pet and
-      hotel photos are shown to everyone). Disk name `s3`. Injects the `AWS_*`
-      credentials and `FILESYSTEM_DISK`.
+      hotel photos are shown to everyone). Name it anything from 3 to 40
+      characters, for example `pet-hotel-dev-photos`; the name is only a label
+      in Cloud. The app always uses the Laravel disk called `s3` from
+      `config/filesystems.php`, whatever the bucket is named. Attaching injects
+      the `AWS_*` credentials and `FILESYSTEM_DISK`.
 - [ ] Copy the bucket's public URL from its settings page. Cloud does **not**
       inject `AWS_URL`, and the app needs it to build photo URLs and to allow the
       bucket in the CSP `img-src`.
