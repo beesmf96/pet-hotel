@@ -1,6 +1,10 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { useForm } from '@inertiajs/vue3';
+import FormField from '@/Components/Ui/FormField.vue';
+import TextInput from '@/Components/Ui/TextInput.vue';
+import UiButton from '@/Components/Ui/UiButton.vue';
+import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 
 const props = defineProps({
     user: {
@@ -41,72 +45,39 @@ function submitPassword() {
 <template>
     <AppLayout>
         <template #header>
-            <h1 class="text-xl font-semibold text-gray-900">My Profile</h1>
+            <h1 class="text-3xl sm:text-4xl">My profile</h1>
         </template>
 
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-lg">
+        <div class="card-hard p-6 max-w-lg">
             <form class="space-y-4" @submit.prevent="submit">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                    <input
-                        v-model="form.name"
-                        type="text"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
-                    />
-                    <p v-if="form.errors.name" class="mt-1 text-xs text-red-600">{{ form.errors.name }}</p>
-                </div>
+                <FormField label="Name" :error="form.errors.name">
+                    <TextInput v-model="form.name" type="text" />
+                </FormField>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input
-                        :value="user.email"
-                        type="email"
-                        disabled
-                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-500"
-                    />
-                </div>
+                <FormField label="Email">
+                    <TextInput :model-value="user.email" type="email" disabled />
+                </FormField>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                    <input
-                        v-model="form.phone"
-                        type="tel"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
-                    />
-                    <p v-if="form.errors.phone" class="mt-1 text-xs text-red-600">{{ form.errors.phone }}</p>
-                </div>
+                <FormField label="Phone" :error="form.errors.phone">
+                    <TextInput v-model="form.phone" type="tel" />
+                </FormField>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Preferred Location</label>
-                    <input
-                        v-model="form.preferred_location"
-                        type="text"
-                        placeholder="e.g. Kuala Lumpur"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
-                    />
-                    <p v-if="form.errors.preferred_location" class="mt-1 text-xs text-red-600">
-                        {{ form.errors.preferred_location }}
-                    </p>
-                </div>
+                <FormField label="Preferred Location" :error="form.errors.preferred_location">
+                    <TextInput v-model="form.preferred_location" type="text" placeholder="e.g. Kuala Lumpur" />
+                </FormField>
 
                 <div class="flex items-center gap-3 pt-2">
-                    <button
-                        type="submit"
-                        :disabled="form.processing"
-                        class="bg-gray-900 text-white text-sm px-5 py-2 rounded-lg hover:bg-gray-700 disabled:opacity-50"
-                    >
-                        Save Changes
-                    </button>
-                    <span v-if="form.recentlySuccessful" class="text-sm text-green-600">Saved!</span>
+                    <UiButton type="submit" :disabled="form.processing"> Save Changes </UiButton>
+                    <span v-if="form.recentlySuccessful" class="text-sm font-bold text-teal">Saved!</span>
                 </div>
             </form>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-lg mt-6">
-            <h2 class="text-sm font-semibold text-gray-900">
+        <div class="card-hard p-6 max-w-lg mt-6">
+            <SectionTitle size="sm">
                 {{ hasPassword ? 'Change Password' : 'Set a Password' }}
-            </h2>
-            <p class="mt-1 text-xs text-gray-500">
+            </SectionTitle>
+            <p class="mt-1 text-sm text-moss">
                 {{
                     hasPassword
                         ? 'Choose a new password of at least 8 characters.'
@@ -115,51 +86,31 @@ function submitPassword() {
             </p>
 
             <form class="space-y-4 mt-4" @submit.prevent="submitPassword">
-                <div v-if="hasPassword">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-                    <input
+                <FormField v-if="hasPassword" label="Current Password" :error="passwordForm.errors.current_password">
+                    <TextInput
                         v-model="passwordForm.current_password"
                         type="password"
                         autocomplete="current-password"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
                     />
-                    <p v-if="passwordForm.errors.current_password" class="mt-1 text-xs text-red-600">
-                        {{ passwordForm.errors.current_password }}
-                    </p>
-                </div>
+                </FormField>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                    <input
-                        v-model="passwordForm.password"
-                        type="password"
-                        autocomplete="new-password"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
-                    />
-                    <p v-if="passwordForm.errors.password" class="mt-1 text-xs text-red-600">
-                        {{ passwordForm.errors.password }}
-                    </p>
-                </div>
+                <FormField label="New Password" :error="passwordForm.errors.password">
+                    <TextInput v-model="passwordForm.password" type="password" autocomplete="new-password" />
+                </FormField>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
-                    <input
+                <FormField label="Confirm New Password">
+                    <TextInput
                         v-model="passwordForm.password_confirmation"
                         type="password"
                         autocomplete="new-password"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
                     />
-                </div>
+                </FormField>
 
                 <div class="flex items-center gap-3 pt-2">
-                    <button
-                        type="submit"
-                        :disabled="passwordForm.processing"
-                        class="bg-gray-900 text-white text-sm px-5 py-2 rounded-lg hover:bg-gray-700 disabled:opacity-50"
-                    >
+                    <UiButton type="submit" :disabled="passwordForm.processing">
                         {{ hasPassword ? 'Update Password' : 'Set Password' }}
-                    </button>
-                    <span v-if="passwordForm.recentlySuccessful" class="text-sm text-green-600">Saved!</span>
+                    </UiButton>
+                    <span v-if="passwordForm.recentlySuccessful" class="text-sm font-bold text-teal">Saved!</span>
                 </div>
             </form>
         </div>

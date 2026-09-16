@@ -3,32 +3,21 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { router } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import { useFormatDate } from '@/composables/useFormatDate.js';
+import SectionTitle from '@/Components/Ui/SectionTitle.vue';
+import UiButton from '@/Components/Ui/UiButton.vue';
+import StatusPill from '@/Components/Ui/StatusPill.vue';
+import Notice from '@/Components/Ui/Notice.vue';
 
 const props = defineProps({
     booking: { type: Object, required: true },
 });
 
 const flash = computed(() => usePage().props.flash ?? {});
-
-const statusConfig = {
-    pending:   { label: 'Pending',   classes: 'bg-amber-100 text-amber-700' },
-    confirmed: { label: 'Confirmed', classes: 'bg-green-100 text-green-700' },
-    cancelled: { label: 'Cancelled', classes: 'bg-gray-100 text-gray-500' },
-};
-
-function formatDate(dateStr) {
-    return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    });
-}
+const { formatDate } = useFormatDate();
 
 function nights() {
-    return Math.round(
-        (new Date(props.booking.check_out) - new Date(props.booking.check_in)) / 86400000,
-    );
+    return Math.round((new Date(props.booking.check_out) - new Date(props.booking.check_in)) / 86400000);
 }
 
 function cancelBooking() {
@@ -40,85 +29,72 @@ function cancelBooking() {
 <template>
     <AppLayout>
         <template #header>
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-xl font-semibold text-gray-900">Booking #{{ booking.id }}</h1>
-                    <p class="text-sm text-gray-500 mt-0.5">{{ booking.hotel.name }}</p>
+            <div class="flex items-start justify-between gap-4">
+                <div class="flex flex-col gap-1">
+                    <h1 class="text-3xl sm:text-4xl leading-tight">Booking #{{ booking.id }}</h1>
+                    <p class="font-sans font-medium tracking-normal text-sm text-moss">{{ booking.hotel.name }}</p>
                 </div>
-                <span
-                    class="text-xs font-medium px-3 py-1.5 rounded-full"
-                    :class="statusConfig[booking.status]?.classes"
-                >
-                    {{ statusConfig[booking.status]?.label ?? booking.status }}
-                </span>
+                <StatusPill :status="booking.status" />
             </div>
         </template>
 
         <div class="max-w-2xl space-y-6">
             <!-- Flash message -->
-            <div v-if="flash.success" class="bg-green-50 border border-green-200 rounded-xl p-4 text-sm text-green-800">
-                {{ flash.success }}
-            </div>
+            <Notice v-if="flash.success">{{ flash.success }}</Notice>
 
             <!-- Details card -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
-                <h2 class="text-base font-semibold text-gray-900">Booking Details</h2>
+            <div class="card-hard p-6 space-y-4">
+                <SectionTitle>Booking Details</SectionTitle>
 
-                <dl class="space-y-3 text-sm">
+                <dl class="space-y-3 text-sm [&_dt]:font-semibold [&_dt]:text-moss [&_dd]:font-bold [&_dd]:text-right">
                     <div class="flex justify-between">
-                        <dt class="text-gray-500">Hotel</dt>
-                        <dd class="font-medium text-gray-900">
+                        <dt class="text-moss">Hotel</dt>
+                        <dd class="font-medium text-ink">
                             <a :href="`/hotels/${booking.hotel.slug}`" class="hover:underline">
                                 {{ booking.hotel.name }}
                             </a>
                         </dd>
                     </div>
                     <div class="flex justify-between">
-                        <dt class="text-gray-500">Address</dt>
-                        <dd class="text-gray-700">{{ booking.hotel.address }}, {{ booking.hotel.city }}</dd>
+                        <dt class="text-moss">Address</dt>
+                        <dd class="text-ink">{{ booking.hotel.address }}, {{ booking.hotel.city }}</dd>
                     </div>
                     <div class="flex justify-between">
-                        <dt class="text-gray-500">Pet</dt>
-                        <dd class="font-medium text-gray-900">{{ booking.pet.name }} ({{ booking.pet.species }})</dd>
+                        <dt class="text-moss">Pet</dt>
+                        <dd class="font-medium text-ink">{{ booking.pet.name }} ({{ booking.pet.species }})</dd>
                     </div>
                     <div class="flex justify-between">
-                        <dt class="text-gray-500">Check-in</dt>
-                        <dd class="font-medium text-gray-900">{{ formatDate(booking.check_in) }}</dd>
+                        <dt class="text-moss">Check-in</dt>
+                        <dd class="font-medium text-ink">{{ formatDate(booking.check_in, { weekday: true }) }}</dd>
                     </div>
                     <div class="flex justify-between">
-                        <dt class="text-gray-500">Check-out</dt>
-                        <dd class="font-medium text-gray-900">{{ formatDate(booking.check_out) }}</dd>
+                        <dt class="text-moss">Check-out</dt>
+                        <dd class="font-medium text-ink">{{ formatDate(booking.check_out, { weekday: true }) }}</dd>
                     </div>
                     <div class="flex justify-between">
-                        <dt class="text-gray-500">Duration</dt>
-                        <dd class="text-gray-700">{{ nights() }} night{{ nights() !== 1 ? 's' : '' }}</dd>
+                        <dt class="text-moss">Duration</dt>
+                        <dd class="text-ink">{{ nights() }} night{{ nights() !== 1 ? 's' : '' }}</dd>
                     </div>
-                    <div class="border-t border-gray-100 pt-3 flex justify-between">
-                        <dt class="font-semibold text-gray-900">Total</dt>
-                        <dd class="font-semibold text-gray-900">RM {{ Number(booking.total_price).toFixed(2) }}</dd>
+                    <div class="border-t-2 border-ink/10 pt-3 flex justify-between items-baseline">
+                        <dt>Total</dt>
+                        <dd class="font-display text-2xl">RM {{ Number(booking.total_price).toFixed(2) }}</dd>
                     </div>
                 </dl>
             </div>
 
             <!-- Notes -->
-            <div v-if="booking.notes" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h2 class="text-base font-semibold text-gray-900 mb-2">Notes</h2>
-                <p class="text-sm text-gray-600 whitespace-pre-line">{{ booking.notes }}</p>
+            <div v-if="booking.notes" class="card-hard p-6">
+                <SectionTitle class="mb-2">Notes</SectionTitle>
+                <p class="text-[15px] text-moss leading-relaxed whitespace-pre-line">{{ booking.notes }}</p>
             </div>
 
             <!-- Actions -->
             <div class="flex items-center justify-between">
-                <a href="/bookings" class="text-sm text-gray-600 hover:text-gray-900 underline">
-                    Back to My Bookings
-                </a>
+                <a href="/bookings" class="text-sm font-bold text-teal hover:underline"> Back to My Bookings </a>
 
-                <button
-                    v-if="booking.status === 'pending'"
-                    class="text-sm text-red-600 hover:text-red-800 px-4 py-2 rounded-lg border border-red-200 hover:border-red-400 transition-colors"
-                    @click="cancelBooking"
-                >
+                <UiButton v-if="booking.status === 'pending'" variant="coral" @click="cancelBooking">
                     Cancel Booking
-                </button>
+                </UiButton>
             </div>
         </div>
     </AppLayout>

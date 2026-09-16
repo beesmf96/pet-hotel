@@ -1,6 +1,10 @@
 <script setup>
 import AuthLayout from '@/Layouts/AuthLayout.vue';
 import { useForm } from '@inertiajs/vue3';
+import FormField from '@/Components/Ui/FormField.vue';
+import TextInput from '@/Components/Ui/TextInput.vue';
+import UiButton from '@/Components/Ui/UiButton.vue';
+import Notice from '@/Components/Ui/Notice.vue';
 
 defineProps({
     status: { type: String, default: null },
@@ -17,34 +21,21 @@ function submit() {
     <AuthLayout>
         <template #subtitle>Reset your password</template>
 
-        <div v-if="status" class="mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
-            {{ status }}
-        </div>
+        <Notice v-if="status" class="mb-4">{{ status }}</Notice>
 
-        <p class="mb-5 text-sm text-gray-600">Enter your email and we'll send you a password reset link.</p>
+        <p class="mb-5 text-sm text-moss">Enter your email and we'll send you a password reset link.</p>
 
         <form class="space-y-5" @submit.prevent="submit">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input
-                    v-model="form.email"
-                    type="email"
-                    autocomplete="email"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
-                />
-                <p v-if="form.errors.email" class="mt-1 text-xs text-red-600">{{ form.errors.email }}</p>
-            </div>
+            <FormField label="Email" :error="form.errors.email">
+                <TextInput v-model="form.email" type="email" autocomplete="email" />
+            </FormField>
 
-            <button
-                type="submit"
-                :disabled="form.processing"
-                class="w-full bg-gray-900 text-white py-2 rounded-lg text-sm font-medium hover:bg-gray-700 disabled:opacity-50"
-            >
+            <UiButton block type="submit" :disabled="form.processing">
                 {{ form.processing ? 'Sending...' : 'Send reset link' }}
-            </button>
+            </UiButton>
 
-            <p class="text-center text-sm text-gray-600">
-                <a href="/login" class="font-medium text-gray-900 hover:underline">Back to sign in</a>
+            <p class="text-center text-sm text-moss">
+                <a href="/login" class="font-medium text-ink hover:underline">Back to sign in</a>
             </p>
         </form>
     </AuthLayout>

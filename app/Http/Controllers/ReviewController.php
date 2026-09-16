@@ -37,8 +37,8 @@ class ReviewController extends Controller
         return Inertia::render('Hotels/ReviewsPage', [
             'hotel' => ['name' => $hotel->name, 'slug' => $hotel->slug],
             'reviews' => $reviews,
-            'average_rating' => $avg,
-            'reviews_count' => $count,
+            'averageRating' => $avg,
+            'reviewsCount' => $count,
         ]);
     }
 

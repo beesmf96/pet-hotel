@@ -38,8 +38,8 @@ class HotelController extends Controller
         return Inertia::render('Hotels/HotelProfilePage', [
             'hotel' => $hotel,
             'reviews' => $reviews,
-            'reviews_count' => $reviewsCount,
-            'average_rating' => $averageRating,
+            'reviewsCount' => $reviewsCount,
+            'averageRating' => $averageRating,
         ]);
     }
 }

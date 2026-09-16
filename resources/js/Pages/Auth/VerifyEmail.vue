@@ -1,6 +1,8 @@
 <script setup>
 import AuthLayout from '@/Layouts/AuthLayout.vue';
 import { useForm } from '@inertiajs/vue3';
+import UiButton from '@/Components/Ui/UiButton.vue';
+import Notice from '@/Components/Ui/Notice.vue';
 
 defineProps({
     status: { type: String, default: null },
@@ -22,30 +24,23 @@ function logout() {
     <AuthLayout>
         <template #subtitle>Verify your email</template>
 
-        <div
-            v-if="status === 'verification-link-sent'"
-            class="mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3"
+        <Notice v-if="status === 'verification-link-sent'" class="mb-4"
+            >A new verification link has been sent to your email address.</Notice
         >
-            A new verification link has been sent to your email address.
-        </div>
 
-        <p class="mb-6 text-sm text-gray-600">
+        <p class="mb-6 text-sm text-moss">
             Thanks for registering! Before getting started, please verify your email address by clicking on the link we
             just sent you. If you didn't receive the email, we'll gladly send another.
         </p>
 
         <div class="flex flex-col gap-3">
-            <button
-                :disabled="resendForm.processing"
-                class="w-full bg-gray-900 text-white py-2 rounded-lg text-sm font-medium hover:bg-gray-700 disabled:opacity-50"
-                @click="resend"
-            >
+            <UiButton block :disabled="resendForm.processing" @click="resend">
                 {{ resendForm.processing ? 'Sending...' : 'Resend verification email' }}
-            </button>
+            </UiButton>
 
             <button
                 :disabled="logoutForm.processing"
-                class="w-full text-center text-sm text-gray-600 hover:text-gray-900 disabled:opacity-50"
+                class="w-full text-center text-sm font-semibold text-moss hover:text-teal disabled:opacity-50"
                 @click="logout"
             >
                 Sign out

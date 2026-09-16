@@ -1,0 +1,221 @@
+/*
+ * Filament theme for both panels (/admin and /owner), in the same "Playful
+ * bold" direction as the customer pages: cream ground, ink outlines with a
+ * hard offset shadow, Bricolage Grotesque for headings. Colours per panel
+ * (primary) come from ->colors() in the panel providers; everything shared
+ * lives here. Dark mode is disabled on the panels, so there are no dark rules.
+ */
+@import '../../../vendor/filament/filament/resources/css/theme.css';
+@import '@fontsource-variable/bricolage-grotesque';
+
+@source '../../../app/Filament/**/*';
+@source '../../../resources/views/filament/**/*';
+
+:root {
+    --ph-ink: #1f2a26;
+    --ph-cream: #fff8e7;
+    --ph-teal: #0f766e;
+    --ph-mustard: #ffcf3f;
+    --ph-coral: #ff8a5b;
+    --ph-moss: #4b5753;
+    --ph-shadow: 4px 4px 0 0 var(--ph-ink);
+    --ph-shadow-sm: 3px 3px 0 0 var(--ph-ink);
+    --ph-display: 'Bricolage Grotesque Variable', 'Arial Black', ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer components {
+    /* Ground and chrome */
+    .fi-body {
+        background-color: var(--ph-cream);
+        color: var(--ph-ink);
+    }
+
+    .fi-topbar {
+        background-color: var(--ph-cream);
+        box-shadow: none;
+        --tw-ring-color: transparent;
+        border-bottom: 3px solid var(--ph-ink);
+    }
+
+    .fi-sidebar {
+        background-color: var(--ph-cream);
+        border-inline-end: 3px solid var(--ph-ink);
+    }
+
+    .fi-sidebar-header {
+        background-color: var(--ph-cream);
+        box-shadow: none;
+        --tw-ring-color: transparent;
+        border-bottom: 3px solid var(--ph-ink);
+    }
+
+    .fi-sidebar-item-btn {
+        font-weight: 600;
+        border-radius: 0.75rem;
+    }
+
+    .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+        background-color: var(--ph-mustard);
+        border: 2px solid var(--ph-ink);
+        box-shadow: var(--ph-shadow-sm);
+    }
+
+    .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-label,
+    .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-icon {
+        color: var(--ph-ink);
+    }
+
+    .fi-sidebar-group-label {
+        color: var(--ph-moss);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-size: 0.7rem;
+    }
+
+    /* Headings */
+    .fi-header-heading,
+    .fi-section-header-heading,
+    .fi-modal-heading,
+    .fi-simple-header-heading,
+    .fi-wi-stats-overview-stat-value {
+        font-family: var(--ph-display);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--ph-ink);
+    }
+
+    .fi-logo {
+        font-family: var(--ph-display);
+        font-weight: 800;
+    }
+
+    /* Surfaces: sections, tables, stat tiles, login card, modals, dropdowns.
+       Two section variants stay unstyled: the lazy-widget loading wrapper, and
+       "not contained" sections, which Filament renders without chrome and uses
+       to group the stat tiles. Styling either double-frames every stat. */
+    .fi-section:not(.fi-loading-section):not(.fi-section-not-contained),
+    .fi-ta-ctn,
+    .fi-wi-stats-overview-stat,
+    .fi-simple-main,
+    .fi-modal-window,
+    .fi-dropdown-panel {
+        background-color: white;
+        border: 3px solid var(--ph-ink);
+        border-radius: 1rem;
+        box-shadow: var(--ph-shadow);
+        --tw-ring-color: transparent;
+        --tw-shadow: 0 0 #0000;
+    }
+
+    .fi-loading-section {
+        background: transparent;
+    }
+
+    .fi-section-header,
+    .fi-ta-header {
+        border-bottom-color: color-mix(in oklab, var(--ph-ink) 10%, transparent);
+    }
+
+    .fi-ta-header-cell {
+        font-weight: 700;
+        color: var(--ph-moss);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-size: 0.7rem;
+    }
+
+    .fi-ta-row:hover {
+        background-color: color-mix(in oklab, var(--ph-mustard) 25%, white);
+    }
+
+    .fi-wi-stats-overview-stat-label,
+    .fi-wi-stats-overview-stat-description {
+        color: var(--ph-moss);
+        font-weight: 600;
+    }
+
+    /* Controls */
+    .fi-btn {
+        border: 2px solid var(--ph-ink);
+        border-radius: 0.75rem;
+        font-weight: 700;
+        box-shadow: var(--ph-shadow-sm);
+        --tw-ring-color: transparent;
+        --tw-shadow: 0 0 #0000;
+        transition: transform 75ms, box-shadow 75ms;
+    }
+
+    .fi-btn:hover {
+        transform: translate(2px, 2px);
+        box-shadow: none;
+    }
+
+    .fi-btn.fi-size-xs,
+    .fi-btn.fi-size-sm {
+        box-shadow: 2px 2px 0 0 var(--ph-ink);
+    }
+
+    .fi-btn.fi-size-xs:hover,
+    .fi-btn.fi-size-sm:hover {
+        transform: translate(1px, 1px);
+    }
+
+    .fi-input-wrp,
+    .fi-select-input,
+    .fi-fo-file-upload {
+        border: 2px solid var(--ph-ink);
+        border-radius: 0.75rem;
+        box-shadow: none;
+        --tw-ring-color: transparent;
+        --tw-shadow: 0 0 #0000;
+    }
+
+    .fi-input-wrp:focus-within {
+        --tw-ring-color: var(--ph-teal);
+    }
+
+    .fi-fo-field-label,
+    .fi-fo-field-wrp-label,
+    .fi-in-entry-label {
+        font-weight: 700;
+        color: var(--ph-ink);
+    }
+
+    .fi-badge {
+        border: 2px solid var(--ph-ink);
+        border-radius: 9999px;
+        font-weight: 700;
+        --tw-ring-color: transparent;
+    }
+
+    .fi-tabs {
+        gap: 0.5rem;
+    }
+
+    .fi-tabs-item {
+        border-radius: 0.75rem;
+        font-weight: 700;
+    }
+
+    .fi-tabs-item.fi-active {
+        background-color: var(--ph-mustard);
+        border: 2px solid var(--ph-ink);
+    }
+
+    .fi-pagination-item.fi-active,
+    .fi-pagination-item[aria-current='page'] {
+        border: 2px solid var(--ph-ink);
+        background-color: var(--ph-mustard);
+        border-radius: 0.75rem;
+    }
+
+    /* Login and other simple pages */
+    .fi-simple-layout {
+        background-color: var(--ph-cream);
+    }
+
+    .fi-simple-main {
+        box-shadow: 8px 8px 0 0 var(--ph-ink);
+    }
+}

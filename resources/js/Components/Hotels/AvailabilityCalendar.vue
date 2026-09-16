@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
+import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 
 const props = defineProps({
     hotelSlug: {
@@ -61,14 +62,13 @@ const calendarDays = computed(() => {
 function cellClass(cell) {
     const isToday = cell.date === todayKey;
     const isSelectedEndpoint = props.selectable && (cell.date === checkIn.value || cell.date === checkOut.value);
-    const isInRange = props.selectable
-        && checkIn.value && checkOut.value
-        && cell.date > checkIn.value && cell.date < checkOut.value;
+    const isInRange =
+        props.selectable && checkIn.value && checkOut.value && cell.date > checkIn.value && cell.date < checkOut.value;
     const isPast = props.selectable && cell.date < todayKey;
 
     // Priority 1: selected endpoint wins over everything
     if (isSelectedEndpoint) {
-        return 'bg-gray-900 text-white ring-2 ring-gray-900 cursor-pointer';
+        return 'bg-ink text-cream ring-2 ring-ink font-bold cursor-pointer';
     }
 
     // Priority 2: unavailable states (blocked/full/past) — not clickable
@@ -81,14 +81,18 @@ function cellClass(cell) {
 
     // Priority 3: in-range highlight
     if (isInRange) {
-        return 'bg-gray-100 text-gray-800' + (props.selectable ? ' cursor-pointer' : '');
+        return 'bg-mustard text-ink font-medium' + (props.selectable ? ' cursor-pointer' : '');
     }
 
     // Priority 4: availability status with today ring (today ring skipped when selected)
     const ring = isToday ? 'ring-2 ' : '';
 
     if (cell.available_spots !== null && cell.available_spots <= 3) {
-        return ring + 'ring-orange-400 bg-orange-50 text-orange-700 font-medium' + (props.selectable ? ' cursor-pointer' : '');
+        return (
+            ring +
+            'ring-orange-400 bg-orange-50 text-orange-700 font-medium' +
+            (props.selectable ? ' cursor-pointer' : '')
+        );
     }
     return ring + 'ring-green-400 bg-green-50 text-green-700 font-medium' + (props.selectable ? ' cursor-pointer' : '');
 }
@@ -165,21 +169,21 @@ onMounted(fetchMonth);
 </script>
 
 <template>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 class="text-base font-semibold text-gray-900 mb-4">Availability</h2>
+    <div class="card-hard p-6">
+        <SectionTitle class="mb-4">Availability</SectionTitle>
 
         <!-- Month navigation -->
         <div class="flex items-center justify-between mb-4">
             <button
-                class="w-8 h-8 rounded-full flex items-center justify-center text-lg text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                class="w-9 h-9 rounded-full border-2 border-ink flex items-center justify-center text-lg font-bold hover:bg-mustard disabled:opacity-30 disabled:cursor-not-allowed transition"
                 :disabled="isPrevDisabled"
                 @click="prevMonth"
             >
                 ‹
             </button>
-            <span class="text-sm font-medium text-gray-900">{{ monthLabel }}</span>
+            <span class="font-display font-bold text-base">{{ monthLabel }}</span>
             <button
-                class="w-8 h-8 rounded-full flex items-center justify-center text-lg text-gray-500 hover:bg-gray-100"
+                class="w-9 h-9 rounded-full border-2 border-ink flex items-center justify-center text-lg font-bold hover:bg-mustard transition"
                 @click="nextMonth"
             >
                 ›
@@ -191,8 +195,9 @@ onMounted(fetchMonth);
             <span
                 v-for="d in ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']"
                 :key="d"
-                class="text-center text-xs text-gray-400 font-medium py-1"
-            >{{ d }}</span>
+                class="text-center text-xs text-moss font-bold py-1"
+                >{{ d }}</span
+            >
         </div>
 
         <!-- Calendar grid -->
@@ -203,7 +208,7 @@ onMounted(fetchMonth);
             <div
                 v-for="(cell, i) in calendarDays"
                 :key="i"
-                class="h-9 rounded-lg flex items-center justify-center text-sm"
+                class="h-9 rounded-lg flex items-center justify-center text-sm transition-colors"
                 :class="cell ? cellClass(cell) : ''"
                 @click="cell && handleCellClick(cell)"
             >
@@ -215,20 +220,20 @@ onMounted(fetchMonth);
         <p v-if="error" class="mt-3 text-sm text-red-600 text-center">{{ error }}</p>
 
         <!-- Legend -->
-        <div class="flex flex-wrap gap-4 mt-4 pt-4 border-t border-gray-100">
-            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+        <div class="flex flex-wrap gap-4 mt-4 pt-4 border-t-2 border-ink/10">
+            <div class="flex items-center gap-1.5 text-xs font-medium text-moss">
                 <span class="w-3 h-3 rounded-sm bg-green-50 border border-green-300 inline-block" />
                 Available
             </div>
-            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+            <div class="flex items-center gap-1.5 text-xs font-medium text-moss">
                 <span class="w-3 h-3 rounded-sm bg-orange-50 border border-orange-300 inline-block" />
                 Limited
             </div>
-            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+            <div class="flex items-center gap-1.5 text-xs font-medium text-moss">
                 <span class="w-3 h-3 rounded-sm bg-red-50 border border-red-200 inline-block" />
                 Full
             </div>
-            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+            <div class="flex items-center gap-1.5 text-xs font-medium text-moss">
                 <span class="w-3 h-3 rounded-sm bg-gray-100 border border-gray-200 inline-block" />
                 Unavailable
             </div>
