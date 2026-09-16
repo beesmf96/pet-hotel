@@ -166,7 +166,7 @@ jobs:
           GITLEAKS_VERSION: '8.30.1'
 
   frontend:
-    name: Frontend (ESLint + Vitest + coverage)
+    name: Frontend (ESLint + Vitest)
     runs-on: ubuntu-latest
 
     steps:
