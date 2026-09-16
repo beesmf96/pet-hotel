@@ -1,14 +1,14 @@
 <?php
 
 /**
- * Renders the stakeholder-facing docs from notes/ to docs/ and regenerates
+ * Renders the stakeholder-facing docs from docs-src/ to docs/ and regenerates
  * the index.
  *
- *   php notes/build.php
+ *   php docs-src/build.php
  *
  * docs/ is the GitHub Pages site (Settings > Pages serves main:/docs) and
  * holds HTML only; a .nojekyll file there stops Jekyll from processing it.
- * Markdown under notes/ is the source of truth and is coder-facing by
+ * Markdown under docs-src/ is the source of truth and is coder-facing by
  * default. Only files whose frontmatter says `audience: stakeholder` are
  * rendered to HTML; everything else (runbooks, the paper trail, ...) is read
  * as markdown in the repo. Never hand-edit a generated .html file. Pages are
@@ -38,7 +38,7 @@ use League\CommonMark\Extension\Table\TableExtension;
 use League\CommonMark\Extension\TaskList\TaskListExtension;
 use League\CommonMark\MarkdownConverter;
 
-const NOTES_DIR = __DIR__;
+const SRC_DIR = __DIR__;
 const HTML_DIR = __DIR__.'/../docs';
 
 /**
@@ -234,7 +234,7 @@ foreach (STATIC_DOCS as $href => $doc) {
     $entries[] = $doc + ['href' => $href];
 }
 
-foreach (glob(NOTES_DIR.'/*.md') as $path) {
+foreach (glob(SRC_DIR.'/*.md') as $path) {
     $slug = basename($path, '.md');
     [$meta, $body] = split_frontmatter(file_get_contents($path));
 
