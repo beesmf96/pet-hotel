@@ -2,7 +2,7 @@
 title: Landing page redesign (playful bold)
 description: Rebuilt the landing page in the "Playful bold" direction chosen from three design proposals.
 date: 2026-09-16
-pr: ~
+pr: 51
 plan: ~
 ---
 
