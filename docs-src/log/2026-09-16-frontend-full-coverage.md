@@ -2,7 +2,7 @@
 title: Tests for the 15 untested Vue files, floor raised to 90
 description: Every Vue file and composable now has a test file; honest line coverage went from 61.7% to 92.6% and the CI floor from 60 to 90.
 date: 2026-09-16
-pr: ~
+pr: 45
 plan: ~
 ---
 
