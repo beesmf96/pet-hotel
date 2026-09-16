@@ -91,6 +91,17 @@ index and, if possible, altogether "since it is already done". A fifth asked to
   Checklist steps 3 and 4, CLAUDE.md, `.env.example`, the `s3` disk comment,
   and the knowledge entry all say so now; the `AWS_REGION`/`AWS_ENDPOINT_URL`
   fallbacks added earlier were removed as they rested on a wrong guess.
+- Follow-up after the merge: PR #49 was merged before the last three commits
+  (bucket naming, the ACL change, the `PHOTO_DISK=photos` docs), so they ride
+  in the next PR. `dev` redeployed with `PHOTO_DISK=photos`: the CSP
+  `img-src` lists the bucket and a pet photo upload succeeded, notably while
+  still on `storePublicly()`. So this bucket accepted a `public-read` ACL
+  despite the Cloud docs; the `store()` change stays as the documented-safe
+  path. Reading Livewire showed that with the bucket as the default disk,
+  Filament uploads go browser-to-R2 with a presigned URL, which
+  `connect-src 'self'` will block once the CSP is enforced. Checklist step 4
+  now requires `FILESYSTEM_DISK=local`, and step 9 adds an admin photo
+  upload to the re-check list.
 - Infra: `.env.docker` set `CACHE_DRIVER=redis`, a key Laravel no longer
   reads, so the Docker cache silently fell back to the database store. Now
   `CACHE_STORE=redis`. A running stack needs the same change in its `.env`.

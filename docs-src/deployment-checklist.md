@@ -69,9 +69,14 @@ deploy, so do not type database or cache credentials by hand.
       endpoint, and public `url` already set, so none of the `AWS_*` variables
       are injected or needed. The `s3` disk in `config/filesystems.php` is for
       any other S3-compatible host.
-- [ ] **Default disk** can stay on. Cloud then injects `FILESYSTEM_DISK=photos`,
-      which only moves Livewire's temporary uploads into the bucket. Add a custom
-      `FILESYSTEM_DISK=local` in step 4 if you would rather keep those local.
+- [ ] **Default disk** on or off does not matter, because step 4 overrides it.
+      Cloud injects `FILESYSTEM_DISK=photos` when it is on, and Livewire then
+      sends the admin panel's photo uploads straight from the browser to the R2
+      endpoint with a presigned URL. That request leaves this origin, so the
+      CSP `connect-src 'self'` reports it today and blocks it once enforced.
+      `FILESYSTEM_DISK=local` keeps Livewire's temporary files on the container,
+      where the app moves them into the bucket itself. Customer pet photos never
+      go through Livewire and are unaffected either way.
 - [ ] Set `PHOTO_DISK=photos` in step 4 (the disk name, not `s3`). The app builds
       photo URLs and the CSP `img-src` from that disk's `url`, which Cloud fills
       in as `https://<bucket>.laravel.cloud`.
@@ -96,6 +101,7 @@ SESSION_DRIVER=redis
 SESSION_SECURE_COOKIE=true
 CACHE_STORE=redis
 PHOTO_DISK=photos                          # the bucket's Disk name (step 3)
+FILESYSTEM_DISK=local                      # overrides the injected value (step 3)
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 CSP_MODE=report                            # switch to enforce later (step 9)
@@ -110,6 +116,7 @@ CSP_MODE=report                            # switch to enforce later (step 9)
 - [ ] `SESSION_SECURE_COOKIE=true`. `config/session.php` has no default for it,
       so an unset value ships the session cookie without the `Secure` flag.
 - [ ] `PHOTO_DISK` set to the bucket's disk name. Step 1 must be done first.
+- [ ] `FILESYSTEM_DISK=local`, so Filament uploads stay inside the CSP.
 - [ ] `GOOGLE_CLIENT_SECRET` from the Google Cloud console, for a client that
       belongs to **this** environment (step 7).
 - [ ] No secret is committed to git. `.env.docker` is tracked on purpose as a
@@ -241,7 +248,8 @@ so it protects nothing until you enforce it.
 - [ ] Widen `SecurityHeaders::contentSecurityPolicy()` only for legitimate
       sources.
 - [ ] When the log is quiet, set `CSP_MODE=enforce` and redeploy.
-- [ ] Re-check the map, both Filament panels, and a photo upload.
+- [ ] Re-check the map, both Filament panels, a pet photo upload, and a hotel
+      photo upload in the admin panel (the second goes through Livewire).
 
 Policy detail: `.claude/plans/plan-owasp-hardening.md`.
 
