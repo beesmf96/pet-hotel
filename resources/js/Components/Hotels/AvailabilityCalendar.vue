@@ -165,21 +165,21 @@ onMounted(fetchMonth);
 </script>
 
 <template>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 class="text-base font-semibold text-gray-900 mb-4">Availability</h2>
+    <div class="bg-white border-3 border-ink rounded-2xl shadow-hard p-6">
+        <h2 class="font-display font-bold text-2xl mb-4">Availability</h2>
 
         <!-- Month navigation -->
         <div class="flex items-center justify-between mb-4">
             <button
-                class="w-8 h-8 rounded-full flex items-center justify-center text-lg text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                class="w-9 h-9 rounded-full border-2 border-ink flex items-center justify-center text-lg font-bold hover:bg-mustard disabled:opacity-30 disabled:cursor-not-allowed transition"
                 :disabled="isPrevDisabled"
                 @click="prevMonth"
             >
                 ‹
             </button>
-            <span class="text-sm font-medium text-gray-900">{{ monthLabel }}</span>
+            <span class="font-display font-bold text-base">{{ monthLabel }}</span>
             <button
-                class="w-8 h-8 rounded-full flex items-center justify-center text-lg text-gray-500 hover:bg-gray-100"
+                class="w-9 h-9 rounded-full border-2 border-ink flex items-center justify-center text-lg font-bold hover:bg-mustard transition"
                 @click="nextMonth"
             >
                 ›
@@ -191,7 +191,7 @@ onMounted(fetchMonth);
             <span
                 v-for="d in ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']"
                 :key="d"
-                class="text-center text-xs text-gray-400 font-medium py-1"
+                class="text-center text-xs text-moss font-bold py-1"
             >{{ d }}</span>
         </div>
 
@@ -215,20 +215,20 @@ onMounted(fetchMonth);
         <p v-if="error" class="mt-3 text-sm text-red-600 text-center">{{ error }}</p>
 
         <!-- Legend -->
-        <div class="flex flex-wrap gap-4 mt-4 pt-4 border-t border-gray-100">
-            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+        <div class="flex flex-wrap gap-4 mt-4 pt-4 border-t-2 border-ink/10">
+            <div class="flex items-center gap-1.5 text-xs font-medium text-moss">
                 <span class="w-3 h-3 rounded-sm bg-green-50 border border-green-300 inline-block" />
                 Available
             </div>
-            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+            <div class="flex items-center gap-1.5 text-xs font-medium text-moss">
                 <span class="w-3 h-3 rounded-sm bg-orange-50 border border-orange-300 inline-block" />
                 Limited
             </div>
-            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+            <div class="flex items-center gap-1.5 text-xs font-medium text-moss">
                 <span class="w-3 h-3 rounded-sm bg-red-50 border border-red-200 inline-block" />
                 Full
             </div>
-            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+            <div class="flex items-center gap-1.5 text-xs font-medium text-moss">
                 <span class="w-3 h-3 rounded-sm bg-gray-100 border border-gray-200 inline-block" />
                 Unavailable
             </div>

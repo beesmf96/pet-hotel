@@ -1,19 +1,20 @@
 ---
-title: Landing and search page redesign (playful bold)
-description: Rebuilt the landing page, the app layout and the search page in the "Playful bold" direction chosen from three design proposals.
+title: Landing, search and hotel profile redesign (playful bold)
+description: Rebuilt the landing page, the app layout, the search page and the hotel profile in the "Playful bold" direction chosen from three design proposals.
 date: 2026-09-16
 pr: 51
 plan: ~
 ---
 
-# Landing and search page redesign (playful bold)
+# Landing, search and hotel profile redesign (playful bold)
 
 ## Asked
 "i want to explore the landing page design, where currently might be less
 attractive for a pet hotel searching platform. can we have 3 different design
 proposal, see which one is good?" The user then picked direction B, "Playful
 bold". A second request in the same session: apply the same style to the
-search page, with the shared app layout included, on the same branch.
+search page, with the shared app layout included, on the same branch. A third
+request: the hotel profile page too, same branch.
 
 ## Done
 - Design: three directions (warm editorial, playful bold, clean marketplace)
@@ -35,6 +36,19 @@ search page, with the shared app layout included, on the same branch.
   stacks above the results on phones.
 - Frontend: `FilterSidebar.vue` restyled to match. Price labels now say RM.
 - Frontend: notification bell badge is coral with an ink border.
+- Frontend: `HotelProfilePage.vue` restyled. Outlined cards with hard
+  shadows, display-font headings, a taller gallery with outlined arrow buttons
+  and an SVG paw placeholder, facility chips without emoji, check-in and
+  check-out times as tiles, and Book Now merged into the pricing card.
+- Frontend: `ReviewList.vue` stars are mustard on ink; `AvailabilityCalendar.vue`
+  got the new frame, month buttons and legend. Its day-cell colours are
+  unchanged because the booking form shares the component.
+- Bug fix: `HotelController` and `ReviewController` sent `reviews_count` and
+  `average_rating`, but both pages declare `reviewsCount` and `averageRating`.
+  Vue does not map snake_case to camelCase, so the profile always showed
+  "No reviews yet" and never the "View all" link, and the reviews page never
+  showed its summary. The controllers now send camelCase and the feature
+  tests in `ReviewTest.php` assert the new names.
 - Bug fix found on the way: with no query string the search page's `filters`
   prop is an empty array, so `filters.sort` was the Array method and the sort
   select rendered blank. The page now only accepts a string value.
@@ -47,10 +61,9 @@ search page, with the shared app layout included, on the same branch.
   in users. There is no dedicated owner onboarding page yet.
 
 ## Not done
-- Only the landing page, the layout and the search page carry the new style.
-  The hotel profile, booking, pets and profile pages keep their grey cards
-  inside the new chrome. Restyling them is a follow-up; the hotel profile is
-  the natural next one.
+- The booking, reviews list, pets, profile and dashboard pages keep their grey
+  cards inside the new chrome. Restyling them is a follow-up; the booking form
+  is the natural next one since Book Now leads straight into it.
 - The design canvas still shows all three directions; it was not trimmed to
   the chosen one.
 
@@ -65,8 +78,10 @@ search page, with the shared app layout included, on the same branch.
   default).
 - `bun run lint`: 0 errors, 7 warnings, one fewer than `dev` (the existing
   `require-default-prop` pattern).
-- `composer test` in Docker: 377 passed. `vendor/bin/pint --test`: pass.
-- Headless Chromium screenshots of the landing and search pages at 1440px and
-  400px wide, plus the search empty state: no horizontal overflow, headline
+- `composer test` in Docker: 377 passed, including the renamed review prop
+  assertions. `vendor/bin/pint --test`: pass.
+- Headless Chromium screenshots of the landing, search and hotel profile
+  pages at 1440px and 400px wide, plus the search empty state: no horizontal overflow, headline
   on two lines on desktop, fields and sidebar stack on phone, sort select
-  shows "Newest first".
+  shows "Newest first", the profile's review summary shows the average and
+  count.

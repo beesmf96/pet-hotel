@@ -164,11 +164,10 @@ describe('HotelProfilePage — gallery navigation', () => {
 })
 
 describe('HotelProfilePage — facilities, policies, and pricing', () => {
-    it('lists facilities with their icon and label', () => {
+    it('lists facilities by label', () => {
         const hotel = { ...baseHotel, facilities: [{ id: 1, type: 'grooming' }, { id: 2, type: '24h_care' }] }
         const w = mount(HotelProfilePage, { props: { ...baseProps, hotel } })
         expect(w.text()).toContain('Facilities')
-        expect(w.text()).toContain('✂️')
         expect(w.text()).toContain('Grooming')
         expect(w.text()).toContain('24h Care')
     })

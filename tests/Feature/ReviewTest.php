@@ -35,8 +35,8 @@ class ReviewTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->component('Hotels/ReviewsPage')
                 ->has('reviews')
-                ->has('average_rating')
-                ->has('reviews_count')
+                ->has('averageRating')
+                ->has('reviewsCount')
             );
     }
 
@@ -56,7 +56,7 @@ class ReviewTest extends TestCase
 
         $response = $this->get("/hotels/{$hotel->slug}/reviews");
         $response->assertInertia(fn ($page) => $page
-            ->where('reviews_count', 0)
+            ->where('reviewsCount', 0)
         );
     }
 
@@ -84,8 +84,8 @@ class ReviewTest extends TestCase
             ->assertStatus(200)
             ->assertInertia(fn ($page) => $page
                 ->component('Hotels/HotelProfilePage')
-                ->where('average_rating', 4.5)
-                ->where('reviews_count', 2)
+                ->where('averageRating', 4.5)
+                ->where('reviewsCount', 2)
                 ->has('reviews', 2)
             );
     }
