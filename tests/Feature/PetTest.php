@@ -32,7 +32,7 @@ class PetTest extends TestCase
     public function test_user_can_view_pets_page(): void
     {
         $user = User::factory()->create();
-        $user->pets()->create(['name' => 'Fluffy', 'species' => 'Cat']);
+        $user->pets()->create(['name' => 'Fluffy', 'species' => 'cat']);
 
         $this->actingAs($user)
             ->get('/pets')
@@ -44,8 +44,8 @@ class PetTest extends TestCase
         $user = User::factory()->create();
         $other = User::factory()->create();
 
-        $user->pets()->create(['name' => 'Mine', 'species' => 'Dog']);
-        $other->pets()->create(['name' => 'Theirs', 'species' => 'Cat']);
+        $user->pets()->create(['name' => 'Mine', 'species' => 'dog']);
+        $other->pets()->create(['name' => 'Theirs', 'species' => 'cat']);
 
         $this->actingAs($user)
             ->get('/pets')
@@ -57,7 +57,7 @@ class PetTest extends TestCase
         Storage::fake('public');
         $user = User::factory()->create();
         $photo = UploadedFile::fake()->image('buddy.jpg')->store('pet-photos', 'public');
-        $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog', 'photo' => $photo]);
+        $user->pets()->create(['name' => 'Buddy', 'species' => 'dog', 'photo' => $photo]);
 
         $this->actingAs($user)
             ->get('/pets')
@@ -70,7 +70,7 @@ class PetTest extends TestCase
     public function test_photo_url_is_null_when_pet_has_no_photo(): void
     {
         $user = User::factory()->create();
-        $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         $this->actingAs($user)
             ->get('/pets')
@@ -85,24 +85,24 @@ class PetTest extends TestCase
     public function test_unverified_user_cannot_create_pet(): void
     {
         $this->actingAs(User::factory()->unverified()->create())
-            ->post('/pets', ['name' => 'Buddy', 'species' => 'Dog'])
+            ->post('/pets', ['name' => 'Buddy', 'species' => 'dog'])
             ->assertRedirect('/email/verify');
     }
 
     public function test_unverified_user_cannot_update_pet(): void
     {
         $user = User::factory()->unverified()->create();
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         $this->actingAs($user)
-            ->patch("/pets/{$pet->id}", ['name' => 'Max', 'species' => 'Dog'])
+            ->patch("/pets/{$pet->id}", ['name' => 'Max', 'species' => 'dog'])
             ->assertRedirect('/email/verify');
     }
 
     public function test_unverified_user_cannot_delete_pet(): void
     {
         $user = User::factory()->unverified()->create();
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         $this->actingAs($user)
             ->delete("/pets/{$pet->id}")
@@ -113,7 +113,7 @@ class PetTest extends TestCase
 
     public function test_guest_cannot_create_pet(): void
     {
-        $this->post('/pets', ['name' => 'Buddy', 'species' => 'Dog'])
+        $this->post('/pets', ['name' => 'Buddy', 'species' => 'dog'])
             ->assertRedirect('/login');
     }
 
@@ -122,11 +122,11 @@ class PetTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)
-            ->post('/pets', ['name' => 'Buddy', 'species' => 'Dog'])
+            ->post('/pets', ['name' => 'Buddy', 'species' => 'dog'])
             ->assertRedirect()
             ->assertSessionHas('success', 'Pet added.');
 
-        $this->assertDatabaseHas('pets', ['user_id' => $user->id, 'name' => 'Buddy', 'species' => 'Dog']);
+        $this->assertDatabaseHas('pets', ['user_id' => $user->id, 'name' => 'Buddy', 'species' => 'dog']);
     }
 
     public function test_user_can_create_pet_with_all_fields(): void
@@ -135,7 +135,7 @@ class PetTest extends TestCase
 
         $this->actingAs($user)->post('/pets', [
             'name' => 'Buddy',
-            'species' => 'Dog',
+            'species' => 'dog',
             'breed' => 'Labrador',
             'age' => 3,
             'special_needs' => 'Gluten-free food only',
@@ -154,7 +154,7 @@ class PetTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)
-            ->post('/pets', ['species' => 'Dog'])
+            ->post('/pets', ['species' => 'dog'])
             ->assertSessionHasErrors('name');
     }
 
@@ -167,12 +167,43 @@ class PetTest extends TestCase
             ->assertSessionHasErrors('species');
     }
 
+    public function test_store_rejects_species_outside_the_pet_type_list(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->post('/pets', ['name' => 'Buddy', 'species' => 'Golden Retriever'])
+            ->assertSessionHasErrors('species');
+    }
+
+    public function test_store_rejects_species_that_differs_only_in_case(): void
+    {
+        // Pricing is matched on the exact key, so "Dog" would book at RM 0.
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->post('/pets', ['name' => 'Buddy', 'species' => 'Dog'])
+            ->assertSessionHasErrors('species');
+    }
+
+    public function test_update_rejects_species_outside_the_pet_type_list(): void
+    {
+        $user = User::factory()->create();
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
+
+        $this->actingAs($user)
+            ->patch("/pets/{$pet->id}", ['name' => 'Buddy', 'species' => 'Dog'])
+            ->assertSessionHasErrors('species');
+
+        $this->assertSame('dog', $pet->fresh()->species);
+    }
+
     public function test_store_validates_age_is_integer(): void
     {
         $user = User::factory()->create();
 
         $this->actingAs($user)
-            ->post('/pets', ['name' => 'Buddy', 'species' => 'Dog', 'age' => 'old'])
+            ->post('/pets', ['name' => 'Buddy', 'species' => 'dog', 'age' => 'old'])
             ->assertSessionHasErrors('age');
     }
 
@@ -181,7 +212,7 @@ class PetTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)
-            ->post('/pets', ['name' => 'Buddy', 'species' => 'Dog', 'age' => -1])
+            ->post('/pets', ['name' => 'Buddy', 'species' => 'dog', 'age' => -1])
             ->assertSessionHasErrors('age');
     }
 
@@ -192,7 +223,7 @@ class PetTest extends TestCase
 
         $this->actingAs($user)->post('/pets', [
             'name' => 'Buddy',
-            'species' => 'Dog',
+            'species' => 'dog',
             'photo' => UploadedFile::fake()->image('buddy.jpg'),
         ]);
 
@@ -209,7 +240,7 @@ class PetTest extends TestCase
         $this->actingAs($user)
             ->post('/pets', [
                 'name' => 'Buddy',
-                'species' => 'Dog',
+                'species' => 'dog',
                 'photo' => UploadedFile::fake()->create('document.pdf', 100, 'application/pdf'),
             ])
             ->assertSessionHasErrors('photo');
@@ -220,19 +251,19 @@ class PetTest extends TestCase
     public function test_guest_cannot_update_pet(): void
     {
         $user = User::factory()->create();
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
-        $this->patch("/pets/{$pet->id}", ['name' => 'Max', 'species' => 'Dog'])
+        $this->patch("/pets/{$pet->id}", ['name' => 'Max', 'species' => 'dog'])
             ->assertRedirect('/login');
     }
 
     public function test_user_can_update_own_pet(): void
     {
         $user = User::factory()->create();
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         $this->actingAs($user)
-            ->patch("/pets/{$pet->id}", ['name' => 'Max', 'species' => 'Dog'])
+            ->patch("/pets/{$pet->id}", ['name' => 'Max', 'species' => 'dog'])
             ->assertRedirect()
             ->assertSessionHas('success', 'Pet updated.');
 
@@ -243,27 +274,27 @@ class PetTest extends TestCase
     {
         $user = User::factory()->create();
         $other = User::factory()->create();
-        $pet = $other->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $other->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         $this->actingAs($user)
-            ->patch("/pets/{$pet->id}", ['name' => 'Max', 'species' => 'Dog'])
+            ->patch("/pets/{$pet->id}", ['name' => 'Max', 'species' => 'dog'])
             ->assertForbidden();
     }
 
     public function test_update_requires_name(): void
     {
         $user = User::factory()->create();
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         $this->actingAs($user)
-            ->patch("/pets/{$pet->id}", ['species' => 'Dog'])
+            ->patch("/pets/{$pet->id}", ['species' => 'dog'])
             ->assertSessionHasErrors('name');
     }
 
     public function test_update_requires_species(): void
     {
         $user = User::factory()->create();
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         $this->actingAs($user)
             ->patch("/pets/{$pet->id}", ['name' => 'Buddy'])
@@ -274,12 +305,12 @@ class PetTest extends TestCase
     {
         Storage::fake('public');
         $user = User::factory()->create();
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         $this->actingAs($user)
             ->patch("/pets/{$pet->id}", [
                 'name' => 'Buddy',
-                'species' => 'Dog',
+                'species' => 'dog',
                 'photo' => UploadedFile::fake()->create('document.pdf', 100, 'application/pdf'),
             ])
             ->assertSessionHasErrors('photo');
@@ -289,12 +320,12 @@ class PetTest extends TestCase
     {
         Storage::fake('public');
         $user = User::factory()->create();
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         $this->actingAs($user)
             ->patch("/pets/{$pet->id}", [
                 'name' => 'Buddy',
-                'species' => 'Dog',
+                'species' => 'dog',
                 'photo' => UploadedFile::fake()->image('big.jpg')->size(3000),
             ])
             ->assertSessionHasErrors('photo');
@@ -305,11 +336,11 @@ class PetTest extends TestCase
         Storage::fake('public');
         $user = User::factory()->create();
         $oldPhoto = UploadedFile::fake()->image('old.jpg')->store('pet-photos', 'public');
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog', 'photo' => $oldPhoto]);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog', 'photo' => $oldPhoto]);
 
         $this->actingAs($user)->patch("/pets/{$pet->id}", [
             'name' => 'Buddy',
-            'species' => 'Dog',
+            'species' => 'dog',
             'photo' => UploadedFile::fake()->image('new.jpg'),
         ]);
 
@@ -323,7 +354,7 @@ class PetTest extends TestCase
     public function test_guest_cannot_delete_pet(): void
     {
         $user = User::factory()->create();
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         $this->delete("/pets/{$pet->id}")->assertRedirect('/login');
     }
@@ -331,7 +362,7 @@ class PetTest extends TestCase
     public function test_user_can_delete_own_pet(): void
     {
         $user = User::factory()->create();
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         $this->actingAs($user)
             ->delete("/pets/{$pet->id}")
@@ -345,7 +376,7 @@ class PetTest extends TestCase
     {
         $user = User::factory()->create();
         $other = User::factory()->create();
-        $pet = $other->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $other->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         $this->actingAs($user)
             ->delete("/pets/{$pet->id}")
@@ -357,7 +388,7 @@ class PetTest extends TestCase
         Storage::fake('public');
         $user = User::factory()->create();
         $photo = UploadedFile::fake()->image('buddy.jpg')->store('pet-photos', 'public');
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog', 'photo' => $photo]);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog', 'photo' => $photo]);
 
         $this->actingAs($user)->delete("/pets/{$pet->id}");
 

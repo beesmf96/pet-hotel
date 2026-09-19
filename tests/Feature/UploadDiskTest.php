@@ -39,7 +39,7 @@ class UploadDiskTest extends TestCase
 
         $this->actingAs($user)->post('/pets', [
             'name' => 'Buddy',
-            'species' => 'Dog',
+            'species' => 'dog',
             'photo' => UploadedFile::fake()->image('buddy.jpg'),
         ]);
 
@@ -80,7 +80,7 @@ class UploadDiskTest extends TestCase
     {
         $user = User::factory()->create();
         $photo = UploadedFile::fake()->image('buddy.jpg')->store('pet-photos', self::DISK);
-        $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog', 'photo' => $photo]);
+        $user->pets()->create(['name' => 'Buddy', 'species' => 'dog', 'photo' => $photo]);
 
         $this->actingAs($user)
             ->get('/pets')
@@ -97,11 +97,11 @@ class UploadDiskTest extends TestCase
     {
         $user = User::factory()->create();
         $old = UploadedFile::fake()->image('old.jpg')->store('pet-photos', self::DISK);
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog', 'photo' => $old]);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog', 'photo' => $old]);
 
         $this->actingAs($user)->patch("/pets/{$pet->id}", [
             'name' => 'Buddy',
-            'species' => 'Dog',
+            'species' => 'dog',
             'photo' => UploadedFile::fake()->image('new.jpg'),
         ]);
 
@@ -113,7 +113,7 @@ class UploadDiskTest extends TestCase
     {
         $user = User::factory()->create();
         $photo = UploadedFile::fake()->image('buddy.jpg')->store('pet-photos', self::DISK);
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog', 'photo' => $photo]);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog', 'photo' => $photo]);
 
         $this->actingAs($user)->delete("/pets/{$pet->id}");
 

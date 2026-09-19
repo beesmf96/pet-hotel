@@ -8,6 +8,7 @@ import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
 import StatusPill from '@/Components/Ui/StatusPill.vue';
 import Notice from '@/Components/Ui/Notice.vue';
+import { petTypeLabel } from '@/petTypes';
 
 const props = defineProps({
     booking: { type: Object, required: true },
@@ -61,7 +62,7 @@ function cancelBooking() {
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-moss">Pet</dt>
-                        <dd class="font-medium text-ink">{{ booking.pet.name }} ({{ booking.pet.species }})</dd>
+                        <dd class="font-medium text-ink">{{ booking.pet.name }} ({{ petTypeLabel(booking.pet.species) }})</dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-moss">Check-in</dt>

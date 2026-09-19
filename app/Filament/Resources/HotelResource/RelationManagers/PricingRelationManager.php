@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\HotelResource\RelationManagers;
 
+use App\Enums\PetType;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -23,13 +24,7 @@ class PricingRelationManager extends RelationManager
     {
         return $schema->components([
             Forms\Components\Select::make('pet_type')
-                ->options([
-                    'dog' => 'Dog',
-                    'cat' => 'Cat',
-                    'rabbit' => 'Rabbit',
-                    'bird' => 'Bird',
-                    'other' => 'Other',
-                ])
+                ->options(PetType::options())
                 ->required(),
             Forms\Components\TextInput::make('price_per_night')
                 ->numeric()
