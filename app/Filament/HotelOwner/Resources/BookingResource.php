@@ -93,6 +93,18 @@ class BookingResource extends Resource
                     ->modalDescription('This will decline the booking and notify the guest.')
                     ->visible(fn (Booking $record): bool => $record->status === 'pending')
                     ->action(fn (Booking $record) => $record->update(['status' => 'cancelled'])),
+
+                Action::make('complete')
+                    ->label('Mark completed')
+                    ->icon(Heroicon::OutlinedFlag)
+                    ->color('info')
+                    ->requiresConfirmation()
+                    ->modalHeading('Mark Booking Completed')
+                    ->modalDescription('This marks the stay as finished and lets the guest leave a review.')
+                    // Owners can only close a stay once its check-out date has arrived,
+                    // so a guest cannot review a stay that has not happened yet.
+                    ->visible(fn (Booking $record): bool => $record->status === 'confirmed' && $record->check_out->lte(today()))
+                    ->action(fn (Booking $record) => $record->update(['status' => 'completed'])),
             ]);
     }
 
