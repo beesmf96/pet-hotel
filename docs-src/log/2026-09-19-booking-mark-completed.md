@@ -2,7 +2,7 @@
 title: Mark completed action for bookings
 description: Owners and admins can now move a confirmed booking to completed, which is the status the review flow requires and which nothing could set before.
 date: 2026-09-19
-pr: ~
+pr: 55
 plan: ~
 ---
 
