@@ -2,7 +2,7 @@
 title: Pet species is a fixed pet type list
 description: The pet form's species is now a select over the same five keys hotels price by, backed by a PetType enum and a migration that folds existing free text onto the list.
 date: 2026-09-19
-pr: ~
+pr: 56
 plan: ~
 ---
 
