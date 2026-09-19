@@ -32,7 +32,7 @@ const baseHotel = {
     id: 1,
     name: 'Paws Inn',
     slug: 'paws-inn',
-    pricing: [{ pet_type: 'Dog', price_per_night: '40.00' }],
+    pricing: [{ pet_type: 'dog', price_per_night: '40.00' }],
 }
 
 function mountPage(pets = [], hotel = baseHotel) {
@@ -44,7 +44,7 @@ function mountPage(pets = [], hotel = baseHotel) {
 
 describe('BookingFormPage — availability calendar', () => {
     it('renders the availability calendar stub when pets are present', () => {
-        const w = mountPage([{ id: 1, name: 'Buddy', species: 'Dog' }])
+        const w = mountPage([{ id: 1, name: 'Buddy', species: 'dog' }])
         expect(w.find('[data-testid="availability-calendar"]').exists()).toBe(true)
     })
 })
@@ -56,7 +56,7 @@ describe('BookingFormPage — no pets warning', () => {
     })
 
     it('hides warning and shows form when pets are present', () => {
-        const w = mountPage([{ id: 1, name: 'Buddy', species: 'Dog' }])
+        const w = mountPage([{ id: 1, name: 'Buddy', species: 'dog' }])
         expect(w.find('form').exists()).toBe(true)
         expect(w.text()).not.toContain('add a pet')
     })
@@ -64,12 +64,12 @@ describe('BookingFormPage — no pets warning', () => {
 
 describe('BookingFormPage — price summary', () => {
     it('shows placeholder text when no pet or dates selected', () => {
-        const w = mountPage([{ id: 1, name: 'Buddy', species: 'Dog' }])
+        const w = mountPage([{ id: 1, name: 'Buddy', species: 'dog' }])
         expect(w.text()).toContain('Select a pet and dates to see the price')
     })
 
     it('shows price calculation when pet and dates are selected', async () => {
-        const w = mountPage([{ id: 1, name: 'Buddy', species: 'Dog' }])
+        const w = mountPage([{ id: 1, name: 'Buddy', species: 'dog' }])
         formState.pet_id = 1
         formState.check_in = '2025-06-01'
         formState.check_out = '2025-06-03'
@@ -82,7 +82,7 @@ describe('BookingFormPage — price summary', () => {
 describe('BookingFormPage — no pricing warning', () => {
     it('shows no-pricing warning when selected pet species has no matching pricing', async () => {
         const hotel = { ...baseHotel, pricing: [] }
-        const w = mountPage([{ id: 1, name: 'Whiskers', species: 'Cat' }], hotel)
+        const w = mountPage([{ id: 1, name: 'Whiskers', species: 'cat' }], hotel)
         formState.pet_id = 1
         formState.check_in = ''
         formState.check_out = ''
@@ -91,7 +91,7 @@ describe('BookingFormPage — no pricing warning', () => {
     })
 
     it('does not show no-pricing warning when no pet is selected', () => {
-        const w = mountPage([{ id: 1, name: 'Buddy', species: 'Dog' }])
+        const w = mountPage([{ id: 1, name: 'Buddy', species: 'dog' }])
         expect(w.text()).not.toContain('no pricing listed for')
     })
 })

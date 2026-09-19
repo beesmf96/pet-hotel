@@ -22,7 +22,7 @@ vi.mock('@inertiajs/vue3', () => ({
 
 import PetFormModal from '@/Components/PetFormModal.vue'
 
-const pet = { id: 7, name: 'Buddy', species: 'Dog', breed: 'Labrador', age: 3, special_needs: 'Insulin' }
+const pet = { id: 7, name: 'Buddy', species: 'dog', breed: 'Labrador', age: 3, special_needs: 'Insulin' }
 
 // The dialog is teleported to <body>, so query the document rather than the wrapper.
 const body = () => new DOMWrapper(document.body)
@@ -64,7 +64,7 @@ describe('PetFormModal — title and submit button', () => {
     })
 
     it('shows "Edit Pet" title when pet prop is an object', () => {
-        const pet = { id: 1, name: 'Buddy', species: 'Dog', breed: '', age: 3, special_needs: '' }
+        const pet = { id: 1, name: 'Buddy', species: 'dog', breed: '', age: 3, special_needs: '' }
         const w = mount(PetFormModal, {
             props: { show: true, pet },
             attachTo: document.body,
@@ -85,7 +85,7 @@ describe('PetFormModal — title and submit button', () => {
     })
 
     it('shows "Save Changes" submit button when pet is set', () => {
-        const pet = { id: 1, name: 'Buddy', species: 'Dog', breed: '', age: 3, special_needs: '' }
+        const pet = { id: 1, name: 'Buddy', species: 'dog', breed: '', age: 3, special_needs: '' }
         const w = mount(PetFormModal, {
             props: { show: true, pet },
             attachTo: document.body,
@@ -97,11 +97,23 @@ describe('PetFormModal — title and submit button', () => {
     })
 })
 
+describe('PetFormModal — species select', () => {
+    it('offers the fixed pet type list instead of free text', () => {
+        const w = mount(PetFormModal, { props: { show: true, pet: null }, attachTo: document.body })
+        const select = body().find('select')
+        expect(select.exists()).toBe(true)
+        const options = select.findAll('option').map((o) => o.text())
+        expect(options).toEqual(['Choose a species…', 'Dog', 'Cat', 'Rabbit', 'Bird', 'Other'])
+        expect(select.findAll('option').map((o) => o.element.value)).toEqual(['', 'dog', 'cat', 'rabbit', 'bird', 'other'])
+        w.unmount()
+    })
+})
+
 describe('PetFormModal — filling the form from the pet prop', () => {
     it('copies the pet fields into the form when editing', () => {
         const w = mount(PetFormModal, { props: { show: true, pet }, attachTo: document.body })
         expect(formState.name).toBe('Buddy')
-        expect(formState.species).toBe('Dog')
+        expect(formState.species).toBe('dog')
         expect(formState.breed).toBe('Labrador')
         expect(formState.age).toBe(3)
         expect(formState.special_needs).toBe('Insulin')

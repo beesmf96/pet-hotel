@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\PetType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StorePetRequest extends FormRequest
 {
@@ -15,7 +17,7 @@ class StorePetRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'species' => ['required', 'string', 'max:100'],
+            'species' => ['required', Rule::enum(PetType::class)],
             'breed' => ['nullable', 'string', 'max:100'],
             'age' => ['nullable', 'integer', 'min:0', 'max:100'],
             'special_needs' => ['nullable', 'string', 'max:1000'],

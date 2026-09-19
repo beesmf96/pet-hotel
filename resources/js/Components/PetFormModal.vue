@@ -5,6 +5,7 @@ import FormField from '@/Components/Ui/FormField.vue';
 import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 import TextInput from '@/Components/Ui/TextInput.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
+import { PET_TYPES } from '@/petTypes';
 
 const props = defineProps({
     show: Boolean,
@@ -68,7 +69,12 @@ function close() {
                     </FormField>
 
                     <FormField label="Species *" :error="form.errors.species">
-                        <TextInput v-model="form.species" type="text" placeholder="e.g. Dog, Cat, Rabbit" />
+                        <TextInput v-model="form.species" as="select">
+                            <option value="" disabled>Choose a species…</option>
+                            <option v-for="type in PET_TYPES" :key="type.value" :value="type.value">
+                                {{ type.label }}
+                            </option>
+                        </TextInput>
                     </FormField>
 
                     <div class="grid grid-cols-2 gap-3">
