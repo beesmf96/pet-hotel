@@ -30,6 +30,7 @@ class HotelOwnerPanelProvider extends PanelProvider
             ])
             ->brandName('PetHotel')
             ->brandLogo(fn () => view('filament.brand', ['panel' => 'Owner']))
+            ->favicon(asset('favicon.svg'))
             ->darkMode(false)
             ->viteTheme('resources/css/filament/theme.css')
             ->discoverResources(in: app_path('Filament/HotelOwner/Resources'), for: 'App\Filament\HotelOwner\Resources')
