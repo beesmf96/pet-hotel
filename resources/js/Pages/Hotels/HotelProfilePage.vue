@@ -8,6 +8,7 @@ import { Link } from '@inertiajs/vue3';
 import PawIcon from '@/Components/Ui/PawIcon.vue';
 import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
+import { petTypeLabel } from '@/petTypes';
 
 const props = defineProps({
     hotel: { type: Object, required: true },
@@ -27,13 +28,6 @@ const facilityLabels = {
     '24h_care': '24h Care',
 };
 
-const petTypeLabels = {
-    dog: 'Dog',
-    cat: 'Cat',
-    rabbit: 'Rabbit',
-    bird: 'Bird',
-    other: 'Other',
-};
 
 // Normalised to one shape so the template binds a single key, rather than
 // reading .url off gallery rows and a hand-built cover object that only
@@ -166,7 +160,7 @@ function nextPhoto() {
                                     :key="price.id"
                                     class="flex justify-between items-baseline py-2.5 text-sm"
                                 >
-                                    <span class="font-semibold">{{ petTypeLabels[price.pet_type] }}</span>
+                                    <span class="font-semibold">{{ petTypeLabel(price.pet_type) }}</span>
                                     <span class="font-display font-bold text-lg">
                                         RM {{ Number(price.price_per_night).toFixed(2)
                                         }}<span class="font-sans text-sm font-medium text-moss"> / night</span>

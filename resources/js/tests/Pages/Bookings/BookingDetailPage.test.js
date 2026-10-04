@@ -20,7 +20,7 @@ const baseBooking = {
     total_price: '120.00',
     notes: null,
     hotel: { id: 1, name: 'Paws Inn', slug: 'paws-inn', address: '1 Main St', city: 'Singapore' },
-    pet: { id: 1, name: 'Buddy', species: 'Dog' },
+    pet: { id: 1, name: 'Buddy', species: 'dog' },
 }
 
 function mountPage(booking, flash = {}) {

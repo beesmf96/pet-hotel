@@ -34,8 +34,8 @@ class UserTest extends TestCase
         $user = User::factory()->create();
         $other = User::factory()->create();
 
-        $user->pets()->create(['name' => 'Mine', 'species' => 'Dog']);
-        $other->pets()->create(['name' => 'Theirs', 'species' => 'Cat']);
+        $user->pets()->create(['name' => 'Mine', 'species' => 'dog']);
+        $other->pets()->create(['name' => 'Theirs', 'species' => 'cat']);
 
         $this->assertCount(1, $user->pets);
         $this->assertEquals('Mine', $user->pets->first()->name);

@@ -17,7 +17,7 @@ import PetsPage from '@/Pages/Pets.vue';
 const basePet = {
     id: 1,
     name: 'Buddy',
-    species: 'Dog',
+    species: 'dog',
     breed: 'Labrador',
     age: 3,
     photo_url: null,
@@ -47,6 +47,12 @@ describe('Pets page — pet card rendering', () => {
         const w = mount(PetsPage, { props: { pets: [basePet] } });
         expect(w.find('img').exists()).toBe(false);
         expect(w.find('svg').exists()).toBe(true);
+    });
+
+    it('shows the species label, not the stored key', () => {
+        const w = mount(PetsPage, { props: { pets: [basePet] } });
+        expect(w.text()).toContain('Dog');
+        expect(w.text()).not.toMatch(/\bdog\b/);
     });
 
     it('shows breed when pet.breed is set', () => {
