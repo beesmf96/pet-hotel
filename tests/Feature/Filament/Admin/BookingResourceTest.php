@@ -108,6 +108,38 @@ class BookingResourceTest extends TestCase
             ->assertTableActionHidden('confirm', $booking);
     }
 
+    public function test_complete_action_completes_a_confirmed_booking(): void
+    {
+        $booking = Booking::factory()->confirmed()->create();
+
+        Livewire::test(ListBookings::class)
+            ->callTableAction('complete', $booking)
+            ->assertHasNoTableActionErrors();
+
+        $this->assertSame('completed', $booking->fresh()->status);
+    }
+
+    public function test_complete_action_is_visible_before_check_out_for_admins(): void
+    {
+        $booking = Booking::factory()->confirmed()->create([
+            'check_in' => now()->addDay(),
+            'check_out' => now()->addDays(3),
+        ]);
+
+        Livewire::test(ListBookings::class)
+            ->assertTableActionVisible('complete', $booking);
+    }
+
+    public function test_complete_action_is_hidden_for_non_confirmed_bookings(): void
+    {
+        $pending = Booking::factory()->create(['status' => 'pending']);
+        $completed = Booking::factory()->completed()->create();
+
+        Livewire::test(ListBookings::class)
+            ->assertTableActionHidden('complete', $pending)
+            ->assertTableActionHidden('complete', $completed);
+    }
+
     public function test_cancel_action_is_hidden_for_cancelled_bookings(): void
     {
         $booking = Booking::factory()->create(['status' => 'cancelled']);

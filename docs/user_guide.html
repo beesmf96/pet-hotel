@@ -287,6 +287,7 @@
   <a href="#p3-s2">2. Viewing Your Bookings</a>
   <a href="#p3-s3">3. Confirming a Booking</a>
   <a href="#p3-s4">4. Declining a Booking</a>
+  <a href="#p3-s5">5. Completing a Stay</a>
 </nav>
 
 <!-- ══════════════════ MAIN ══════════════════ -->
@@ -622,6 +623,9 @@
   <h3>Cancel a Booking</h3>
   <p>For any non-cancelled booking, click the red <strong>Cancel</strong> action. On cancel: status → <span class="badge badge-cancelled">Cancelled</span> and the customer receives a notification.</p>
 
+  <h3>Mark a Booking Completed</h3>
+  <p>For any <span class="badge badge-confirmed">Confirmed</span> booking, click the blue <strong>Mark completed</strong> action. On completion: status → <span class="badge badge-completed">Completed</span> and the customer can leave a review. No notification is sent. Unlike the owner panel, admins may complete a booking before its check-out date, which is useful for support and testing.</p>
+
   <hr />
 
   <!-- 2.5 Users -->
@@ -730,7 +734,21 @@
     <li>Booking status changes to <span class="badge badge-cancelled">Cancelled</span></li>
     <li>The customer receives an <strong>email</strong> and an <strong>in-app notification</strong> automatically</li>
   </ul>
-  <div class="note">Only <span class="badge badge-pending">Pending</span> bookings show the Confirm and Decline actions. Confirmed, completed, or already-cancelled bookings cannot be actioned from the owner panel.</div>
+  <div class="note">Only <span class="badge badge-pending">Pending</span> bookings show the Confirm and Decline actions.</div>
+
+  <hr />
+
+  <!-- 3.5 Complete -->
+  <h2 class="section-heading" id="p3-s5">5. Completing a Stay</h2>
+  <p>Once the guest has checked out, find the <span class="badge badge-confirmed">Confirmed</span> booking and click the blue <strong>Mark completed</strong> row action.</p>
+  <p>A confirmation modal appears — click <strong>Confirm</strong> to proceed.</p>
+  <p>On completion:</p>
+  <ul style="padding-left:20px;margin:8px 0 14px">
+    <li>Booking status changes to <span class="badge badge-completed">Completed</span></li>
+    <li>The customer can now <strong>leave a review</strong> for your hotel from their My Bookings page</li>
+    <li>No email or notification is sent</li>
+  </ul>
+  <div class="note">The action only appears on or after the booking's check-out date. Completed and cancelled bookings cannot be actioned further from the owner panel.</div>
 
 </main>
 
