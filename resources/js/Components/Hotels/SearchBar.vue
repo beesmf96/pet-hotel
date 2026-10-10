@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import FormField from '@/Components/Ui/FormField.vue';
 import TextInput from '@/Components/Ui/TextInput.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
+import { PET_TYPES } from '@/petTypes';
 
 const props = defineProps({
     filters: { type: Object, default: () => ({}) },
@@ -15,14 +16,7 @@ const checkIn = ref(props.filters.check_in || '');
 const checkOut = ref(props.filters.check_out || '');
 const petType = ref(props.filters.pet_type || '');
 
-const PET_TYPES = [
-    { value: '', label: 'Any pet type' },
-    { value: 'dog', label: 'Dog' },
-    { value: 'cat', label: 'Cat' },
-    { value: 'rabbit', label: 'Rabbit' },
-    { value: 'bird', label: 'Bird' },
-    { value: 'other', label: 'Other' },
-];
+const petTypeOptions = [{ value: '', label: 'Any pet type' }, ...PET_TYPES];
 
 function search() {
     emit('search', {
@@ -50,7 +44,7 @@ function search() {
 
         <FormField label="Pet type" class="flex-1 min-w-40">
             <TextInput v-model="petType" as="select">
-                <option v-for="type in PET_TYPES" :key="type.value" :value="type.value">
+                <option v-for="type in petTypeOptions" :key="type.value" :value="type.value">
                     {{ type.label }}
                 </option>
             </TextInput>

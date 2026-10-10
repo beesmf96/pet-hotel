@@ -25,7 +25,7 @@ class PetPolicyTest extends TestCase
     public function test_owner_can_update_their_pet(): void
     {
         $user = User::factory()->create();
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         $this->assertTrue($this->policy->update($user, $pet));
     }
@@ -34,7 +34,7 @@ class PetPolicyTest extends TestCase
     {
         $owner = User::factory()->create();
         $other = User::factory()->create();
-        $pet = $owner->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $owner->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         $this->assertFalse($this->policy->update($other, $pet));
     }
@@ -44,7 +44,7 @@ class PetPolicyTest extends TestCase
     public function test_owner_can_delete_their_pet(): void
     {
         $user = User::factory()->create();
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         $this->assertTrue($this->policy->delete($user, $pet));
     }
@@ -53,7 +53,7 @@ class PetPolicyTest extends TestCase
     {
         $owner = User::factory()->create();
         $other = User::factory()->create();
-        $pet = $owner->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $owner->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         $this->assertFalse($this->policy->delete($other, $pet));
     }
@@ -63,7 +63,7 @@ class PetPolicyTest extends TestCase
         // Verify the policy compares IDs (not object identity)
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
-        $pet = $user1->pets()->create(['name' => 'Buddy', 'species' => 'Dog']);
+        $pet = $user1->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
 
         // Fresh copies from DB should still work
         $this->assertTrue($this->policy->update(User::find($user1->id), Pet::find($pet->id)));

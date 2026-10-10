@@ -101,6 +101,17 @@ class BookingResource extends Resource
                     ->visible(fn (Booking $record): bool => ! in_array($record->status, ['cancelled']))
                     ->action(fn (Booking $record) => $record->update(['status' => 'cancelled'])),
 
+                Action::make('complete')
+                    ->label('Mark completed')
+                    ->icon(Heroicon::OutlinedFlag)
+                    ->color('info')
+                    ->requiresConfirmation()
+                    ->modalHeading('Mark Booking Completed')
+                    ->modalDescription('This marks the stay as finished and lets the customer leave a review.')
+                    // Admins are not held to the check-out date, so a stay can be closed early for support or testing.
+                    ->visible(fn (Booking $record): bool => $record->status === 'confirmed')
+                    ->action(fn (Booking $record) => $record->update(['status' => 'completed'])),
+
                 ViewAction::make(),
             ])
             ->toolbarActions([

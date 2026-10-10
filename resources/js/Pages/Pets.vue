@@ -6,6 +6,7 @@ import { ref } from 'vue';
 import PawIcon from '@/Components/Ui/PawIcon.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
 import EmptyState from '@/Components/Ui/EmptyState.vue';
+import { petTypeLabel } from '@/petTypes';
 
 defineProps({
     pets: {
@@ -72,7 +73,7 @@ function deletePet(pet) {
                 <div class="flex-1 min-w-0">
                     <h3 class="font-display font-bold text-lg">{{ pet.name }}</h3>
                     <p class="text-sm text-moss">
-                        {{ pet.species }}<span v-if="pet.breed"> · {{ pet.breed }}</span>
+                        {{ petTypeLabel(pet.species) }}<span v-if="pet.breed"> · {{ pet.breed }}</span>
                     </p>
                     <p v-if="pet.age != null" class="text-sm text-moss">
                         {{ pet.age }} yr{{ pet.age !== 1 ? 's' : '' }}

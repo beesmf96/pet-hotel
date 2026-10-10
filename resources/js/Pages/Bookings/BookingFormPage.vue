@@ -8,6 +8,7 @@ import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 import TextInput from '@/Components/Ui/TextInput.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
 import Notice from '@/Components/Ui/Notice.vue';
+import { petTypeLabel } from '@/petTypes';
 
 const props = defineProps({
     hotel: { type: Object, required: true },
@@ -78,7 +79,7 @@ function submit() {
                         <TextInput v-model="form.pet_id" as="select">
                             <option value="" disabled>Choose a pet…</option>
                             <option v-for="pet in pets" :key="pet.id" :value="pet.id">
-                                {{ pet.name }} ({{ pet.species }})
+                                {{ pet.name }} ({{ petTypeLabel(pet.species) }})
                             </option>
                         </TextInput>
                     </FormField>
@@ -136,7 +137,7 @@ function submit() {
                     <p v-else class="text-sm text-teal-light italic">Select a pet and dates to see the price.</p>
 
                     <Notice v-if="selectedPet && !pricing" tone="warning" class="mt-3"
-                        >This hotel has no pricing listed for <strong>{{ selectedPet.species }}</strong
+                        >This hotel has no pricing listed for <strong>{{ petTypeLabel(selectedPet.species) }}</strong
                         >.</Notice
                     >
 

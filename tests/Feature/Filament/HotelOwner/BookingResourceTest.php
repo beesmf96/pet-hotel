@@ -114,6 +114,56 @@ class BookingResourceTest extends TestCase
             ->assertTableActionHidden('decline', $booking);
     }
 
+    public function test_complete_action_completes_a_confirmed_booking_after_check_out(): void
+    {
+        $booking = Booking::factory()->for($this->hotel, 'hotel')->confirmed()->create([
+            'check_in' => now()->subDays(3),
+            'check_out' => now()->subDay(),
+        ]);
+
+        Livewire::test(ListBookings::class)
+            ->callTableAction('complete', $booking)
+            ->assertHasNoTableActionErrors();
+
+        $this->assertSame('completed', $booking->fresh()->status);
+    }
+
+    public function test_complete_action_is_visible_on_the_check_out_day(): void
+    {
+        $booking = Booking::factory()->for($this->hotel, 'hotel')->confirmed()->create([
+            'check_in' => now()->subDays(2),
+            'check_out' => today(),
+        ]);
+
+        Livewire::test(ListBookings::class)
+            ->assertTableActionVisible('complete', $booking);
+    }
+
+    public function test_complete_action_is_hidden_before_check_out(): void
+    {
+        $booking = Booking::factory()->for($this->hotel, 'hotel')->confirmed()->create([
+            'check_in' => now()->addDay(),
+            'check_out' => now()->addDays(3),
+        ]);
+
+        Livewire::test(ListBookings::class)
+            ->assertTableActionHidden('complete', $booking);
+    }
+
+    public function test_complete_action_is_hidden_for_non_confirmed_bookings(): void
+    {
+        $pending = Booking::factory()->for($this->hotel, 'hotel')->create([
+            'status' => 'pending',
+            'check_in' => now()->subDays(3),
+            'check_out' => now()->subDay(),
+        ]);
+        $completed = Booking::factory()->for($this->hotel, 'hotel')->completed()->create();
+
+        Livewire::test(ListBookings::class)
+            ->assertTableActionHidden('complete', $pending)
+            ->assertTableActionHidden('complete', $completed);
+    }
+
     // ── Owner without a hotel ─────────────────────────────────────────────────
 
     public function test_user_with_no_hotel_is_forbidden(): void
