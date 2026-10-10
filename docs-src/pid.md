@@ -115,6 +115,8 @@ each request — which keeps the MVP simple and avoids payment integration.
 | Real-time chat between customer and hotel | Email and notifications cover the MVP need |
 | Additional OAuth providers | Google only; others add support cost without demand |
 | Full hotel-owner self-service listing management | Owners manage bookings, capacity, closed dates and check-in/out times; the listing itself (name, photos, pricing, policy text) is managed by admins |
+| SMS / WhatsApp notifications | Email and the owner panel's bell cover the MVP. SMS or WhatsApp needs a paid provider (e.g. Twilio, WhatsApp Business API), phone-number collection and consent, and per-message cost. Worth revisiting if owners miss emails in testing |
+| Reminders for requests left pending | Needs the Laravel scheduler and a rule for when to nudge (e.g. after 24 hours). Revisit once owners have used email and the bell |
 | Daycare (same-day stays, no night) | Boarding by the night covers the MVP. Daycare needs its own day price, its own capacity, a one-date booking form, and usually repeat bookings and a first-visit temperament check. Revisit if test hotels offer it |
 | Multi-language / multi-currency | Single market at launch |
 | Automated availability sync with external calendars | No integration partners identified |
@@ -281,4 +283,4 @@ document and, where implementation work follows, a plan file in `.claude/plans/`
 |---------|------|--------|--------|
 | 1.0 | 2026-08-08 | Initial baseline | *TBC* |
 | 1.1 | 2026-09-16 | Audit against the code: sorting claims, coverage floors, branching model, CI triggers, stack versions, post-MVP list; task list retired | *TBC* |
-| 1.2 | 2026-10-10 | Owner availability and hotel settings delivered; daycare recorded as out of scope | *TBC* |
+| 1.2 | 2026-10-10 | Owner availability and hotel settings delivered; daycare, SMS/WhatsApp and pending reminders recorded as out of scope | *TBC* |

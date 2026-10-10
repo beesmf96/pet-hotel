@@ -29,6 +29,25 @@ class BookingResource extends Resource
 
     protected static ?int $navigationSort = 0;
 
+    public static function getNavigationBadge(): ?string
+    {
+        $pending = Booking::where('hotel_id', static::ownerHotel()->id)
+            ->where('status', 'pending')
+            ->count();
+
+        return $pending > 0 ? (string) $pending : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'warning';
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Requests waiting for you to confirm or decline';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([]);

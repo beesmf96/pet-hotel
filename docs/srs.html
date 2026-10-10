@@ -433,6 +433,12 @@ tests that verify it.</li>
 <td>Notification jobs · <code>tests/Feature/NotificationTest.php</code></td>
 </tr>
 <tr>
+<td>FR-32a</td>
+<td>The system shall email every owner of the hotel, and add a notification to the owner panel, when a guest submits a booking request and when a guest cancels their pending request.</td>
+<td>M</td>
+<td><code>NotifyOwnersOfBookingRequest</code>, <code>NotifyOwnersOfGuestCancellation</code> · <code>tests/Feature/OwnerNotificationTest.php</code></td>
+</tr>
+<tr>
 <td>FR-33</td>
 <td>Notification emails shall be dispatched through the queue, not sent inline during the web request.</td>
 <td>M</td>
@@ -446,7 +452,7 @@ tests that verify it.</li>
 </tr>
 <tr>
 <td>FR-35</td>
-<td>A customer shall see an unread notification count and read their recent in-app notifications.</td>
+<td>A customer shall see an unread notification count and read their recent in-app notifications. Owner-panel notifications are not included.</td>
 <td>M</td>
 <td><code>notifications.index</code> · <code>tests/Feature/NotificationTest.php</code></td>
 </tr>
@@ -532,7 +538,7 @@ tests that verify it.</li>
 </tr>
 <tr>
 <td>FR-45</td>
-<td>A hotel owner shall confirm or decline a booking for their own hotel.</td>
+<td>A hotel owner shall confirm or decline a booking for their own hotel, and see the number of pending requests on the Bookings menu item.</td>
 <td>M</td>
 <td><code>HotelOwner\BookingResource</code> · <code>tests/Feature/Filament/HotelOwner/BookingResourceTest.php</code></td>
 </tr>

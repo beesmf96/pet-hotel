@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreBookingRequest;
+use App\Jobs\NotifyOwnersOfBookingRequest;
+use App\Jobs\NotifyOwnersOfGuestCancellation;
 use App\Jobs\SendBookingRequestNotification;
 use App\Models\Booking;
 use App\Models\PetHotel;
@@ -57,6 +59,7 @@ class BookingController extends Controller
         ]);
 
         SendBookingRequestNotification::dispatch($booking);
+        NotifyOwnersOfBookingRequest::dispatch($booking);
 
         return redirect()->route('bookings.confirmation', $booking);
     }
@@ -130,6 +133,10 @@ class BookingController extends Controller
         $this->authorize('cancel', $booking);
 
         $booking->update(['status' => 'cancelled']);
+
+        // Here rather than in Booking::booted(): only this path is the guest
+        // cancelling. An owner declining is not news to the owners.
+        NotifyOwnersOfGuestCancellation::dispatch($booking);
 
         return back()->with('success', 'Booking cancelled.');
     }

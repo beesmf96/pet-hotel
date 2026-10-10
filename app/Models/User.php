@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -39,6 +40,16 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->belongsToMany(PetHotel::class, 'hotel_owner', 'user_id', 'hotel_id')
             ->withPivot('role')
             ->withTimestamps();
+    }
+
+    /**
+     * Notifications for the customer site's bell. One account can also own a
+     * hotel, and the owner panel's notifications (Filament's database format)
+     * belong in the panel's own bell, not here.
+     */
+    public function customerNotifications(): MorphMany
+    {
+        return $this->notifications()->whereNull('data->format');
     }
 
     public function pets(): HasMany
