@@ -1,8 +1,15 @@
-# Pet Hotel
+---
+title: Local Setup
+description: Running Pet Hotel on your own machine with Docker, plus the everyday commands and the one-time commit hook.
+badges: Operations
+order: 45
+---
+
+# Local Setup
 
 A booking platform for pet boarding. Laravel 13 · Vue 3 · Inertia · Filament 4 · PostgreSQL · Redis.
 
-## Run it locally
+## Run it
 
 You need Docker and Git.
 
@@ -53,6 +60,6 @@ It runs gitleaks on staged changes and refuses the commit if something looks lik
 
 ## More
 
-- [Documentation](https://beesmf96.github.io/pet-hotel/) — user guide, booking flow, requirements, roadmap (stakeholder-facing, built from `docs-src/` into `docs/`); developer docs are the markdown under `docs-src/`
-- [Deployment checklist](docs-src/deployment-checklist.md) — read before putting it on a public host
-- [CLAUDE.md](CLAUDE.md) — conventions for working in the codebase
+- [Documentation](https://beesmf96.github.io/pet-hotel/) — the stakeholder site, built from `docs-src/` into `docs/`
+- [Deployment checklist](deployment-checklist.md) — read before putting it on a public host
+- [CLAUDE.md](../CLAUDE.md) — conventions for working in the codebase

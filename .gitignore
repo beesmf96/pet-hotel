@@ -6,7 +6,7 @@
 .env
 .env.backup
 .env.production
-# .env.docker is deliberately NOT ignored — it is a tracked template that README
+# .env.docker is deliberately NOT ignored — it is a tracked template that docs-src/local-setup.md
 # tells you to copy to .env. Listing it here while it stayed tracked made it look
 # ignored, so a real secret added to it would have been committed silently.
 # Keep secrets out of it; it ships in the repo.

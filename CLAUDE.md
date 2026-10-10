@@ -41,6 +41,8 @@ vendor/bin/pint       # PHP formatter
 php docs-src/build.php # renders stakeholder docs → docs/ (the GitHub Pages site)
 ```
 
+First-time setup (hosts, seeded logins, commit hook): `docs-src/local-setup.md`.
+
 Docker: `docker compose up -d` (add `--profile dev` for the Vite container). **Always pass
 `--user appuser` to `docker compose exec`** — without it commands run as root and leave
 root-owned files you cannot edit. Repair with
