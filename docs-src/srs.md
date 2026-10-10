@@ -109,7 +109,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | FR-15 | The system shall show an empty state when no hotel matches the criteria. | S | `SearchPage.vue` · Vitest component suite |
 | FR-16 | A guest shall view a hotel profile by slug, showing description, photo gallery, facilities, policies, per-pet-type pricing, rating summary, and a map when the hotel has coordinates. | M | `GET /hotels/{slug}` · `tests/Feature/HotelTest.php` |
 | FR-17 | Photo references shall be resolved to URLs on the disk they were written to before reaching the page. | M | `PhotoUrl` support class · `tests/Unit/Support/PhotoUrlTest.php`, `tests/Feature/HotelPhotoUrlTest.php` |
-| FR-18 | A guest shall view a hotel's availability calendar for a date range. Availability is served as JSON to the calendar widget. | M | `GET /hotels/{slug}/availability` · `tests/Feature/HotelAvailabilityTest.php` |
+| FR-18 | A guest shall view a hotel's availability calendar for a date range, with each day marked available, limited (half or fewer of its spots left), full or closed, and the spots left on hover. Availability is served as JSON to the calendar widget. | M | `GET /hotels/{slug}/availability` · `tests/Feature/HotelAvailabilityTest.php` |
 | FR-18a | The landing page shall show up to four active hotels ranked by average rating. | C | `GET /` · `tests/Feature/LandingPageTest.php` |
 
 ### 3.4 Booking
@@ -166,6 +166,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | FR-45 | A hotel owner shall confirm or decline a booking for their own hotel. | M | `HotelOwner\BookingResource` · `tests/Feature/Filament/HotelOwner/BookingResourceTest.php` |
 | FR-46 | A hotel owner shall set their hotel's normal capacity and check-in and check-out times. | M | `HotelOwner\Pages\HotelSettings` · `tests/Feature/Filament/HotelOwner/HotelSettingsTest.php` |
 | FR-47 | A hotel owner shall close a range of dates, set a different capacity for a range, and reset a range to normal. | M | `HotelOwner\AvailabilityResource` · `tests/Feature/Filament/HotelOwner/AvailabilityResourceTest.php` |
+| FR-48 | A hotel owner shall see, for each night of a chosen month, the capacity, confirmed bookings, spots left and status. | S | `HotelOwner\Pages\DailyOverview` · `tests/Feature/Filament/HotelOwner/DailyOverviewTest.php` |
 
 ---
 

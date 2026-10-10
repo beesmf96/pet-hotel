@@ -171,4 +171,35 @@ class AvailabilityTest extends TestCase
 
         $this->assertTrue($this->fits('2030-12-24', '2030-12-27'));
     }
+
+    /** @return array{capacity: int, booked: int, spots_left: int, blocked: bool} */
+    private function night(int $capacity, int $spotsLeft, bool $blocked = false): array
+    {
+        return ['capacity' => $capacity, 'booked' => $capacity - $spotsLeft, 'spots_left' => $spotsLeft, 'blocked' => $blocked];
+    }
+
+    public function test_status_reads_closed_before_anything_else(): void
+    {
+        $this->assertSame('blocked', Availability::status($this->night(4, 4, blocked: true)));
+    }
+
+    public function test_status_is_full_with_no_spot_left(): void
+    {
+        $this->assertSame('full', Availability::status($this->night(4, 0)));
+        $this->assertSame('full', Availability::status($this->night(0, 0)));
+    }
+
+    public function test_status_is_limited_at_half_or_fewer_spots_left(): void
+    {
+        $this->assertSame('limited', Availability::status($this->night(4, 2)));
+        $this->assertSame('limited', Availability::status($this->night(2, 1)));
+        $this->assertSame('limited', Availability::status($this->night(10, 3)));
+    }
+
+    public function test_status_is_available_above_half(): void
+    {
+        $this->assertSame('available', Availability::status($this->night(4, 3)));
+        $this->assertSame('available', Availability::status($this->night(2, 2)));
+        $this->assertSame('available', Availability::status($this->night(1, 1)));
+    }
 }

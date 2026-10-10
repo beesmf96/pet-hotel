@@ -293,7 +293,7 @@ tests that verify it.</li>
 </tr>
 <tr>
 <td>FR-18</td>
-<td>A guest shall view a hotel's availability calendar for a date range. Availability is served as JSON to the calendar widget.</td>
+<td>A guest shall view a hotel's availability calendar for a date range, with each day marked available, limited (half or fewer of its spots left), full or closed, and the spots left on hover. Availability is served as JSON to the calendar widget.</td>
 <td>M</td>
 <td><code>GET /hotels/{slug}/availability</code> · <code>tests/Feature/HotelAvailabilityTest.php</code></td>
 </tr>
@@ -547,6 +547,12 @@ tests that verify it.</li>
 <td>A hotel owner shall close a range of dates, set a different capacity for a range, and reset a range to normal.</td>
 <td>M</td>
 <td><code>HotelOwner\AvailabilityResource</code> · <code>tests/Feature/Filament/HotelOwner/AvailabilityResourceTest.php</code></td>
+</tr>
+<tr>
+<td>FR-48</td>
+<td>A hotel owner shall see, for each night of a chosen month, the capacity, confirmed bookings, spots left and status.</td>
+<td>S</td>
+<td><code>HotelOwner\Pages\DailyOverview</code> · <code>tests/Feature/Filament/HotelOwner/DailyOverviewTest.php</code></td>
 </tr>
 </tbody>
 </table></div>

@@ -212,3 +212,45 @@ describe('AvailabilityCalendar — visual state classes', () => {
         expect(rangeCell.classes()).toContain('bg-mustard');
     });
 });
+
+describe('AvailabilityCalendar — limited days and spot labels', () => {
+    async function cellFor(days, dayNumber) {
+        stubFetch(days);
+        const w = mount(AvailabilityCalendar, { props: { hotelSlug: 'paws-inn' } });
+        await flushPromises();
+        return w.findAll('[class*="grid-cols-7"] > div').find((c) => c.text() === String(dayNumber));
+    }
+
+    it('colours a limited day orange', async () => {
+        const cell = await cellFor({ '2030-06-20': makeDay('2030-06-20', 'limited', 1) }, 20);
+        expect(cell.classes()).toContain('bg-orange-50');
+    });
+
+    it('keeps an available day green even with few spots', async () => {
+        const cell = await cellFor({ '2030-06-20': makeDay('2030-06-20', 'available', 2) }, 20);
+        expect(cell.classes()).toContain('bg-green-50');
+    });
+
+    it('labels an open day with its spots left', async () => {
+        expect((await cellFor({ '2030-06-20': makeDay('2030-06-20', 'limited', 1) }, 20)).attributes('title')).toBe(
+            '1 spot left',
+        );
+        expect((await cellFor({ '2030-06-21': makeDay('2030-06-21', 'available', 4) }, 21)).attributes('title')).toBe(
+            '4 spots left',
+        );
+    });
+
+    it('labels full and closed days', async () => {
+        expect((await cellFor({ '2030-06-20': makeDay('2030-06-20', 'full', 0) }, 20)).attributes('title')).toBe(
+            'Full',
+        );
+        expect((await cellFor({ '2030-06-20': makeDay('2030-06-20', 'blocked') }, 20)).attributes('title')).toBe(
+            'Closed',
+        );
+    });
+
+    it('leaves a day with no data unlabelled', async () => {
+        const cell = await cellFor({}, 20);
+        expect(cell.attributes('title')).toBe('');
+    });
+});

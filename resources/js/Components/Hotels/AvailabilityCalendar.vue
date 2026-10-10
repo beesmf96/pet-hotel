@@ -59,6 +59,14 @@ const calendarDays = computed(() => {
     return cells;
 });
 
+// Shown on hover and read by screen readers.
+function cellLabel(cell) {
+    if (cell.status === 'blocked') return 'Closed';
+    if (cell.status === 'full') return 'Full';
+    if (cell.available_spots === null || cell.available_spots === undefined) return '';
+    return `${cell.available_spots} ${cell.available_spots === 1 ? 'spot' : 'spots'} left`;
+}
+
 function cellClass(cell) {
     const isToday = cell.date === todayKey;
     const isSelectedEndpoint = props.selectable && (cell.date === checkIn.value || cell.date === checkOut.value);
@@ -87,7 +95,7 @@ function cellClass(cell) {
     // Priority 4: availability status with today ring (today ring skipped when selected)
     const ring = isToday ? 'ring-2 ' : '';
 
-    if (cell.available_spots !== null && cell.available_spots <= 3) {
+    if (cell.status === 'limited') {
         return (
             ring +
             'ring-orange-400 bg-orange-50 text-orange-700 font-medium' +
@@ -224,6 +232,7 @@ onMounted(fetchMonth);
                 :key="i"
                 class="h-9 rounded-lg flex items-center justify-center text-sm transition-colors"
                 :class="cell ? cellClass(cell) : ''"
+                :title="cell ? cellLabel(cell) : undefined"
                 @click="cell && handleCellClick(cell)"
             >
                 <span v-if="cell">{{ cell.day }}</span>

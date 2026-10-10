@@ -290,6 +290,7 @@
   <a href="#p3-s5">5. Completing a Stay</a>
   <a href="#p3-s6">6. Hotel Settings</a>
   <a href="#p3-s7">7. Availability</a>
+  <a href="#p3-s8">8. Daily Overview</a>
 </nav>
 
 <!-- ══════════════════ MAIN ══════════════════ -->
@@ -418,7 +419,7 @@
   <p>Each hotel page shows: photo gallery, name, address, city, description, facilities, pricing by pet type, check-in/out policy, a map (when the hotel has coordinates), review summary, and the latest 5 reviews.</p>
 
   <h3>Availability Calendar</h3>
-  <p>Accessible from the hotel detail page. Shows a month-by-month calendar with four colours: <strong>Available</strong> (green), <strong>Limited</strong> (orange, 3 or fewer spots left), <strong>Full</strong> (red), and <strong>Unavailable</strong> (grey, blocked by the hotel). Navigate between months with the previous/next controls. The same calendar appears on the booking form, where clicking dates fills in check-in and check-out.</p>
+  <p>Accessible from the hotel detail page. Shows a month-by-month calendar with four colours: <strong>Available</strong> (green), <strong>Limited</strong> (orange, half or fewer of that day's spots left), <strong>Full</strong> (red), and <strong>Unavailable</strong> (grey, blocked by the hotel). Hover over a day to see how many spots are left. Navigate between months with the previous/next controls. The same calendar appears on the booking form, where clicking dates fills in check-in and check-out.</p>
 
   <h3>All Reviews</h3>
   <p><span class="route-label">Route</span><span class="route">/hotels/{slug}/reviews</span></p>
@@ -787,6 +788,23 @@
     <li>Each listed date has <strong>Edit</strong> and <strong>Reset</strong> actions. The list shows today and later; clear the filter to see past dates.</li>
   </ul>
   <div class="note">Closing a date or lowering its capacity does not cancel bookings already confirmed for it. If capacity drops below them, the date simply shows as full.</div>
+
+  <hr />
+
+  <!-- 3.8 Daily overview -->
+  <h2 class="section-heading" id="p3-s8">8. Daily Overview</h2>
+  <p><strong>Daily overview</strong> lists every night of a month, so you can see how full you are. Pick the month with the <strong>Month</strong> filter.</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Column</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Pets per night</td><td>That night's capacity. "Changed for this date" means it differs from your normal capacity</td></tr>
+        <tr><td>Booked</td><td>Confirmed and completed stays covering that night. Pending requests are not counted</td></tr>
+        <tr><td>Spots left</td><td>Pets per night − Booked. Empty on closed nights</td></tr>
+        <tr><td>Status</td><td>Open, Limited (half or fewer spots left), Full, or Closed — the same colours customers see</td></tr>
+      </tbody>
+    </table>
+  </div>
 
 </main>
 

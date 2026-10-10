@@ -122,6 +122,22 @@ class HotelAvailabilityTest extends TestCase
             ->assertJsonPath('days.2026-08-07.available_spots', 2);
     }
 
+    public function test_limited_status_is_relative_to_the_nights_capacity(): void
+    {
+        $this->hotel->update(['capacity' => 2]);
+        Booking::factory()->for($this->hotel, 'hotel')->confirmed()->create([
+            'check_in' => '2026-08-05',
+            'check_out' => '2026-08-06',
+        ]);
+
+        $response = $this->getJson("/hotels/{$this->hotel->slug}/availability?month=2026-08");
+
+        $response->assertJsonPath('days.2026-08-04.status', 'available')
+            ->assertJsonPath('days.2026-08-04.capacity', 2)
+            ->assertJsonPath('days.2026-08-05.status', 'limited')
+            ->assertJsonPath('days.2026-08-05.available_spots', 1);
+    }
+
     public function test_returns_404_for_unknown_hotel(): void
     {
         $this->getJson('/hotels/does-not-exist/availability')

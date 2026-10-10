@@ -44,6 +44,14 @@ times with the dates, and to let owners set them.
   saying "Please select a check-in date."
 - Email: request and confirmed emails add "from 2:00 PM" and "by 12:00 PM".
 - Seeder: overrides only — Sundays closed, Saturdays capacity 3.
+- Follow-up after manual testing: with capacity 2 every day showed orange,
+  as "Limited" meant 3 or fewer spots left. `Availability::status()` now
+  decides each day's status, and "limited" means half or fewer of that
+  night's spots. The calendar shows "X spots left" on hover. Owners get a
+  **Daily overview** page: every night of a month with capacity, booked,
+  spots left and status. Bookings stays first in the owner sidebar.
+- Docs: PID v1.2 records daycare (same-day stays) as out of scope, after the
+  user asked whether it is normal for pet hotels.
 - Docs: user guide (customer booking notes, admin capacity, owner sections 6
   and 7), SRS v1.2 (FR-22 done, FR-23 rewritten, FR-23a, FR-46, FR-47, DR-03,
   NFR-17, OI-4 closed), PID risk R3, CLAUDE.md trap and testing notes.
@@ -66,11 +74,12 @@ times with the dates, and to let owners set them.
 - Intake: none
 
 ## Verified
-- `composer test`: 451 passed, 1578 assertions. New `AvailabilityTest` (15),
-  owner `AvailabilityResourceTest` (9) and `HotelSettingsTest` (6), plus
-  booking, calendar, email and panel confirm cases.
-- Coverage with pcov: 98.35% of lines; every new class at 100%.
-- `vendor/bin/pint`: clean. `bun run test`: 275 passed. `bun run lint`: 0
+- `composer test`: 463 passed, 1611 assertions. New `AvailabilityTest` (19),
+  owner `AvailabilityResourceTest` (9), `HotelSettingsTest` (6) and
+  `DailyOverviewTest` (7), plus booking, calendar, email and panel confirm
+  cases.
+- Coverage with pcov: 98.28% of lines.
+- `vendor/bin/pint`: clean. `bun run test`: 280 passed. `bun run lint`: 0
   errors, the same 5 existing warnings.
 - Migration up, down and up again on the local PostgreSQL database.
 - `php docs-src/build.php` re-rendered `pid.html` and `srs.html`.

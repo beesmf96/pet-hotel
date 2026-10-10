@@ -93,6 +93,13 @@ dates are shown, and to let owners set their own times.
   times when the hotel has a policy (one Vitest case per branch).
 - `BookingController@create`, `confirmation`, `show`: pass the policy times.
 
+## Follow-up (same PR, after manual testing)
+- "Limited" is relative: half or fewer of the night's capacity
+  (`Availability::status()`), so a small hotel is not orange every day.
+- Calendar shows "X spots left" on hover.
+- Owner "Daily overview" page: capacity, booked, spots left, status per night.
+- Daycare recorded as out of scope in the PID.
+
 ## Acceptance Criteria
 - [x] A hotel with no override rows has `capacity` spots on every night
 - [x] Spots left = night capacity − confirmed/completed bookings

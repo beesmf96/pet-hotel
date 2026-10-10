@@ -26,12 +26,9 @@ class HotelAvailabilityController extends Controller
         foreach (Availability::nights($hotel, $start, $end) as $key => $night) {
             $days[$key] = [
                 'date' => $key,
-                'status' => match (true) {
-                    $night['blocked'] => 'blocked',
-                    $night['spots_left'] > 0 => 'available',
-                    default => 'full',
-                },
+                'status' => Availability::status($night),
                 'available_spots' => $night['spots_left'],
+                'capacity' => $night['capacity'],
             ];
         }
 

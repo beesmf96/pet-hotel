@@ -58,6 +58,23 @@ class Availability
     }
 
     /**
+     * How a night reads to people: "blocked" (closed by the owner), "full",
+     * "limited" (half or fewer of that night's spots left) or "available".
+     * Relative to capacity, so a two-pet hotel is not "limited" every night.
+     *
+     * @param  array{capacity: int, booked: int, spots_left: int, blocked: bool}  $night
+     */
+    public static function status(array $night): string
+    {
+        return match (true) {
+            $night['blocked'] => 'blocked',
+            $night['spots_left'] < 1 => 'full',
+            $night['capacity'] >= $night['spots_left'] * 2 => 'limited',
+            default => 'available',
+        };
+    }
+
+    /**
      * Whether one more pet can stay every night from check-in up to, but not
      * including, check-out.
      */
