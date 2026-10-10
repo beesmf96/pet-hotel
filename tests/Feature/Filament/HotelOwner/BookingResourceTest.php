@@ -2,7 +2,10 @@
 
 namespace Tests\Feature\Filament\HotelOwner;
 
+use App\Enums\CancelledBy;
 use App\Filament\HotelOwner\Resources\BookingResource\Pages\ListBookings;
+use App\Jobs\NotifyOwnersOfGuestCancellation;
+use App\Jobs\SendBookingCancelledNotification;
 use App\Models\Booking;
 use App\Models\PetHotel;
 use App\Models\User;
@@ -126,6 +129,8 @@ class BookingResourceTest extends TestCase
             ->assertHasNoTableActionErrors();
 
         $this->assertSame('cancelled', $booking->fresh()->status);
+        Queue::assertPushed(SendBookingCancelledNotification::class, fn ($job) => $job->by === CancelledBy::Hotel);
+        Queue::assertNotPushed(NotifyOwnersOfGuestCancellation::class);
     }
 
     public function test_actions_are_hidden_for_non_pending_bookings(): void

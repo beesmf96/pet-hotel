@@ -1,4 +1,5 @@
 <script setup>
+import { formatMoney } from '@/money';
 import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -59,7 +60,7 @@ function closeReview() {
                         <div class="shrink-0 text-right flex flex-col items-end gap-2">
                             <StatusPill :status="booking.status" />
                             <p class="font-display font-bold text-lg">
-                                RM {{ Number(booking.total_price).toFixed(2) }}
+                                {{ formatMoney(booking.total_price) }}
                             </p>
                         </div>
                     </div>

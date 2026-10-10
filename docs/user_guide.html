@@ -446,7 +446,7 @@
     </table>
   </div>
   <ol start="3">
-    <li>The <strong>total price</strong> is calculated automatically (nightly rate × number of nights) and shown before you confirm.</li>
+    <li>The <strong>total price</strong> is calculated automatically (nightly rate × number of nights) and shown before you confirm. If the hotel has no price for your pet's type, the form says so and you cannot send the request.</li>
     <li>If the hotel has set its times, the form shows them under the calendar, for example "Check-in from 2:00 PM · check-out by 12:00 PM". The same times appear on your booking and in your emails.</li>
     <li>Submit — you will be redirected to the <strong>Booking Confirmation</strong> page.</li>
   </ol>
@@ -628,7 +628,7 @@
   <p>If any night of the stay is now full or closed, the booking is not confirmed: a red "Cannot confirm this booking" notice appears and the booking stays Pending.</p>
 
   <h3>Cancel a Booking</h3>
-  <p>For any non-cancelled booking, click the red <strong>Cancel</strong> action. On cancel: status → <span class="badge badge-cancelled">Cancelled</span> and the customer receives a notification.</p>
+  <p>For any non-cancelled booking, click the red <strong>Cancel</strong> action. On cancel: status → <span class="badge badge-cancelled">Cancelled</span> and the customer receives a notification — "Booking Request Declined" if it was still pending, "Booking Cancelled by the Hotel" if it had been confirmed.</p>
 
   <h3>Mark a Booking Completed</h3>
   <p>For any <span class="badge badge-confirmed">Confirmed</span> booking, click the blue <strong>Mark completed</strong> action. On completion: status → <span class="badge badge-completed">Completed</span> and the customer can leave a review. No notification is sent. Unlike the owner panel, admins may complete a booking before its check-out date, which is useful for support and testing.</p>
@@ -749,7 +749,7 @@
   <p>On decline:</p>
   <ul style="padding-left:20px;margin:8px 0 14px">
     <li>Booking status changes to <span class="badge badge-cancelled">Cancelled</span></li>
-    <li>The customer receives an <strong>email</strong> and an <strong>in-app notification</strong> automatically</li>
+    <li>The customer receives a <strong>"Booking Request Declined"</strong> email and an <strong>in-app notification</strong>, saying the hotel could not take the request and that no booking was made</li>
   </ul>
   <div class="note">Only <span class="badge badge-pending">Pending</span> bookings show the Confirm and Decline actions.</div>
 

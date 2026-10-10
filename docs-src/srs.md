@@ -118,7 +118,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 |----|-------------|-----|-----------|
 | FR-19 | A verified customer shall submit a booking request selecting a pet, check-in and check-out dates, and optional notes. | M | `bookings.create`, `bookings.store` · `tests/Feature/BookingTest.php` |
 | FR-20 | A new booking shall be created with status `pending`; the system shall never confirm it automatically. | M | `BookingController@store` · `tests/Feature/BookingTest.php` |
-| FR-21 | The system shall calculate total price from the hotel's per-night rate for the pet's type and the number of nights. Where the hotel has no rate for that pet type the total is currently 0 — see OI-5. | M | `BookingController@store` · `tests/Feature/BookingTest.php` |
+| FR-21 | The system shall calculate total price from the hotel's per-night rate for the pet's type and the number of nights, summed in whole sen. A request for a pet type the hotel has no rate for shall be rejected. | M | `BookingController@store` · `tests/Feature/BookingTest.php` |
 | FR-22 | The system shall reject a booking request, and refuse to confirm a booking, when any night of the stay is closed or has no spot left. The check-out day is not a night. | M | `Availability::fits()`, `BookingController@store`, `Booking::confirm()` · `tests/Feature/BookingTest.php`, `tests/Unit/Support/AvailabilityTest.php` |
 | FR-23 | Spots left shall be computed from capacity and confirmed and completed bookings, never stored. Confirming takes a spot on each night; cancelling frees it. Pending requests hold no spot. | M | `App\Support\Availability` · `tests/Unit/Support/AvailabilityTest.php` |
 | FR-23a | Check-in and check-out times, when the hotel has set them, shall appear on the booking form, confirmation page, booking detail page, and the request and confirmed emails. | S | `PetHotelPolicy::stayTimes()` · `tests/Feature/BookingTest.php`, `tests/Feature/NotificationTest.php` |
@@ -140,9 +140,9 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 
 | ID | Requirement | Pri | Traces to |
 |----|-------------|-----|-----------|
-| FR-32 | The system shall email the customer when a booking request is submitted, when it is confirmed, and when it is cancelled. | M | Notification jobs · `tests/Feature/NotificationTest.php` |
+| FR-32 | The system shall email the customer when a booking request is submitted, when it is confirmed, and when it is cancelled. The cancellation email shall say whether the customer cancelled, the hotel declined the request, or the hotel cancelled a confirmed stay. | M | Notification jobs · `tests/Feature/NotificationTest.php` |
 | FR-32a | The system shall email every owner of the hotel, and add a notification to the owner panel, when a guest submits a booking request and when a guest cancels their pending request. | M | `NotifyOwnersOfBookingRequest`, `NotifyOwnersOfGuestCancellation` · `tests/Feature/OwnerNotificationTest.php` |
-| FR-33 | Notification emails shall be dispatched through the queue, not sent inline during the web request. | M | `Booking::booted()` dispatch · `tests/Feature/Jobs/NotificationJobPolicyTest.php` |
+| FR-33 | Notification emails shall be dispatched through the queue, not sent inline during the web request. Each is queued once, by its job. | M | `Booking::confirm()`, `Booking::cancel()`, `BookingController@store` · `tests/Feature/Jobs/NotificationJobPolicyTest.php` |
 | FR-34 | A queued notification job shall fail safely and shall not be retried indefinitely when its subject no longer exists. | M | Job policy · `tests/Feature/Jobs/NotificationJobPolicyTest.php` |
 | FR-35 | A customer shall see an unread notification count and read their recent in-app notifications. Owner-panel notifications are not included. | M | `notifications.index` · `tests/Feature/NotificationTest.php` |
 | FR-36 | A customer shall mark one notification, or all of them, as read. | M | `notifications.read`, `notifications.read-all` · `tests/Feature/NotificationTest.php` |
@@ -283,5 +283,5 @@ NFR-14/NFR-15 (CI quality gates).
 | OI-2 | No requirement covers what happens to reviews when a hotel is deleted beyond the cascade in DR-01. | *TBC* |
 | OI-3 | Distance sorting exists in the backend but has no UI control, and depends on coordinates that admins enter manually with no validation. Decide whether to expose it or remove it. | *TBC* |
 | OI-4 | ~~FR-22 is unimplemented.~~ Resolved 2026-10-10: spots are computed from capacity (FR-23), requests and confirms are checked (FR-22), and owners manage dates (FR-46, FR-47). | Closed |
-| OI-5 | A booking for a pet type the hotel has no pricing row for is created with `total_price = 0` rather than being rejected (FR-21). The form warns but still submits. | *TBC* |
+| OI-5 | ~~A booking for a pet type with no pricing row is created at RM 0.~~ Resolved 2026-10-10: the request is rejected and the form cannot be submitted (FR-21). | Closed |
 | OI-6 | Check-in and check-out dates in the search bar do not narrow results by availability (FR-12); they are only passed through. | *TBC* |

@@ -1,4 +1,5 @@
 <script setup>
+import { formatMoney } from '@/money';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { useFormatDate } from '@/composables/useFormatDate.js';
 import UiButton from '@/Components/Ui/UiButton.vue';
@@ -69,9 +70,7 @@ const { formatDate } = useFormatDate();
                 </div>
                 <div class="border-t-2 border-ink/10 pt-3 flex justify-between items-baseline">
                     <span class="font-semibold text-moss">Total</span>
-                    <span class="font-display font-extrabold text-2xl"
-                        >RM {{ Number(booking.total_price).toFixed(2) }}</span
-                    >
+                    <span class="font-display font-extrabold text-2xl">{{ formatMoney(booking.total_price) }}</span>
                 </div>
             </div>
 

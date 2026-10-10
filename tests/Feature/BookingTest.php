@@ -124,21 +124,43 @@ class BookingTest extends TestCase
         ]);
     }
 
-    public function test_booking_with_no_matching_pricing_sets_zero_total(): void
+    public function test_booking_is_rejected_when_the_hotel_has_no_price_for_the_pet_type(): void
     {
         Queue::fake();
 
         $user = User::factory()->create();
-        $hotel = PetHotel::factory()->create();
+        $hotel = PetHotel::factory()->create(['name' => 'Paws Inn']);
+        $hotel->pricing()->create(['pet_type' => 'dog', 'price_per_night' => 50]);
         $pet = $user->pets()->create(['name' => 'Tweety', 'species' => 'bird']);
 
         $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
             'pet_id' => $pet->id,
             'check_in' => $this->futureDate(30),
             'check_out' => $this->futureDate(32),
+        ])->assertSessionHasErrors([
+            'pet_id' => "Paws Inn has no price for Tweety's pet type (Bird) yet, so Tweety cannot be booked here.",
         ]);
 
-        $this->assertDatabaseHas('bookings', ['total_price' => 0]);
+        $this->assertDatabaseCount('bookings', 0);
+        Queue::assertNothingPushed();
+    }
+
+    public function test_total_is_exact_for_prices_a_float_would_round(): void
+    {
+        Queue::fake();
+
+        $user = User::factory()->create();
+        $hotel = PetHotel::factory()->create();
+        $hotel->pricing()->create(['pet_type' => 'dog', 'price_per_night' => '0.10']);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
+
+        $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
+            'pet_id' => $pet->id,
+            'check_in' => $this->futureDate(30),
+            'check_out' => $this->futureDate(33),
+        ]);
+
+        $this->assertSame('0.30', Booking::sole()->total_price);
     }
 
     public function test_user_cannot_book_with_another_users_pet(): void
@@ -488,6 +510,7 @@ class BookingTest extends TestCase
         $user = User::factory()->create();
         $hotel = PetHotel::factory()->create(['capacity' => $capacity]);
         $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
+        $hotel->pricing()->create(['pet_type' => 'dog', 'price_per_night' => 50]);
 
         return [$user, $hotel, $pet];
     }

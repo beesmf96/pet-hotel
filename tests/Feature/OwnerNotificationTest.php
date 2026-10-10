@@ -53,6 +53,7 @@ class OwnerNotificationTest extends TestCase
 
         $guest = User::factory()->create();
         $pet = $guest->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
+        $this->hotel->pricing()->create(['pet_type' => 'dog', 'price_per_night' => 60]);
 
         $this->actingAs($guest)->post("/hotels/{$this->hotel->slug}/bookings", [
             'pet_id' => $pet->id,

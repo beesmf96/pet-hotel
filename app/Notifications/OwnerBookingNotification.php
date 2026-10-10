@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Enums\PetType;
 use App\Filament\HotelOwner\Resources\BookingResource;
 use App\Models\Booking;
+use App\Support\Money;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification as PanelNotification;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -41,7 +42,7 @@ abstract class OwnerBookingNotification extends Notification
             ->line('Guest: '.$booking->user->name)
             ->line('Pet: '.$this->petDescription())
             ->line('Stay: '.$this->stayDescription())
-            ->line('Total: RM '.number_format($booking->total_price, 2));
+            ->line('Total: '.Money::format($booking->total_price));
 
         if ($booking->notes) {
             $mail->line('Notes: '.$booking->notes);

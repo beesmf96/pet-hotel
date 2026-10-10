@@ -2,10 +2,12 @@
 
 namespace App\Filament\HotelOwner\Resources;
 
+use App\Enums\CancelledBy;
 use App\Exceptions\BookingDoesNotFit;
 use App\Filament\HotelOwner\Concerns\ResolvesOwnerHotel;
 use App\Filament\HotelOwner\Resources\BookingResource\Pages;
 use App\Models\Booking;
+use App\Support\Money;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -82,7 +84,7 @@ class BookingResource extends Resource
                     })
                     ->sortable(),
                 TextColumn::make('total_price')
-                    ->money('MYR')
+                    ->formatStateUsing(fn ($state): string => Money::format($state))
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->date('d M Y')
@@ -118,7 +120,7 @@ class BookingResource extends Resource
                     ->modalHeading('Decline Booking')
                     ->modalDescription('This will decline the booking and notify the guest.')
                     ->visible(fn (Booking $record): bool => $record->status === 'pending')
-                    ->action(fn (Booking $record) => $record->update(['status' => 'cancelled'])),
+                    ->action(fn (Booking $record) => $record->cancel(CancelledBy::Hotel)),
 
                 Action::make('complete')
                     ->label('Mark completed')

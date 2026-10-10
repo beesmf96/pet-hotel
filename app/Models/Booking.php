@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\CancelledBy;
 use App\Exceptions\BookingDoesNotFit;
+use App\Jobs\NotifyOwnersOfGuestCancellation;
 use App\Jobs\SendBookingCancelledNotification;
 use App\Jobs\SendBookingConfirmationNotification;
 use App\Support\Availability;
@@ -26,24 +28,6 @@ class Booking extends Model
         'total_price' => 'decimal:2',
     ];
 
-    protected static function booted(): void
-    {
-        static::updated(function (Booking $booking) {
-            if (! $booking->wasChanged('status')) {
-                return;
-            }
-
-            $new = $booking->status;
-            $original = $booking->getOriginal('status');
-
-            if ($new === 'confirmed' && $original !== 'confirmed') {
-                SendBookingConfirmationNotification::dispatch($booking);
-            } elseif ($new === 'cancelled') {
-                SendBookingCancelledNotification::dispatch($booking);
-            }
-        });
-    }
-
     /**
      * Confirm a pending request if the hotel still has room for every night.
      *
@@ -63,7 +47,27 @@ class Booking extends Model
             }
 
             $this->update(['status' => 'confirmed']);
+
+            SendBookingConfirmationNotification::dispatch($this);
         });
+    }
+
+    /**
+     * End a booking and tell the people who need to know. The guest always
+     * hears, in words that fit who cancelled and whether the stay had been
+     * confirmed; the hotel's owners hear only when the guest cancelled.
+     */
+    public function cancel(CancelledBy $by): void
+    {
+        $wasConfirmed = in_array($this->status, Availability::HOLDING_STATUSES, true);
+
+        $this->update(['status' => 'cancelled']);
+
+        SendBookingCancelledNotification::dispatch($this, $by, $wasConfirmed);
+
+        if ($by === CancelledBy::Guest) {
+            NotifyOwnersOfGuestCancellation::dispatch($this);
+        }
     }
 
     public function user(): BelongsTo

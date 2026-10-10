@@ -1,4 +1,5 @@
 <script setup>
+import { formatMoney } from '@/money';
 import { router } from '@inertiajs/vue3';
 import PawIcon from '@/Components/Ui/PawIcon.vue';
 
@@ -74,7 +75,7 @@ function visitHotel() {
             </div>
 
             <p v-if="hotel.price_from" class="text-base font-bold text-ink">
-                RM {{ Number(hotel.price_from).toFixed(0) }} <span class="font-medium text-moss">/ night</span>
+                {{ formatMoney(hotel.price_from, { decimals: 0 }) }} <span class="font-medium text-moss">/ night</span>
             </p>
             <p v-else class="text-sm text-moss">Pricing on request</p>
         </div>

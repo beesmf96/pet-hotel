@@ -88,6 +88,26 @@ describe('BookingFormPage — no pricing warning', () => {
         formState.check_out = ''
         await w.vm.$nextTick()
         expect(w.text()).toContain('no pricing listed for')
+        expect(w.text()).toContain('Whiskers cannot be booked here')
+        expect(w.find('button[type="submit"]').attributes('disabled')).toBeDefined()
+    })
+
+    it('keeps the submit button enabled when the pet has a price', async () => {
+        const w = mountPage([{ id: 1, name: 'Buddy', species: 'dog' }])
+        formState.pet_id = 1
+        await w.vm.$nextTick()
+        expect(w.find('button[type="submit"]').attributes('disabled')).toBeUndefined()
+    })
+
+    it('shows a total with thousands separators', async () => {
+        const hotel = { ...baseHotel, pricing: [{ pet_type: 'dog', price_per_night: '650.00' }] }
+        const w = mountPage([{ id: 1, name: 'Buddy', species: 'dog' }], hotel)
+        formState.pet_id = 1
+        formState.check_in = '2030-06-01'
+        formState.check_out = '2030-06-03'
+        await w.vm.$nextTick()
+        expect(w.text()).toContain('RM 650.00 × 2 nights')
+        expect(w.text()).toContain('RM 1,300.00')
     })
 
     it('does not show no-pricing warning when no pet is selected', () => {

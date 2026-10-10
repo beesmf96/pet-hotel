@@ -1,4 +1,5 @@
 <script setup>
+import { formatMoney } from '@/money';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { router } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
@@ -87,7 +88,7 @@ function cancelBooking() {
                     </div>
                     <div class="border-t-2 border-ink/10 pt-3 flex justify-between items-baseline">
                         <dt>Total</dt>
-                        <dd class="font-display text-2xl">RM {{ Number(booking.total_price).toFixed(2) }}</dd>
+                        <dd class="font-display text-2xl">{{ formatMoney(booking.total_price) }}</dd>
                     </div>
                 </dl>
             </div>

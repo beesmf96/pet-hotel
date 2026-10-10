@@ -1,4 +1,5 @@
 <script setup>
+import { formatMoney, toSen } from '@/money';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import AvailabilityCalendar from '@/Components/Hotels/AvailabilityCalendar.vue';
 import { useForm } from '@inertiajs/vue3';
@@ -38,7 +39,7 @@ const nights = computed(() => {
 
 const totalPrice = computed(() => {
     if (!pricing.value || nights.value === 0) return null;
-    return (Number(pricing.value.price_per_night) * nights.value).toFixed(2);
+    return (toSen(pricing.value.price_per_night) * nights.value) / 100;
 });
 
 function onDatesSelected(val) {
@@ -128,15 +129,15 @@ function submit() {
                     <div v-if="totalPrice !== null" class="space-y-2 text-sm">
                         <div class="flex justify-between text-teal-light">
                             <span
-                                >RM {{ Number(pricing.price_per_night).toFixed(2) }} × {{ nights }} night{{
+                                >{{ formatMoney(pricing.price_per_night) }} × {{ nights }} night{{
                                     nights !== 1 ? 's' : ''
                                 }}</span
                             >
-                            <span>RM {{ totalPrice }}</span>
+                            <span>{{ formatMoney(totalPrice) }}</span>
                         </div>
                         <div class="border-t-2 border-cream/20 pt-3 flex justify-between items-baseline">
                             <span class="font-bold">Total</span>
-                            <span class="font-display font-extrabold text-3xl">RM {{ totalPrice }}</span>
+                            <span class="font-display font-extrabold text-3xl">{{ formatMoney(totalPrice) }}</span>
                         </div>
                     </div>
 
@@ -144,12 +145,17 @@ function submit() {
 
                     <Notice v-if="selectedPet && !pricing" tone="warning" class="mt-3"
                         >This hotel has no pricing listed for <strong>{{ petTypeLabel(selectedPet.species) }}</strong
-                        >.</Notice
+                        >, so {{ selectedPet.name }} cannot be booked here. Choose another pet or hotel.</Notice
                     >
 
                     <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-6">
                         <UiButton as="a" variant="cream" :href="`/hotels/${hotel.slug}`"> Back </UiButton>
-                        <UiButton variant="mustard" size="lg" type="submit" :disabled="form.processing">
+                        <UiButton
+                            variant="mustard"
+                            size="lg"
+                            type="submit"
+                            :disabled="form.processing || (selectedPet && !pricing)"
+                        >
                             {{ form.processing ? 'Submitting…' : 'Request Booking' }}
                         </UiButton>
                     </div>

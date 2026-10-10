@@ -330,7 +330,7 @@ tests that verify it.</li>
 </tr>
 <tr>
 <td>FR-21</td>
-<td>The system shall calculate total price from the hotel's per-night rate for the pet's type and the number of nights. Where the hotel has no rate for that pet type the total is currently 0 — see OI-5.</td>
+<td>The system shall calculate total price from the hotel's per-night rate for the pet's type and the number of nights, summed in whole sen. A request for a pet type the hotel has no rate for shall be rejected.</td>
 <td>M</td>
 <td><code>BookingController@store</code> · <code>tests/Feature/BookingTest.php</code></td>
 </tr>
@@ -428,7 +428,7 @@ tests that verify it.</li>
 <tbody>
 <tr>
 <td>FR-32</td>
-<td>The system shall email the customer when a booking request is submitted, when it is confirmed, and when it is cancelled.</td>
+<td>The system shall email the customer when a booking request is submitted, when it is confirmed, and when it is cancelled. The cancellation email shall say whether the customer cancelled, the hotel declined the request, or the hotel cancelled a confirmed stay.</td>
 <td>M</td>
 <td>Notification jobs · <code>tests/Feature/NotificationTest.php</code></td>
 </tr>
@@ -440,9 +440,9 @@ tests that verify it.</li>
 </tr>
 <tr>
 <td>FR-33</td>
-<td>Notification emails shall be dispatched through the queue, not sent inline during the web request.</td>
+<td>Notification emails shall be dispatched through the queue, not sent inline during the web request. Each is queued once, by its job.</td>
 <td>M</td>
-<td><code>Booking::booted()</code> dispatch · <code>tests/Feature/Jobs/NotificationJobPolicyTest.php</code></td>
+<td><code>Booking::confirm()</code>, <code>Booking::cancel()</code>, <code>BookingController@store</code> · <code>tests/Feature/Jobs/NotificationJobPolicyTest.php</code></td>
 </tr>
 <tr>
 <td>FR-34</td>
@@ -915,8 +915,8 @@ NFR-14/NFR-15 (CI quality gates).</p>
 </tr>
 <tr>
 <td>OI-5</td>
-<td>A booking for a pet type the hotel has no pricing row for is created with <code>total_price = 0</code> rather than being rejected (FR-21). The form warns but still submits.</td>
-<td><em>TBC</em></td>
+<td>~~A booking for a pet type with no pricing row is created at RM 0.~~ Resolved 2026-10-10: the request is rejected and the form cannot be submitted (FR-21).</td>
+<td>Closed</td>
 </tr>
 <tr>
 <td>OI-6</td>
