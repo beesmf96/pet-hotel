@@ -288,6 +288,9 @@
   <a href="#p3-s3">3. Confirming a Booking</a>
   <a href="#p3-s4">4. Declining a Booking</a>
   <a href="#p3-s5">5. Completing a Stay</a>
+  <a href="#p3-s6">6. Hotel Settings</a>
+  <a href="#p3-s7">7. Availability</a>
+  <a href="#p3-s8">8. Daily Overview</a>
 </nav>
 
 <!-- ══════════════════ MAIN ══════════════════ -->
@@ -416,7 +419,7 @@
   <p>Each hotel page shows: photo gallery, name, address, city, description, facilities, pricing by pet type, check-in/out policy, a map (when the hotel has coordinates), review summary, and the latest 5 reviews.</p>
 
   <h3>Availability Calendar</h3>
-  <p>Accessible from the hotel detail page. Shows a month-by-month calendar with four colours: <strong>Available</strong> (green), <strong>Limited</strong> (orange, 3 or fewer spots left), <strong>Full</strong> (red), and <strong>Unavailable</strong> (grey, blocked by the hotel). Navigate between months with the previous/next controls. The same calendar appears on the booking form, where clicking dates fills in check-in and check-out.</p>
+  <p>Accessible from the hotel detail page. Shows a month-by-month calendar with four colours: <strong>Available</strong> (green), <strong>Limited</strong> (orange, half or fewer of that day's spots left), <strong>Full</strong> (red), and <strong>Unavailable</strong> (grey, blocked by the hotel). Hover over a day to see how many spots are left. Navigate between months with the previous/next controls. The same calendar appears on the booking form, where clicking dates fills in check-in and check-out.</p>
 
   <h3>All Reviews</h3>
   <p><span class="route-label">Route</span><span class="route">/hotels/{slug}/reviews</span></p>
@@ -437,15 +440,17 @@
       <tbody>
         <tr><td>Pet</td><td>Yes</td><td>Select from your registered pets</td></tr>
         <tr><td>Check-in Date</td><td>Yes</td><td>Today or later</td></tr>
-        <tr><td>Check-out Date</td><td>Yes</td><td>Must be after check-in</td></tr>
+        <tr><td>Check-out Date</td><td>Yes</td><td>Must be after check-in. The check-out day is not a night: 25 to 28 is three nights (25, 26, 27)</td></tr>
         <tr><td>Notes / Special Requests</td><td>No</td><td>Any information for the hotel</td></tr>
       </tbody>
     </table>
   </div>
   <ol start="3">
     <li>The <strong>total price</strong> is calculated automatically (nightly rate × number of nights) and shown before you confirm.</li>
+    <li>If the hotel has set its times, the form shows them under the calendar, for example "Check-in from 2:00 PM · check-out by 12:00 PM". The same times appear on your booking and in your emails.</li>
     <li>Submit — you will be redirected to the <strong>Booking Confirmation</strong> page.</li>
   </ol>
+  <div class="note">A stay cannot include a night that is <strong>Full</strong> or <strong>Unavailable</strong>. The calendar will not let you pick one, and the form shows an error if another booking took the last spot first. Your check-out day may fall on a full or unavailable day, as it is not a night.</div>
 
   <h3>Booking Confirmation Page</h3>
   <p><span class="route-label">Route</span><span class="route">/bookings/{booking}/confirmation</span></p>
@@ -553,6 +558,7 @@
         <tr><td>Description</td><td>No</td><td></td></tr>
         <tr><td>Address</td><td>Yes</td><td></td></tr>
         <tr><td>City</td><td>Yes</td><td></td></tr>
+        <tr><td>Pets per night</td><td>Yes</td><td>The hotel's normal capacity (default 10). Owners can change single dates under Availability</td></tr>
         <tr><td>Active</td><td>—</td><td>Toggle on/off (defaults to active)</td></tr>
         <tr><td>Latitude / Longitude</td><td>No</td><td>For distance-based sorting</td></tr>
         <tr><td>Cover Photo</td><td>No</td><td>Main image shown in search results</td></tr>
@@ -619,6 +625,7 @@
 
   <h3>Confirm a Booking</h3>
   <p>For any <span class="badge badge-pending">Pending</span> booking, click the green <strong>Confirm</strong> action. On confirm: status → <span class="badge badge-confirmed">Confirmed</span> and the customer receives a notification.</p>
+  <p>If any night of the stay is now full or closed, the booking is not confirmed: a red "Cannot confirm this booking" notice appears and the booking stays Pending.</p>
 
   <h3>Cancel a Booking</h3>
   <p>For any non-cancelled booking, click the red <strong>Cancel</strong> action. On cancel: status → <span class="badge badge-cancelled">Cancelled</span> and the customer receives a notification.</p>
@@ -720,8 +727,10 @@
   <p>On confirm:</p>
   <ul style="padding-left:20px;margin:8px 0 14px">
     <li>Booking status changes to <span class="badge badge-confirmed">Confirmed</span></li>
+    <li>The booking takes one spot on each night of the stay</li>
     <li>The customer receives an <strong>email</strong> and an <strong>in-app notification</strong> automatically</li>
   </ul>
+  <div class="warn">Pending requests do not hold a spot, so several requests can ask for the last spot. Only the first one you confirm gets it. If a night is full or closed by the time you click Confirm, you see "Cannot confirm this booking" and the booking stays Pending — decline it, or open more spots under Availability first.</div>
 
   <hr />
 
@@ -749,6 +758,53 @@
     <li>No email or notification is sent</li>
   </ul>
   <div class="note">The action only appears on or after the booking's check-out date. Completed and cancelled bookings cannot be actioned further from the owner panel.</div>
+
+  <hr />
+
+  <!-- 3.6 Hotel settings -->
+  <h2 class="section-heading" id="p3-s6">6. Hotel Settings</h2>
+  <p>Open <strong>Hotel settings</strong> in the sidebar to set:</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Field</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Pets per night</td><td>Your normal capacity. Every night uses it unless you change that date under Availability</td></tr>
+        <tr><td>Check-in from</td><td>Earliest drop-off time on the check-in day</td></tr>
+        <tr><td>Check-out by</td><td>Latest pick-up time on the check-out day</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Customers see the times on the booking form, on their booking, and in their emails.</p>
+  <div class="note">Spots left on a night = that night's capacity − confirmed (and completed) bookings for that night. Nothing else needs updating: raising or lowering the capacity changes every date at once.</div>
+
+  <hr />
+
+  <!-- 3.7 Availability -->
+  <h2 class="section-heading" id="p3-s7">7. Availability</h2>
+  <p>Use <strong>Availability</strong> for nights that differ from normal. Dates not listed there are open, with your normal capacity.</p>
+  <ul style="padding-left:20px;margin:8px 0 14px">
+    <li><strong>Change dates</strong> — pick a range (the same date twice for one night), then either turn on <strong>Closed</strong> so no one can book those nights, or set a different <strong>Pets per night</strong>, for example fewer when you are short of staff.</li>
+    <li><strong>Reset dates</strong> — puts a range back to open, with the normal capacity.</li>
+    <li>Each listed date has <strong>Edit</strong> and <strong>Reset</strong> actions. The list shows today and later; clear the filter to see past dates.</li>
+  </ul>
+  <div class="note">Closing a date or lowering its capacity does not cancel bookings already confirmed for it. If capacity drops below them, the date simply shows as full.</div>
+
+  <hr />
+
+  <!-- 3.8 Daily overview -->
+  <h2 class="section-heading" id="p3-s8">8. Daily Overview</h2>
+  <p><strong>Daily overview</strong> lists every night of a month, so you can see how full you are. Pick the month with the <strong>Month</strong> filter.</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Column</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Pets per night</td><td>That night's capacity. "Changed for this date" means it differs from your normal capacity</td></tr>
+        <tr><td>Booked</td><td>Confirmed and completed stays covering that night. Pending requests are not counted</td></tr>
+        <tr><td>Spots left</td><td>Pets per night − Booked. Empty on closed nights</td></tr>
+        <tr><td>Status</td><td>Open, Limited (half or fewer spots left), Full, or Closed — the same colours customers see</td></tr>
+      </tbody>
+    </table>
+  </div>
 
 </main>
 

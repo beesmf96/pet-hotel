@@ -2,10 +2,13 @@
 
 namespace App\Filament\HotelOwner\Resources;
 
+use App\Exceptions\BookingDoesNotFit;
+use App\Filament\HotelOwner\Concerns\ResolvesOwnerHotel;
 use App\Filament\HotelOwner\Resources\BookingResource\Pages;
 use App\Models\Booking;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -16,11 +19,15 @@ use Illuminate\Database\Eloquent\Builder;
 
 class BookingResource extends Resource
 {
+    use ResolvesOwnerHotel;
+
     protected static ?string $model = Booking::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendarDays;
 
     protected static ?string $navigationLabel = 'Bookings';
+
+    protected static ?int $navigationSort = 0;
 
     public static function form(Schema $schema): Schema
     {
@@ -82,7 +89,7 @@ class BookingResource extends Resource
                     ->modalHeading('Confirm Booking')
                     ->modalDescription('This will confirm the booking and notify the guest.')
                     ->visible(fn (Booking $record): bool => $record->status === 'pending')
-                    ->action(fn (Booking $record) => $record->update(['status' => 'confirmed'])),
+                    ->action(fn (Booking $record) => static::confirm($record)),
 
                 Action::make('decline')
                     ->label('Decline')
@@ -108,10 +115,27 @@ class BookingResource extends Resource
             ]);
     }
 
+    /**
+     * The stay may have stopped fitting since it was requested: other bookings
+     * were confirmed, or the owner closed a date.
+     */
+    protected static function confirm(Booking $record): void
+    {
+        try {
+            $record->confirm();
+        } catch (BookingDoesNotFit $e) {
+            Notification::make()
+                ->danger()
+                ->title('Cannot confirm this booking')
+                ->body($e->getMessage().' Decline it, or open more spots on those dates first.')
+                ->send();
+        }
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('hotel_id', static::resolveOwnerHotelId());
+            ->where('hotel_id', static::ownerHotel()->id);
     }
 
     public static function getPages(): array
@@ -119,16 +143,5 @@ class BookingResource extends Resource
         return [
             'index' => Pages\ListBookings::route('/'),
         ];
-    }
-
-    protected static function resolveOwnerHotelId(): int
-    {
-        $hotel = auth()->user()?->ownedHotels()->first();
-
-        if (! $hotel) {
-            abort(403, 'No hotel assigned to your account. Contact the administrator.');
-        }
-
-        return $hotel->id;
     }
 }

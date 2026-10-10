@@ -6,6 +6,7 @@ use App\Filament\Resources\BookingResource\Pages\ListBookings;
 use App\Filament\Resources\BookingResource\Pages\ViewBooking;
 use App\Models\Booking;
 use App\Models\Pet;
+use App\Models\PetHotel;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -98,6 +99,29 @@ class BookingResourceTest extends TestCase
             ->assertHasNoTableActionErrors();
 
         $this->assertSame('cancelled', $booking->fresh()->status);
+    }
+
+    public function test_confirm_action_refuses_a_booking_that_no_longer_fits(): void
+    {
+        Queue::fake();
+
+        $hotel = PetHotel::factory()->create(['capacity' => 1]);
+        Booking::factory()->for($hotel, 'hotel')->confirmed()->create([
+            'check_in' => '2030-08-01',
+            'check_out' => '2030-08-02',
+        ]);
+        $booking = Booking::factory()->for($hotel, 'hotel')->create([
+            'check_in' => '2030-08-01',
+            'check_out' => '2030-08-03',
+            'status' => 'pending',
+        ]);
+
+        Livewire::test(ListBookings::class)
+            ->callTableAction('confirm', $booking)
+            ->assertNotified('Cannot confirm this booking');
+
+        $this->assertSame('pending', $booking->fresh()->status);
+        Queue::assertNothingPushed();
     }
 
     public function test_confirm_action_is_hidden_for_non_pending_bookings(): void

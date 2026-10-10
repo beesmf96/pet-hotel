@@ -54,6 +54,15 @@ class HotelResource extends Resource
                     Forms\Components\TextInput::make('city')
                         ->required()
                         ->columnSpan(1),
+                    Forms\Components\TextInput::make('capacity')
+                        ->label('Pets per night')
+                        ->helperText('The normal capacity. Owners can change single dates under Availability.')
+                        ->integer()
+                        ->minValue(0)
+                        ->maxValue(1000)
+                        ->default(10)
+                        ->required()
+                        ->columnSpan(1),
                     Forms\Components\Toggle::make('is_active')
                         ->default(true)
                         ->columnSpan(1),

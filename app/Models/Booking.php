@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Exceptions\BookingDoesNotFit;
 use App\Jobs\SendBookingCancelledNotification;
 use App\Jobs\SendBookingConfirmationNotification;
+use App\Support\Availability;
 use Database\Factories\BookingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 
 #[Fillable(['user_id', 'hotel_id', 'pet_id', 'check_in', 'check_out', 'status', 'notes', 'total_price'])]
 class Booking extends Model
@@ -25,21 +28,6 @@ class Booking extends Model
 
     protected static function booted(): void
     {
-        static::updating(function (Booking $booking) {
-            if (! $booking->isDirty('status')) {
-                return;
-            }
-
-            $original = $booking->getOriginal('status');
-            $new = $booking->status;
-
-            if ($new === 'confirmed' && $original !== 'confirmed') {
-                self::adjustAvailability($booking, -1);
-            } elseif ($new === 'cancelled' && in_array($original, ['confirmed', 'completed'])) {
-                self::adjustAvailability($booking, 1);
-            }
-        });
-
         static::updated(function (Booking $booking) {
             if (! $booking->wasChanged('status')) {
                 return;
@@ -56,13 +44,26 @@ class Booking extends Model
         });
     }
 
-    private static function adjustAvailability(Booking $booking, int $delta): void
+    /**
+     * Confirm a pending request if the hotel still has room for every night.
+     *
+     * Pending requests do not hold a spot, so the check that matters happens
+     * here. The hotel row is locked for the duration so two confirms cannot
+     * both take the last spot.
+     *
+     * @throws BookingDoesNotFit
+     */
+    public function confirm(): void
     {
-        // Use whereBetween with Carbon so the query works across SQLite and PostgreSQL.
-        // check_out is the departure date (not a night), so the range is [check_in, check_out - 1 day].
-        HotelAvailability::where('hotel_id', $booking->hotel_id)
-            ->whereBetween('date', [$booking->check_in, $booking->check_out->copy()->subDay()])
-            ->increment('available_spots', $delta);
+        DB::transaction(function () {
+            $hotel = PetHotel::whereKey($this->hotel_id)->lockForUpdate()->firstOrFail();
+
+            if (! Availability::fits($hotel, $this->check_in, $this->check_out)) {
+                throw new BookingDoesNotFit;
+            }
+
+            $this->update(['status' => 'confirmed']);
+        });
     }
 
     public function user(): BelongsTo

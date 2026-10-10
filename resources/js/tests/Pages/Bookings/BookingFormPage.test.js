@@ -95,3 +95,33 @@ describe('BookingFormPage — no pricing warning', () => {
         expect(w.text()).not.toContain('no pricing listed for')
     })
 })
+
+describe('BookingFormPage — check-in and check-out times', () => {
+    it('shows the hotel times when the hotel has them', () => {
+        const w = mount(BookingFormPage, {
+            props: { hotel: baseHotel, pets: [{ id: 1, name: 'Buddy', species: 'dog' }], times: { check_in: '2:00 PM', check_out: '12:00 PM' } },
+        })
+        expect(w.text()).toContain('Check-in from 2:00 PM · check-out by 12:00 PM')
+    })
+
+    it('shows no times line when the hotel has none', () => {
+        const w = mountPage([{ id: 1, name: 'Buddy', species: 'dog' }])
+        expect(w.text()).not.toContain('Check-in from')
+    })
+})
+
+describe('BookingFormPage — date errors', () => {
+    it('shows the server message for a date error', () => {
+        formState.errors = { check_in: 'The hotel is full or closed on at least one night of this stay.' }
+        const w = mountPage([{ id: 1, name: 'Buddy', species: 'dog' }])
+        expect(w.text()).toContain('The hotel is full or closed on at least one night of this stay.')
+        formState.errors = {}
+    })
+
+    it('shows the check-out error on its own', () => {
+        formState.errors = { check_out: 'Please select a check-out date.' }
+        const w = mountPage([{ id: 1, name: 'Buddy', species: 'dog' }])
+        expect(w.text()).toContain('Please select a check-out date.')
+        formState.errors = {}
+    })
+})

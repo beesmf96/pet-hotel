@@ -85,3 +85,20 @@ describe('BookingDetailPage — status badge', () => {
         expect(w.text()).toContain('Cancelled')
     })
 })
+
+describe('BookingDetailPage — check-in and check-out times', () => {
+    it('adds the hotel times to the dates', () => {
+        usePage.mockReturnValue({ props: { flash: {} } })
+        const w = mount(BookingDetailPage, {
+            props: { booking: baseBooking, times: { check_in: '2:00 PM', check_out: '12:00 PM' } },
+        })
+        expect(w.text()).toContain(', from 2:00 PM')
+        expect(w.text()).toContain(', by 12:00 PM')
+    })
+
+    it('shows the dates alone when the hotel has no times', () => {
+        const w = mountPage(baseBooking)
+        expect(w.text()).not.toContain(', from ')
+        expect(w.text()).not.toContain(', by ')
+    })
+})

@@ -197,27 +197,46 @@ class PetHotelTest extends TestCase
         $availability = HotelAvailability::create([
             'hotel_id' => $hotel->id,
             'date' => now()->addDay()->toDateString(),
-            'available_spots' => 5,
-            'is_blocked' => false,
         ]);
 
         $this->assertInstanceOf(BelongsTo::class, $availability->hotel());
         $this->assertEquals($hotel->id, $availability->hotel->id);
     }
 
-    public function test_availability_casts_spots_and_blocked_flag(): void
+    public function test_availability_casts_capacity_and_blocked_flag(): void
     {
         $hotel = $this->makeHotel();
         $availability = HotelAvailability::create([
             'hotel_id' => $hotel->id,
             'date' => now()->addDay()->toDateString(),
-            'available_spots' => '3',
+            'capacity' => '3',
             'is_blocked' => 1,
         ]);
 
         $fresh = $availability->fresh();
 
-        $this->assertSame(3, $fresh->available_spots);
+        $this->assertSame(3, $fresh->capacity);
         $this->assertTrue($fresh->is_blocked);
+    }
+
+    public function test_availability_capacity_may_be_left_to_the_hotel(): void
+    {
+        $hotel = $this->makeHotel();
+        $availability = HotelAvailability::create([
+            'hotel_id' => $hotel->id,
+            'date' => now()->addDay()->toDateString(),
+            'is_blocked' => true,
+        ]);
+
+        $this->assertNull($availability->fresh()->capacity);
+        $this->assertTrue($hotel->availabilities->contains($availability));
+    }
+
+    public function test_hotel_capacity_defaults_to_ten(): void
+    {
+        $hotel = $this->makeHotel();
+
+        $this->assertSame(10, $hotel->capacity);
+        $this->assertSame(10, $hotel->fresh()->capacity);
     }
 }

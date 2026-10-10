@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBookingRequest;
 use App\Jobs\SendBookingRequestNotification;
 use App\Models\Booking;
-use App\Models\HotelAvailability;
 use App\Models\PetHotel;
+use App\Support\Availability;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -16,45 +16,45 @@ class BookingController extends Controller
 {
     public function create(string $slug): Response
     {
-        $hotel = PetHotel::where('slug', $slug)->with('pricing')->firstOrFail();
+        $hotel = PetHotel::where('slug', $slug)->with(['pricing', 'policy'])->firstOrFail();
         $pets = auth()->user()->pets()->get(['id', 'name', 'species']);
 
         return Inertia::render('Bookings/BookingFormPage', [
             'hotel' => $hotel,
             'pets' => $pets,
+            'times' => $hotel->policy?->stayTimes(),
         ]);
     }
 
     public function store(StoreBookingRequest $request, string $slug): RedirectResponse
     {
-        $booking = DB::transaction(function () use ($request, $slug): Booking {
-            $hotel = PetHotel::where('slug', $slug)->with('pricing')->firstOrFail();
-            $pet = $request->user()->pets()->findOrFail($request->pet_id);
+        $hotel = PetHotel::where('slug', $slug)->with('pricing')->firstOrFail();
+        $pet = $request->user()->pets()->findOrFail($request->pet_id);
 
-            $checkIn = $request->date('check_in');
-            $checkOut = $request->date('check_out');
-            $nights = $checkIn->diffInDays($checkOut);
+        $checkIn = $request->date('check_in');
+        $checkOut = $request->date('check_out');
 
-            HotelAvailability::where('hotel_id', $hotel->id)
-                ->whereBetween('date', [$checkIn->toDateString(), $checkOut->copy()->subDay()->toDateString()])
-                ->lockForUpdate()
-                ->get();
-
-            $pricing = $hotel->pricing->firstWhere('pet_type', $pet->species);
-            $pricePerNight = $pricing ? (float) $pricing->price_per_night : 0;
-            $totalPrice = $pricePerNight * $nights;
-
-            return Booking::create([
-                'user_id' => $request->user()->id,
-                'hotel_id' => $hotel->id,
-                'pet_id' => $pet->id,
-                'check_in' => $checkIn,
-                'check_out' => $checkOut,
-                'status' => 'pending',
-                'notes' => $request->notes,
-                'total_price' => $totalPrice,
+        // A request does not hold a spot (confirming does, see Booking::confirm()),
+        // but there is no point sending one for nights the hotel cannot take.
+        if (! Availability::fits($hotel, $checkIn, $checkOut)) {
+            throw ValidationException::withMessages([
+                'check_in' => 'The hotel is full or closed on at least one night of this stay. Please pick other dates.',
             ]);
-        });
+        }
+
+        $pricing = $hotel->pricing->firstWhere('pet_type', $pet->species);
+        $pricePerNight = $pricing ? (float) $pricing->price_per_night : 0;
+
+        $booking = Booking::create([
+            'user_id' => $request->user()->id,
+            'hotel_id' => $hotel->id,
+            'pet_id' => $pet->id,
+            'check_in' => $checkIn,
+            'check_out' => $checkOut,
+            'status' => 'pending',
+            'notes' => $request->notes,
+            'total_price' => $pricePerNight * $checkIn->diffInDays($checkOut),
+        ]);
 
         SendBookingRequestNotification::dispatch($booking);
 
@@ -65,8 +65,11 @@ class BookingController extends Controller
     {
         $this->authorize('view', $booking);
 
+        $booking->load(['hotel.policy', 'pet']);
+
         return Inertia::render('Bookings/BookingConfirmationPage', [
-            'booking' => $booking->load(['hotel', 'pet']),
+            'booking' => $booking,
+            'times' => $booking->hotel->policy?->stayTimes(),
         ]);
     }
 
@@ -96,9 +99,10 @@ class BookingController extends Controller
     {
         $this->authorize('view', $booking);
 
-        $booking->load(['hotel', 'pet']);
+        $booking->load(['hotel.policy', 'pet']);
 
         return Inertia::render('Bookings/BookingDetailPage', [
+            'times' => $booking->hotel->policy?->stayTimes(),
             'booking' => [
                 'id' => $booking->id,
                 'hotel' => [

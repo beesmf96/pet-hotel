@@ -5,6 +5,7 @@ import UiButton from '@/Components/Ui/UiButton.vue';
 
 defineProps({
     booking: { type: Object, required: true },
+    times: { type: Object, default: null },
 });
 
 const { formatDate } = useFormatDate();
@@ -54,11 +55,17 @@ const { formatDate } = useFormatDate();
                 </div>
                 <div class="flex justify-between gap-4">
                     <span class="font-semibold text-moss">Check-in</span>
-                    <span class="font-bold">{{ formatDate(booking.check_in, { weekday: true }) }}</span>
+                    <span class="font-bold"
+                        >{{ formatDate(booking.check_in, { weekday: true })
+                        }}<template v-if="times">, from {{ times.check_in }}</template></span
+                    >
                 </div>
                 <div class="flex justify-between gap-4">
                     <span class="font-semibold text-moss">Check-out</span>
-                    <span class="font-bold">{{ formatDate(booking.check_out, { weekday: true }) }}</span>
+                    <span class="font-bold"
+                        >{{ formatDate(booking.check_out, { weekday: true })
+                        }}<template v-if="times">, by {{ times.check_out }}</template></span
+                    >
                 </div>
                 <div class="border-t-2 border-ink/10 pt-3 flex justify-between items-baseline">
                     <span class="font-semibold text-moss">Total</span>

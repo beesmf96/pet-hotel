@@ -72,6 +72,38 @@ class NotificationTest extends TestCase
         $this->assertStringContainsString('$150.00', $lines);
     }
 
+    public function test_booking_requested_mail_gives_the_hotel_times(): void
+    {
+        $booking = Booking::factory()->create();
+        $booking->hotel->policy()->create(['check_in_time' => '14:00', 'check_out_time' => '12:00']);
+
+        $lines = implode(' ', (new BookingRequested($booking->fresh()))->toMail($booking->user)->introLines);
+
+        $this->assertStringContainsString($booking->check_in->format('D, d M Y').', from 2:00 PM', $lines);
+        $this->assertStringContainsString($booking->check_out->format('D, d M Y').', by 12:00 PM', $lines);
+    }
+
+    public function test_booking_confirmed_mail_gives_the_hotel_times(): void
+    {
+        $booking = Booking::factory()->confirmed()->create();
+        $booking->hotel->policy()->create(['check_in_time' => '09:30', 'check_out_time' => '18:00']);
+
+        $lines = implode(' ', (new BookingConfirmed($booking->fresh()))->toMail($booking->user)->introLines);
+
+        $this->assertStringContainsString(', from 9:30 AM', $lines);
+        $this->assertStringContainsString(', by 6:00 PM', $lines);
+    }
+
+    public function test_booking_mail_leaves_out_times_without_a_policy(): void
+    {
+        $booking = Booking::factory()->create();
+
+        $lines = implode(' ', (new BookingRequested($booking))->toMail($booking->user)->introLines);
+
+        $this->assertStringNotContainsString(', from ', $lines);
+        $this->assertStringNotContainsString(', by ', $lines);
+    }
+
     public function test_booking_requested_database_payload_describes_the_booking(): void
     {
         $hotel = PetHotel::factory()->create(['name' => 'Happy Paws']);

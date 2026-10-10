@@ -144,6 +144,40 @@ describe('AvailabilityCalendar — selection state machine', () => {
         await pastCell.trigger('click');
         expect(w.emitted('update:modelValue')).toBeFalsy();
     });
+
+    function mountWithDays(days, modelValue) {
+        stubFetch(days);
+        return mount(AvailabilityCalendar, {
+            props: { hotelSlug: 'paws-inn', selectable: true, modelValue },
+        });
+    }
+
+    it('lets a full date be the check-out, as it is not a night', async () => {
+        const w = mountWithDays(
+            { '2030-06-22': makeDay('2030-06-22', 'full', 0) },
+            { checkIn: '2030-06-20', checkOut: '' },
+        );
+        await clickDate(w, '2030-06-22');
+        expect(w.emitted('update:modelValue')[0][0]).toEqual({ checkIn: '2030-06-20', checkOut: '2030-06-22' });
+    });
+
+    it('starts again from the clicked date when the stay would cross a closed night', async () => {
+        const w = mountWithDays(
+            { '2030-06-21': makeDay('2030-06-21', 'blocked') },
+            { checkIn: '2030-06-20', checkOut: '' },
+        );
+        await clickDate(w, '2030-06-23');
+        expect(w.emitted('update:modelValue')[0][0]).toEqual({ checkIn: '2030-06-23', checkOut: '' });
+    });
+
+    it('does not emit when the stay would cross a full night and ends on a closed day', async () => {
+        const w = mountWithDays(
+            { '2030-06-21': makeDay('2030-06-21', 'full', 0), '2030-06-23': makeDay('2030-06-23', 'blocked') },
+            { checkIn: '2030-06-20', checkOut: '' },
+        );
+        await clickDate(w, '2030-06-23');
+        expect(w.emitted('update:modelValue')).toBeFalsy();
+    });
 });
 
 describe('AvailabilityCalendar — visual state classes', () => {
@@ -176,5 +210,47 @@ describe('AvailabilityCalendar — visual state classes', () => {
         const cells = w.findAll('[class*="grid-cols-7"] > div');
         const rangeCell = cells.find((c) => c.text() === '20');
         expect(rangeCell.classes()).toContain('bg-mustard');
+    });
+});
+
+describe('AvailabilityCalendar — limited days and spot labels', () => {
+    async function cellFor(days, dayNumber) {
+        stubFetch(days);
+        const w = mount(AvailabilityCalendar, { props: { hotelSlug: 'paws-inn' } });
+        await flushPromises();
+        return w.findAll('[class*="grid-cols-7"] > div').find((c) => c.text() === String(dayNumber));
+    }
+
+    it('colours a limited day orange', async () => {
+        const cell = await cellFor({ '2030-06-20': makeDay('2030-06-20', 'limited', 1) }, 20);
+        expect(cell.classes()).toContain('bg-orange-50');
+    });
+
+    it('keeps an available day green even with few spots', async () => {
+        const cell = await cellFor({ '2030-06-20': makeDay('2030-06-20', 'available', 2) }, 20);
+        expect(cell.classes()).toContain('bg-green-50');
+    });
+
+    it('labels an open day with its spots left', async () => {
+        expect((await cellFor({ '2030-06-20': makeDay('2030-06-20', 'limited', 1) }, 20)).attributes('title')).toBe(
+            '1 spot left',
+        );
+        expect((await cellFor({ '2030-06-21': makeDay('2030-06-21', 'available', 4) }, 21)).attributes('title')).toBe(
+            '4 spots left',
+        );
+    });
+
+    it('labels full and closed days', async () => {
+        expect((await cellFor({ '2030-06-20': makeDay('2030-06-20', 'full', 0) }, 20)).attributes('title')).toBe(
+            'Full',
+        );
+        expect((await cellFor({ '2030-06-20': makeDay('2030-06-20', 'blocked') }, 20)).attributes('title')).toBe(
+            'Closed',
+        );
+    });
+
+    it('leaves a day with no data unlabelled', async () => {
+        const cell = await cellFor({}, 20);
+        expect(cell.attributes('title')).toBe('');
     });
 });

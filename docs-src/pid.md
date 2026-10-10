@@ -11,8 +11,8 @@ order: 10
 | Field | Value |
 |-------|-------|
 | Project name | Pet Hotel — Pet Boarding Marketplace |
-| Document version | 1.1 |
-| Date | 2026-09-16 |
+| Document version | 1.2 |
+| Date | 2026-10-10 |
 | Status | Baselined |
 | Author | *TBC* |
 | Approver / Sponsor | *TBC* |
@@ -114,7 +114,8 @@ each request — which keeps the MVP simple and avoids payment integration.
 | Native mobile apps | Responsive web is sufficient for MVP |
 | Real-time chat between customer and hotel | Email and notifications cover the MVP need |
 | Additional OAuth providers | Google only; others add support cost without demand |
-| Full hotel-owner self-service listing management | Owner panel covers bookings only; hotels are managed by admins |
+| Full hotel-owner self-service listing management | Owners manage bookings, capacity, closed dates and check-in/out times; the listing itself (name, photos, pricing, policy text) is managed by admins |
+| Daycare (same-day stays, no night) | Boarding by the night covers the MVP. Daycare needs its own day price, its own capacity, a one-date booking form, and usually repeat bookings and a first-visit temperament check. Revisit if test hotels offer it |
 | Multi-language / multi-currency | Single market at launch |
 | Automated availability sync with external calendars | No integration partners identified |
 
@@ -226,7 +227,7 @@ delivered. The session log in `docs-src/log/` is now the record of what shipped.
 
 Post-MVP work delivered outside the original module list: Google OAuth, hotel-owner
 panel, path-based panel routing, object storage for photos, OWASP security hardening,
-queue worker hardening, password change, the paper trail (session log, ADRs,
+queue worker hardening, password change, owner availability and hotel settings, the paper trail (session log, ADRs,
 knowledge, intake), and backend and frontend coverage raising. Dates for each milestone are *TBC* — reconstruct from git history if a
 dated schedule is required.
 
@@ -238,7 +239,7 @@ dated schedule is required.
 |----|------|-----------|--------|------------|
 | R1 | Manual booking confirmation does not scale as volume grows | Medium | High | Monitor pending-booking volume via the dashboard widget; automate confirmation in a later phase |
 | R2 | Photos lost on redeploy if `PHOTO_DISK` is left on the local disk | Medium | High | Deployment checklist mandates `s3` on ephemeral hosting; documented in the stack reference |
-| R3 | Availability drift — spots not adjusting correctly | Low | High | Availability side-effects are centralised in `Booking::booted()` and covered by tests; never duplicated elsewhere |
+| R3 | Availability drift — spots not adjusting correctly | Low | High | Spots left are never stored: `App\Support\Availability` computes them from capacity and bookings, and `Booking::confirm()` checks them under a row lock. Covered by tests |
 | R4 | Dependency vulnerabilities accumulate | Medium | Medium | Advisory review and dependency bumps; OWASP hardening plan completed |
 | R5 | Email deliverability in production (spam filtering) | Medium | Medium | Use a reputable transactional provider; verify sending domain before go-live |
 | R6 | Coverage gate blocks urgent fixes | Low | Low | Add tests with the fix; the floor is not lowered |
@@ -280,3 +281,4 @@ document and, where implementation work follows, a plan file in `.claude/plans/`
 |---------|------|--------|--------|
 | 1.0 | 2026-08-08 | Initial baseline | *TBC* |
 | 1.1 | 2026-09-16 | Audit against the code: sorting claims, coverage floors, branching model, CI triggers, stack versions, post-MVP list; task list retired | *TBC* |
+| 1.2 | 2026-10-10 | Owner availability and hotel settings delivered; daycare recorded as out of scope | *TBC* |

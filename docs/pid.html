@@ -23,11 +23,11 @@
 </tr>
 <tr>
 <td>Document version</td>
-<td>1.1</td>
+<td>1.2</td>
 </tr>
 <tr>
 <td>Date</td>
-<td>2026-09-16</td>
+<td>2026-10-10</td>
 </tr>
 <tr>
 <td>Status</td>
@@ -209,7 +209,11 @@ each request — which keeps the MVP simple and avoids payment integration.</p>
 </tr>
 <tr>
 <td>Full hotel-owner self-service listing management</td>
-<td>Owner panel covers bookings only; hotels are managed by admins</td>
+<td>Owners manage bookings, capacity, closed dates and check-in/out times; the listing itself (name, photos, pricing, policy text) is managed by admins</td>
+</tr>
+<tr>
+<td>Daycare (same-day stays, no night)</td>
+<td>Boarding by the night covers the MVP. Daycare needs its own day price, its own capacity, a one-date booking form, and usually repeat bookings and a first-visit temperament check. Revisit if test hotels offer it</td>
 </tr>
 <tr>
 <td>Multi-language / multi-currency</td>
@@ -476,7 +480,7 @@ delivered. The session log in <code>docs-src/log/</code> is now the record of wh
 </table></div>
 <p>Post-MVP work delivered outside the original module list: Google OAuth, hotel-owner
 panel, path-based panel routing, object storage for photos, OWASP security hardening,
-queue worker hardening, password change, the paper trail (session log, ADRs,
+queue worker hardening, password change, owner availability and hotel settings, the paper trail (session log, ADRs,
 knowledge, intake), and backend and frontend coverage raising. Dates for each milestone are <em>TBC</em> — reconstruct from git history if a
 dated schedule is required.</p>
 <hr />
@@ -511,7 +515,7 @@ dated schedule is required.</p>
 <td>Availability drift — spots not adjusting correctly</td>
 <td>Low</td>
 <td>High</td>
-<td>Availability side-effects are centralised in <code>Booking::booted()</code> and covered by tests; never duplicated elsewhere</td>
+<td>Spots left are never stored: <code>App\Support\Availability</code> computes them from capacity and bookings, and <code>Booking::confirm()</code> checks them under a row lock. Covered by tests</td>
 </tr>
 <tr>
 <td>R4</td>
@@ -595,6 +599,12 @@ document and, where implementation work follows, a plan file in <code>.claude/pl
 <td>1.1</td>
 <td>2026-09-16</td>
 <td>Audit against the code: sorting claims, coverage floors, branching model, CI triggers, stack versions, post-MVP list; task list retired</td>
+<td><em>TBC</em></td>
+</tr>
+<tr>
+<td>1.2</td>
+<td>2026-10-10</td>
+<td>Owner availability and hotel settings delivered; daycare recorded as out of scope</td>
 <td><em>TBC</em></td>
 </tr>
 </tbody>
