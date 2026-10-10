@@ -2,7 +2,7 @@
 title: Booking review fixes — currency, RM 0 bookings, cancel wording, double queuing
 description: Prices print through one currency setting and are summed in sen; a pet type with no price cannot be booked; the cancellation email says who cancelled; customer notifications are queued once; deferred requests go in a new backlog.
 date: 2026-10-10
-pr: ~
+pr: 63
 plan: ~
 ---
 
