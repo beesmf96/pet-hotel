@@ -2,7 +2,7 @@
 title: Owners are told about new and cancelled requests
 description: Every owner of a hotel now gets an email and an owner-panel notification when a guest requests or cancels a stay, and the Bookings menu shows the pending count.
 date: 2026-10-10
-pr: ~
+pr: 62
 plan: plan-owner-notifications
 ---
 

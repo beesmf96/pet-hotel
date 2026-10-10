@@ -2,7 +2,7 @@
 plan: owner-notifications
 status: implemented
 branch: feature/owner-notifications
-pr: ~
+pr: 62
 implemented: 2026-10-10
 ---
 
