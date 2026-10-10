@@ -13,6 +13,7 @@ import { petTypeLabel } from '@/petTypes';
 const props = defineProps({
     hotel: { type: Object, required: true },
     pets: { type: Array, default: () => [] },
+    times: { type: Object, default: null },
 });
 
 const form = useForm({
@@ -92,12 +93,17 @@ function submit() {
                     :model-value="{ checkIn: form.check_in, checkOut: form.check_out }"
                     @update:model-value="onDatesSelected"
                 />
+
+                <p v-if="times" class="-mt-4 text-sm font-medium text-moss">
+                    Check-in from <strong class="text-ink">{{ times.check_in }}</strong> · check-out by
+                    <strong class="text-ink">{{ times.check_out }}</strong>
+                </p>
                 <div
                     v-if="form.errors.check_in || form.errors.check_out"
                     class="-mt-4 text-sm font-semibold text-coral"
                 >
-                    <p v-if="form.errors.check_in">Please select a check-in date.</p>
-                    <p v-if="form.errors.check_out">Please select a check-out date.</p>
+                    <p v-if="form.errors.check_in">{{ form.errors.check_in }}</p>
+                    <p v-if="form.errors.check_out">{{ form.errors.check_out }}</p>
                 </div>
 
                 <!-- Notes -->

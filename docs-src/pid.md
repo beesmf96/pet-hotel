@@ -238,7 +238,7 @@ dated schedule is required.
 |----|------|-----------|--------|------------|
 | R1 | Manual booking confirmation does not scale as volume grows | Medium | High | Monitor pending-booking volume via the dashboard widget; automate confirmation in a later phase |
 | R2 | Photos lost on redeploy if `PHOTO_DISK` is left on the local disk | Medium | High | Deployment checklist mandates `s3` on ephemeral hosting; documented in the stack reference |
-| R3 | Availability drift — spots not adjusting correctly | Low | High | Availability side-effects are centralised in `Booking::booted()` and covered by tests; never duplicated elsewhere |
+| R3 | Availability drift — spots not adjusting correctly | Low | High | Spots left are never stored: `App\Support\Availability` computes them from capacity and bookings, and `Booking::confirm()` checks them under a row lock. Covered by tests |
 | R4 | Dependency vulnerabilities accumulate | Medium | Medium | Advisory review and dependency bumps; OWASP hardening plan completed |
 | R5 | Email deliverability in production (spam filtering) | Medium | Medium | Use a reputable transactional provider; verify sending domain before go-live |
 | R6 | Coverage gate blocks urgent fixes | Low | Low | Add tests with the fix; the floor is not lowered |

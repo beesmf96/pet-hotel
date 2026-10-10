@@ -24,7 +24,7 @@ users ──< bookings ──> pets
 users >─< pet_hotels  (pivot: hotel_owner, has role column)
 pet_hotels ──< facilities, photos, pricing (per pet_type), bookings
 pet_hotels ──1 policies
-pet_hotels ──< hotel_availabilities   (one row per date, available_spots INT)
+pet_hotels ──< hotel_availabilities   (date overrides: is_blocked, capacity NULL = hotel's)
 bookings   ──1 reviews
 ```
 
@@ -58,8 +58,10 @@ service; any hosted deployment needs its own long-running worker process.
 
 ## Traps and decisions
 
-- **Availability side-effects live in `Booking::booted()` only** — spots adjust on
-  `updating`, notification jobs fire on `updated`. Never replicate this elsewhere.
+- **Spots left are never stored.** `App\Support\Availability` computes them: the night's
+  capacity (`pet_hotels.capacity`, or a `hotel_availabilities` override) minus confirmed and
+  completed bookings. Confirm only through `Booking::confirm()`, which checks under a lock on
+  the hotel row. Notification jobs fire from `Booking::booted()` on `updated`, after commit.
 - **Two Filament panels routed by path** — `/admin` requires `is_admin`, `/owner` requires
   `ownedHotels()->exists()`. Do not add `->domain()` to a panel without updating
   `SecurityHeaders::isFilamentRequest()`, which scopes the `'unsafe-eval'` CSP relaxation.
@@ -95,8 +97,8 @@ service; any hosted deployment needs its own long-running worker process.
 
 `tests/Feature/BookingTest.php` is the canonical shape. Factories only, never seeders
 (`HotelAvailability` has none — `create([...])` it; `User::factory()->admin()` and
-`->hotelOwner($hotel)` exist). Booking tests assert `available_spots` decrements on confirm
-and re-increments on cancel. Filament resources are tested with `Livewire::test(...)` under
+`->hotelOwner($hotel)` exist). Booking tests assert spots left drop on confirm
+and come back on cancel. Filament resources are tested with `Livewire::test(...)` under
 `tests/Feature/Filament/`, not over HTTP. Socialite is mocked at the facade — see
 `GoogleAuthTest.php`. Vitest specs live in `resources/js/tests/` mirroring `resources/js/`;
 when a page gains a prop-driven `v-if` branch, add one test per branch.
@@ -133,4 +135,4 @@ feature/{name}  ──PR──▶  dev  ──PR (release)──▶  main
 
 CI (`.github/workflows/ci.yml`) runs Pint, PHPUnit with pcov coverage, `composer audit`,
 `bun audit`, ESLint, and Vitest on every PR to and push to `main` or `dev`. The backend job
-fails below `MIN_COVERAGE` (`95`) — raise it as coverage improves, never lower it.
+fails below `MIN_COVERAGE` (`98`) — raise it as coverage improves, never lower it.

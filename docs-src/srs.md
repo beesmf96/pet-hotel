@@ -10,8 +10,8 @@ order: 12
 
 | Field | Value |
 |-------|-------|
-| Document version | 1.1 |
-| Date | 2026-09-16 |
+| Document version | 1.2 |
+| Date | 2026-10-10 |
 | Status | Baselined against the delivered MVP |
 | Supersedes | `docs/pet-hotel-boarding-mvp-v1.html` (retained as the original scope statement) |
 | Related | [Project Initiation Document](pid.html) |
@@ -48,7 +48,8 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | Hotel owner | A user linked to a `pet_hotel` through the `hotel_owner` pivot |
 | Administrator | A user with `is_admin = true` |
 | Booking request | A booking in `pending` status, not yet confirmed |
-| Spot | One unit of capacity for one hotel on one date (`hotel_availabilities.available_spots`) |
+| Spot | Room for one pet on one night. Spots left on a night = that night's capacity (`pet_hotels.capacity`, or a `hotel_availabilities.capacity` override) − confirmed and completed bookings covering it |
+| Night | A date a pet sleeps over: a stay covers check-in up to, not including, check-out |
 | Completed stay | A confirmed booking whose check-out date has passed |
 | Panel | A Filament admin interface — `/admin` or `/owner` |
 
@@ -118,8 +119,9 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | FR-19 | A verified customer shall submit a booking request selecting a pet, check-in and check-out dates, and optional notes. | M | `bookings.create`, `bookings.store` · `tests/Feature/BookingTest.php` |
 | FR-20 | A new booking shall be created with status `pending`; the system shall never confirm it automatically. | M | `BookingController@store` · `tests/Feature/BookingTest.php` |
 | FR-21 | The system shall calculate total price from the hotel's per-night rate for the pet's type and the number of nights. Where the hotel has no rate for that pet type the total is currently 0 — see OI-5. | M | `BookingController@store` · `tests/Feature/BookingTest.php` |
-| FR-22 | The system shall reject a booking whose dates exceed available spots or fall on blocked dates. **Not implemented** — `BookingController@store` locks the availability rows for update but never checks `available_spots` or `is_blocked`. See OI-4. | M | *gap* |
-| FR-23 | Available spots shall be adjusted as a side effect of a booking status change, in the `Booking` model only. | M | `Booking::booted()` · `tests/Feature/BookingTest.php` |
+| FR-22 | The system shall reject a booking request, and refuse to confirm a booking, when any night of the stay is closed or has no spot left. The check-out day is not a night. | M | `Availability::fits()`, `BookingController@store`, `Booking::confirm()` · `tests/Feature/BookingTest.php`, `tests/Unit/Support/AvailabilityTest.php` |
+| FR-23 | Spots left shall be computed from capacity and confirmed and completed bookings, never stored. Confirming takes a spot on each night; cancelling frees it. Pending requests hold no spot. | M | `App\Support\Availability` · `tests/Unit/Support/AvailabilityTest.php` |
+| FR-23a | Check-in and check-out times, when the hotel has set them, shall appear on the booking form, confirmation page, booking detail page, and the request and confirmed emails. | S | `PetHotelPolicy::stayTimes()` · `tests/Feature/BookingTest.php`, `tests/Feature/NotificationTest.php` |
 | FR-24 | A customer shall view a confirmation screen stating the request is pending. | M | `bookings.confirmation` · `tests/Feature/BookingTest.php` |
 | FR-25 | A customer shall list their bookings with status badges and open any one for detail. | M | `bookings.index`, `bookings.show` · `tests/Feature/BookingTest.php` |
 | FR-26 | A customer shall cancel their own booking while it is still `pending`. Confirmed bookings are cancelled by the hotel or an administrator. | M | `bookings.cancel` · `tests/Feature/BookingTest.php` |
@@ -162,6 +164,8 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | FR-43 | Only users owning at least one hotel shall reach the owner panel at `/owner`. | M | `HotelOwnerPanelProvider` · `tests/Feature/Filament/PanelRoutingTest.php` |
 | FR-44 | A hotel owner shall see bookings for their own hotels only, filterable by status. | M | `HotelOwner\BookingResource` · `tests/Feature/HotelOwnerBookingTest.php` |
 | FR-45 | A hotel owner shall confirm or decline a booking for their own hotel. | M | `HotelOwner\BookingResource` · `tests/Feature/Filament/HotelOwner/BookingResourceTest.php` |
+| FR-46 | A hotel owner shall set their hotel's normal capacity and check-in and check-out times. | M | `HotelOwner\Pages\HotelSettings` · `tests/Feature/Filament/HotelOwner/HotelSettingsTest.php` |
+| FR-47 | A hotel owner shall close a range of dates, set a different capacity for a range, and reset a range to normal. | M | `HotelOwner\AvailabilityResource` · `tests/Feature/Filament/HotelOwner/AvailabilityResourceTest.php` |
 
 ---
 
@@ -202,7 +206,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | NFR-14 | Backend line coverage shall not fall below the CI floor (currently 98%). Frontend line coverage shall not fall below its floor (currently 90%). | M | `.github/workflows/ci.yml` |
 | NFR-15 | PHP shall be formatted with Pint and JavaScript linted with ESLint; both are enforced in CI. | M | `.github/workflows/ci.yml` |
 | NFR-16 | Pages shall be delivered through Inertia. JSON responses are permitted only for the hotel availability and notification widgets. | M | `CLAUDE.md` |
-| NFR-17 | Availability side effects shall exist in exactly one place, `Booking::booted()`. | M | `tests/Feature/BookingTest.php` |
+| NFR-17 | Spots left shall be computed in exactly one place, `App\Support\Availability`, and a booking shall be confirmed only through `Booking::confirm()`, which locks the hotel row. | M | `tests/Unit/Support/AvailabilityTest.php` |
 
 ### 4.5 Portability and Operations
 
@@ -238,7 +242,7 @@ constrain the data layer:
 |----|-------------|
 | DR-01 | Deletion shall cascade through foreign keys; soft deletes shall not be used. |
 | DR-02 | `users.google_id` shall be nullable and unique; `users.password` shall be nullable. |
-| DR-03 | Availability shall be stored as one row per hotel per date, holding `available_spots` and `is_blocked`. |
+| DR-03 | Each hotel shall store a normal `capacity`. A `hotel_availabilities` row is an owner's change to one date: `is_blocked`, and a nullable `capacity` (null keeps the hotel's). Dates without a row use the hotel's capacity. |
 | DR-04 | Pricing shall be stored per hotel per pet type. |
 | DR-05 | A review shall belong to exactly one booking. |
 
@@ -276,6 +280,6 @@ NFR-14/NFR-15 (CI quality gates).
 | OI-1 | The hotel `cancellation_policy` field is free text shown on the profile and is not enforced; customer cancellation is governed only by booking status (FR-26). Decide whether a machine-readable rule is wanted. | *TBC* |
 | OI-2 | No requirement covers what happens to reviews when a hotel is deleted beyond the cascade in DR-01. | *TBC* |
 | OI-3 | Distance sorting exists in the backend but has no UI control, and depends on coordinates that admins enter manually with no validation. Decide whether to expose it or remove it. | *TBC* |
-| OI-4 | **FR-22 is unimplemented.** A customer can book dates that are fully booked or blocked; spots go negative through `Booking::booted()`. The transaction in `BookingController@store` already takes `lockForUpdate()` on the availability rows, so the capacity check was intended — only the assertion is missing. Needs a fix and a regression test. | *TBC* |
+| OI-4 | ~~FR-22 is unimplemented.~~ Resolved 2026-10-10: spots are computed from capacity (FR-23), requests and confirms are checked (FR-22), and owners manage dates (FR-46, FR-47). | Closed |
 | OI-5 | A booking for a pet type the hotel has no pricing row for is created with `total_price = 0` rather than being rejected (FR-21). The form warns but still submits. | *TBC* |
 | OI-6 | Check-in and check-out dates in the search bar do not narrow results by availability (FR-12); they are only passed through. | *TBC* |

@@ -12,6 +12,11 @@ class HotelAvailabilitySeeder extends Seeder
 {
     use WithoutModelEvents;
 
+    /**
+     * Demo date changes for the next three months: every hotel is closed on
+     * Sundays and takes three pets on Saturdays. Every other night uses the
+     * hotel's normal capacity, so it gets no row.
+     */
     public function run(): void
     {
         $hotels = PetHotel::all();
@@ -19,26 +24,19 @@ class HotelAvailabilitySeeder extends Seeder
         $end = $today->copy()->addMonths(3)->endOfMonth();
 
         foreach ($hotels as $hotel) {
-            $cursor = $today->copy()->startOfMonth();
-            while ($cursor->lte($end)) {
-                $dayOfWeek = $cursor->dayOfWeek;
-                $isBlocked = $dayOfWeek === Carbon::SUNDAY;
-                $spots = match (true) {
-                    $isBlocked => 0,
-                    $dayOfWeek === Carbon::SATURDAY => rand(1, 3),
-                    default => rand(3, 10),
+            for ($cursor = $today->copy()->startOfMonth(); $cursor->lte($end); $cursor->addDay()) {
+                $override = match ($cursor->dayOfWeek) {
+                    Carbon::SUNDAY => ['is_blocked' => true, 'capacity' => null],
+                    Carbon::SATURDAY => ['is_blocked' => false, 'capacity' => 3],
+                    default => null,
                 };
 
-                HotelAvailability::upsert([
-                    [
-                        'hotel_id' => $hotel->id,
-                        'date' => $cursor->format('Y-m-d'),
-                        'available_spots' => $spots,
-                        'is_blocked' => $isBlocked,
-                    ],
-                ], ['hotel_id', 'date'], ['available_spots', 'is_blocked']);
-
-                $cursor->addDay();
+                if ($override) {
+                    HotelAvailability::updateOrCreate(
+                        ['hotel_id' => $hotel->id, 'date' => $cursor->format('Y-m-d')],
+                        $override,
+                    );
+                }
             }
         }
     }

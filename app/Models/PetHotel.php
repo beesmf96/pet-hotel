@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[Fillable(['name', 'slug', 'description', 'address', 'city', 'lat', 'lng', 'cover_photo', 'is_active'])]
+#[Fillable(['name', 'slug', 'description', 'address', 'city', 'lat', 'lng', 'cover_photo', 'is_active', 'capacity'])]
 class PetHotel extends Model
 {
     /** @use HasFactory<PetHotelFactory> */
@@ -27,6 +27,16 @@ class PetHotel extends Model
      * @var list<string>
      */
     protected $appends = ['cover_photo_url'];
+
+    /**
+     * Mirrors the column default so a hotel made in memory (factories, the
+     * admin form before it is saved) has a capacity before it is reloaded.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = ['capacity' => 10];
+
+    protected $casts = ['capacity' => 'integer'];
 
     /**
      * The raw `cover_photo` column is left untouched — Filament's FileUpload
@@ -56,6 +66,11 @@ class PetHotel extends Model
     public function pricing(): HasMany
     {
         return $this->hasMany(PetHotelPricing::class, 'hotel_id');
+    }
+
+    public function availabilities(): HasMany
+    {
+        return $this->hasMany(HotelAvailability::class, 'hotel_id');
     }
 
     public function bookings(): HasMany

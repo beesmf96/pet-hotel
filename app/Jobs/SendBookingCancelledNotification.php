@@ -5,12 +5,12 @@ namespace App\Jobs;
 use App\Models\Booking;
 use App\Notifications\BookingCancelled;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldQueueAfterCommit;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class SendBookingCancelledNotification implements ShouldQueue
+class SendBookingCancelledNotification implements ShouldQueueAfterCommit
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 

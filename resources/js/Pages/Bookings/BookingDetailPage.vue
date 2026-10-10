@@ -12,6 +12,7 @@ import { petTypeLabel } from '@/petTypes';
 
 const props = defineProps({
     booking: { type: Object, required: true },
+    times: { type: Object, default: null },
 });
 
 const flash = computed(() => usePage().props.flash ?? {});
@@ -62,15 +63,23 @@ function cancelBooking() {
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-moss">Pet</dt>
-                        <dd class="font-medium text-ink">{{ booking.pet.name }} ({{ petTypeLabel(booking.pet.species) }})</dd>
+                        <dd class="font-medium text-ink">
+                            {{ booking.pet.name }} ({{ petTypeLabel(booking.pet.species) }})
+                        </dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-moss">Check-in</dt>
-                        <dd class="font-medium text-ink">{{ formatDate(booking.check_in, { weekday: true }) }}</dd>
+                        <dd class="font-medium text-ink">
+                            {{ formatDate(booking.check_in, { weekday: true })
+                            }}<template v-if="times">, from {{ times.check_in }}</template>
+                        </dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-moss">Check-out</dt>
-                        <dd class="font-medium text-ink">{{ formatDate(booking.check_out, { weekday: true }) }}</dd>
+                        <dd class="font-medium text-ink">
+                            {{ formatDate(booking.check_out, { weekday: true })
+                            }}<template v-if="times">, by {{ times.check_out }}</template>
+                        </dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-moss">Duration</dt>

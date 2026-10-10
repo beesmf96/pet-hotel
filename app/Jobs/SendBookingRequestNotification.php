@@ -5,12 +5,12 @@ namespace App\Jobs;
 use App\Models\Booking;
 use App\Notifications\BookingRequested;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldQueueAfterCommit;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class SendBookingRequestNotification implements ShouldQueue
+class SendBookingRequestNotification implements ShouldQueueAfterCommit
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -36,7 +36,7 @@ class SendBookingRequestNotification implements ShouldQueue
 
     public function handle(): void
     {
-        $this->booking->loadMissing(['hotel', 'user']);
+        $this->booking->loadMissing(['hotel.policy', 'user']);
         $this->booking->user->notify(new BookingRequested($this->booking));
     }
 }

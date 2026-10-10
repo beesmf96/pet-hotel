@@ -511,7 +511,7 @@ dated schedule is required.</p>
 <td>Availability drift — spots not adjusting correctly</td>
 <td>Low</td>
 <td>High</td>
-<td>Availability side-effects are centralised in <code>Booking::booted()</code> and covered by tests; never duplicated elsewhere</td>
+<td>Spots left are never stored: <code>App\Support\Availability</code> computes them from capacity and bookings, and <code>Booking::confirm()</code> checks them under a row lock. Covered by tests</td>
 </tr>
 <tr>
 <td>R4</td>

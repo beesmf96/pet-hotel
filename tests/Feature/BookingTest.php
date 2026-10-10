@@ -2,12 +2,17 @@
 
 namespace Tests\Feature;
 
+use App\Exceptions\BookingDoesNotFit;
+use App\Jobs\SendBookingConfirmationNotification;
 use App\Jobs\SendBookingRequestNotification;
 use App\Models\Booking;
 use App\Models\HotelAvailability;
+use App\Models\Pet;
 use App\Models\PetHotel;
 use App\Models\User;
+use App\Support\Availability;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
@@ -282,61 +287,187 @@ class BookingTest extends TestCase
             ->assertStatus(403);
     }
 
-    // ── Availability blocking ─────────────────────────────────────────────────
+    // ── Availability ──────────────────────────────────────────────────────────
 
-    public function test_confirming_booking_decrements_availability(): void
+    private function spotsLeft(PetHotel $hotel, string $date): int
     {
-        $user = User::factory()->create();
-        $hotel = PetHotel::factory()->create();
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
+        $night = Carbon::parse($date);
 
-        HotelAvailability::create(['hotel_id' => $hotel->id, 'date' => '2026-08-01', 'available_spots' => 5, 'is_blocked' => false]);
-        HotelAvailability::create(['hotel_id' => $hotel->id, 'date' => '2026-08-02', 'available_spots' => 5, 'is_blocked' => false]);
-
-        $booking = Booking::create([
-            'user_id' => $user->id,
-            'hotel_id' => $hotel->id,
-            'pet_id' => $pet->id,
-            'check_in' => '2026-08-01',
-            'check_out' => '2026-08-03',
-            'status' => 'pending',
-            'total_price' => 100,
-        ]);
-
-        $booking->update(['status' => 'confirmed']);
-
-        // Use the model to avoid date-format differences between SQLite and PostgreSQL
-        $spots = fn ($date) => HotelAvailability::where('hotel_id', $hotel->id)
-            ->whereDate('date', $date)->value('available_spots');
-
-        $this->assertEquals(4, $spots('2026-08-01'));
-        $this->assertEquals(4, $spots('2026-08-02'));
+        return Availability::nights($hotel->fresh(), $night, $night)[$date]['spots_left'];
     }
 
-    public function test_cancelling_confirmed_booking_restores_availability(): void
+    public function test_confirming_booking_takes_a_spot_on_each_night(): void
     {
-        $user = User::factory()->create();
-        $hotel = PetHotel::factory()->create();
-        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
+        Queue::fake();
 
-        HotelAvailability::create(['hotel_id' => $hotel->id, 'date' => '2026-08-01', 'available_spots' => 4, 'is_blocked' => false]);
-
-        $booking = Booking::create([
-            'user_id' => $user->id,
-            'hotel_id' => $hotel->id,
-            'pet_id' => $pet->id,
-            'check_in' => '2026-08-01',
-            'check_out' => '2026-08-02',
-            'status' => 'confirmed',
-            'total_price' => 50,
+        $hotel = PetHotel::factory()->create(['capacity' => 5]);
+        $booking = Booking::factory()->for($hotel, 'hotel')->create([
+            'check_in' => '2030-08-01',
+            'check_out' => '2030-08-03',
+            'status' => 'pending',
         ]);
+
+        $this->assertEquals(5, $this->spotsLeft($hotel, '2030-08-01'));
+
+        $booking->confirm();
+
+        $this->assertSame('confirmed', $booking->fresh()->status);
+        $this->assertEquals(4, $this->spotsLeft($hotel, '2030-08-01'));
+        $this->assertEquals(4, $this->spotsLeft($hotel, '2030-08-02'));
+        $this->assertEquals(5, $this->spotsLeft($hotel, '2030-08-03'));
+        Queue::assertPushed(SendBookingConfirmationNotification::class);
+    }
+
+    public function test_cancelling_confirmed_booking_frees_its_spot(): void
+    {
+        Queue::fake();
+
+        $hotel = PetHotel::factory()->create(['capacity' => 5]);
+        $booking = Booking::factory()->for($hotel, 'hotel')->confirmed()->create([
+            'check_in' => '2030-08-01',
+            'check_out' => '2030-08-02',
+        ]);
+
+        $this->assertEquals(4, $this->spotsLeft($hotel, '2030-08-01'));
 
         $booking->update(['status' => 'cancelled']);
 
-        $spots = HotelAvailability::where('hotel_id', $hotel->id)
-            ->whereDate('date', '2026-08-01')->value('available_spots');
+        $this->assertEquals(5, $this->spotsLeft($hotel, '2030-08-01'));
+    }
 
-        $this->assertEquals(5, $spots);
+    public function test_confirm_is_refused_when_a_night_is_full(): void
+    {
+        Queue::fake();
+
+        $hotel = PetHotel::factory()->create(['capacity' => 1]);
+        Booking::factory()->for($hotel, 'hotel')->confirmed()->create([
+            'check_in' => '2030-08-02',
+            'check_out' => '2030-08-03',
+        ]);
+        $booking = Booking::factory()->for($hotel, 'hotel')->create([
+            'check_in' => '2030-08-01',
+            'check_out' => '2030-08-04',
+            'status' => 'pending',
+        ]);
+
+        try {
+            $booking->confirm();
+            $this->fail('Expected BookingDoesNotFit.');
+        } catch (BookingDoesNotFit) {
+            $this->assertSame('pending', $booking->fresh()->status);
+            Queue::assertNotPushed(SendBookingConfirmationNotification::class);
+        }
+    }
+
+    public function test_confirm_is_refused_when_a_night_is_closed(): void
+    {
+        $hotel = PetHotel::factory()->create();
+        HotelAvailability::create(['hotel_id' => $hotel->id, 'date' => '2030-08-02', 'is_blocked' => true]);
+        $booking = Booking::factory()->for($hotel, 'hotel')->create([
+            'check_in' => '2030-08-01',
+            'check_out' => '2030-08-04',
+            'status' => 'pending',
+        ]);
+
+        $this->expectException(BookingDoesNotFit::class);
+
+        $booking->confirm();
+    }
+
+    public function test_store_rejects_a_stay_over_a_closed_night(): void
+    {
+        Queue::fake();
+
+        [$user, $hotel, $pet] = $this->bookable();
+        HotelAvailability::create(['hotel_id' => $hotel->id, 'date' => $this->futureDate(31), 'is_blocked' => true]);
+
+        $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
+            'pet_id' => $pet->id,
+            'check_in' => $this->futureDate(30),
+            'check_out' => $this->futureDate(33),
+        ])->assertSessionHasErrors('check_in');
+
+        $this->assertDatabaseCount('bookings', 0);
+        Queue::assertNothingPushed();
+    }
+
+    public function test_store_rejects_a_stay_over_a_full_night(): void
+    {
+        [$user, $hotel, $pet] = $this->bookable(capacity: 1);
+        Booking::factory()->for($hotel, 'hotel')->confirmed()->create([
+            'check_in' => $this->futureDate(32),
+            'check_out' => $this->futureDate(33),
+        ]);
+
+        $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
+            'pet_id' => $pet->id,
+            'check_in' => $this->futureDate(30),
+            'check_out' => $this->futureDate(33),
+        ])->assertSessionHasErrors('check_in');
+
+        $this->assertDatabaseMissing('bookings', ['user_id' => $user->id]);
+    }
+
+    public function test_store_allows_check_out_on_a_closed_day(): void
+    {
+        Queue::fake();
+
+        [$user, $hotel, $pet] = $this->bookable();
+        HotelAvailability::create(['hotel_id' => $hotel->id, 'date' => $this->futureDate(33), 'is_blocked' => true]);
+
+        $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
+            'pet_id' => $pet->id,
+            'check_in' => $this->futureDate(30),
+            'check_out' => $this->futureDate(33),
+        ])->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('bookings', ['user_id' => $user->id, 'status' => 'pending']);
+    }
+
+    public function test_store_ignores_pending_requests_when_counting_spots(): void
+    {
+        Queue::fake();
+
+        [$user, $hotel, $pet] = $this->bookable(capacity: 1);
+        Booking::factory()->for($hotel, 'hotel')->create([
+            'check_in' => $this->futureDate(30),
+            'check_out' => $this->futureDate(31),
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
+            'pet_id' => $pet->id,
+            'check_in' => $this->futureDate(30),
+            'check_out' => $this->futureDate(31),
+        ])->assertSessionHasNoErrors();
+    }
+
+    // ── Check-in and check-out times ──────────────────────────────────────────
+
+    public function test_booking_pages_pass_the_hotel_times(): void
+    {
+        $user = User::factory()->create();
+        $booking = $this->makeBooking($user);
+        $booking->hotel->policy()->create(['check_in_time' => '14:00', 'check_out_time' => '11:30']);
+        $times = ['check_in' => '2:00 PM', 'check_out' => '11:30 AM'];
+
+        $this->actingAs($user)->get("/hotels/{$booking->hotel->slug}/book")
+            ->assertInertia(fn ($page) => $page->where('times', $times));
+        $this->actingAs($user)->get("/bookings/{$booking->id}/confirmation")
+            ->assertInertia(fn ($page) => $page->where('times', $times));
+        $this->actingAs($user)->get("/bookings/{$booking->id}")
+            ->assertInertia(fn ($page) => $page->where('times', $times));
+    }
+
+    public function test_booking_pages_pass_no_times_without_a_policy(): void
+    {
+        $user = User::factory()->create();
+        $booking = $this->makeBooking($user);
+
+        $this->actingAs($user)->get("/hotels/{$booking->hotel->slug}/book")
+            ->assertInertia(fn ($page) => $page->where('times', null));
+        $this->actingAs($user)->get("/bookings/{$booking->id}")
+            ->assertInertia(fn ($page) => $page->where('times', null));
     }
 
     // ── Helper ────────────────────────────────────────────────────────────────
@@ -349,6 +480,16 @@ class BookingTest extends TestCase
     private function futureDate(int $daysFromNow): string
     {
         return now()->addDays($daysFromNow)->toDateString();
+    }
+
+    /** @return array{User, PetHotel, Pet} */
+    private function bookable(int $capacity = 10): array
+    {
+        $user = User::factory()->create();
+        $hotel = PetHotel::factory()->create(['capacity' => $capacity]);
+        $pet = $user->pets()->create(['name' => 'Buddy', 'species' => 'dog']);
+
+        return [$user, $hotel, $pet];
     }
 
     private function makeBooking(User $user, string $status = 'pending'): Booking

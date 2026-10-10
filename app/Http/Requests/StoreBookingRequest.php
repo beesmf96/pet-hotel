@@ -20,4 +20,16 @@ class StoreBookingRequest extends FormRequest
             'notes' => ['nullable', 'string', 'max:500'],
         ];
     }
+
+    /**
+     * The booking form prints these under the calendar, so they name the
+     * action rather than the field.
+     */
+    public function messages(): array
+    {
+        return [
+            'check_in.required' => 'Please select a check-in date.',
+            'check_out.required' => 'Please select a check-out date.',
+        ];
+    }
 }

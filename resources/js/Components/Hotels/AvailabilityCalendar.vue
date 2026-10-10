@@ -97,31 +97,45 @@ function cellClass(cell) {
     return ring + 'ring-green-400 bg-green-50 text-green-700 font-medium' + (props.selectable ? ' cursor-pointer' : '');
 }
 
+// A night is a date the pet sleeps over. Check-out is not a night, so a full or
+// closed day may still end a stay, but no night in between may be full or
+// closed. Only the shown month is known here; the server checks the rest.
+function isClosedNight(date) {
+    const status = days.value[date]?.status;
+    return status === 'blocked' || status === 'full';
+}
+
+function nightsAreOpen(from, to) {
+    return Object.keys(days.value).every((date) => date < from || date >= to || !isClosedNight(date));
+}
+
 function handleCellClick(cell) {
     if (!props.selectable) return;
     if (!cell) return;
-    if (cell.status === 'blocked' || cell.status === 'full') return;
     if (cell.date < todayKey) return;
 
     const ci = checkIn.value;
     const co = checkOut.value;
+    const closed = isClosedNight(cell.date);
+
+    // checkIn set, no checkOut, later date: this is the check-out
+    if (ci && !co && cell.date > ci) {
+        if (nightsAreOpen(ci, cell.date)) {
+            emit('update:modelValue', { checkIn: ci, checkOut: cell.date });
+        } else if (!closed) {
+            // The stay would cross a full or closed night: start again from here
+            emit('update:modelValue', { checkIn: cell.date, checkOut: '' });
+        }
+        return;
+    }
+
+    if (closed) return;
 
     // Double-click on current checkIn: no-op
     if (cell.date === ci && !co) return;
 
-    // Both set or no selection: start fresh with this date as checkIn
-    if (!ci || (ci && co)) {
-        emit('update:modelValue', { checkIn: cell.date, checkOut: '' });
-        return;
-    }
-
-    // checkIn set, no checkOut
-    if (cell.date > ci) {
-        emit('update:modelValue', { checkIn: ci, checkOut: cell.date });
-    } else {
-        // Clicked same or earlier date: reset with new checkIn
-        emit('update:modelValue', { checkIn: cell.date, checkOut: '' });
-    }
+    // No selection, both set, or an earlier date: start fresh with this date as checkIn
+    emit('update:modelValue', { checkIn: cell.date, checkOut: '' });
 }
 
 async function fetchMonth() {

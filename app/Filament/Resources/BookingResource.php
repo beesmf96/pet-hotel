@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Exceptions\BookingDoesNotFit;
 use App\Filament\Resources\BookingResource\Pages;
 use App\Models\Booking;
 use BackedEnum;
@@ -9,6 +10,7 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -89,7 +91,7 @@ class BookingResource extends Resource
                     ->modalHeading('Confirm Booking')
                     ->modalDescription('This will confirm the booking and notify the customer.')
                     ->visible(fn (Booking $record): bool => $record->status === 'pending')
-                    ->action(fn (Booking $record) => $record->update(['status' => 'confirmed'])),
+                    ->action(fn (Booking $record) => static::confirm($record)),
 
                 Action::make('cancel')
                     ->label('Cancel')
@@ -119,6 +121,23 @@ class BookingResource extends Resource
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    /**
+     * The stay may have stopped fitting since it was requested: other bookings
+     * were confirmed, or the owner closed a date.
+     */
+    protected static function confirm(Booking $record): void
+    {
+        try {
+            $record->confirm();
+        } catch (BookingDoesNotFit $e) {
+            Notification::make()
+                ->danger()
+                ->title('Cannot confirm this booking')
+                ->body($e->getMessage().' Decline it, or open more spots on those dates first.')
+                ->send();
+        }
     }
 
     public static function getPages(): array

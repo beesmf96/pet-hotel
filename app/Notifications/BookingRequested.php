@@ -23,13 +23,14 @@ class BookingRequested extends Notification implements ShouldQueue
     {
         $booking = $this->booking;
         $hotel = $booking->hotel;
+        $times = $hotel->policy?->stayTimes();
 
         return (new MailMessage)
             ->subject('Booking Request Received — '.$hotel->name)
             ->greeting('Hi '.$notifiable->name.',')
             ->line('We\'ve received your booking request for **'.$hotel->name.'**.')
-            ->line('Check-in: '.$booking->check_in->format('D, d M Y'))
-            ->line('Check-out: '.$booking->check_out->format('D, d M Y'))
+            ->line('Check-in: '.$booking->check_in->format('D, d M Y').($times ? ', from '.$times['check_in'] : ''))
+            ->line('Check-out: '.$booking->check_out->format('D, d M Y').($times ? ', by '.$times['check_out'] : ''))
             ->line('Total: $'.number_format($booking->total_price, 2))
             ->action('View Booking', route('bookings.show', $booking))
             ->line('The hotel will review your request and confirm shortly.');

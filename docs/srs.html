@@ -19,11 +19,11 @@
 <tbody>
 <tr>
 <td>Document version</td>
-<td>1.1</td>
+<td>1.2</td>
 </tr>
 <tr>
 <td>Date</td>
-<td>2026-09-16</td>
+<td>2026-10-10</td>
 </tr>
 <tr>
 <td>Status</td>
@@ -82,7 +82,11 @@ Exclusions are listed in §4.2 of the <a href="pid.html">PID</a>.</p>
 </tr>
 <tr>
 <td>Spot</td>
-<td>One unit of capacity for one hotel on one date (<code>hotel_availabilities.available_spots</code>)</td>
+<td>Room for one pet on one night. Spots left on a night = that night's capacity (<code>pet_hotels.capacity</code>, or a <code>hotel_availabilities.capacity</code> override) − confirmed and completed bookings covering it</td>
+</tr>
+<tr>
+<td>Night</td>
+<td>A date a pet sleeps over: a stay covers check-in up to, not including, check-out</td>
 </tr>
 <tr>
 <td>Completed stay</td>
@@ -332,15 +336,21 @@ tests that verify it.</li>
 </tr>
 <tr>
 <td>FR-22</td>
-<td>The system shall reject a booking whose dates exceed available spots or fall on blocked dates. <strong>Not implemented</strong> — <code>BookingController@store</code> locks the availability rows for update but never checks <code>available_spots</code> or <code>is_blocked</code>. See OI-4.</td>
+<td>The system shall reject a booking request, and refuse to confirm a booking, when any night of the stay is closed or has no spot left. The check-out day is not a night.</td>
 <td>M</td>
-<td><em>gap</em></td>
+<td><code>Availability::fits()</code>, <code>BookingController@store</code>, <code>Booking::confirm()</code> · <code>tests/Feature/BookingTest.php</code>, <code>tests/Unit/Support/AvailabilityTest.php</code></td>
 </tr>
 <tr>
 <td>FR-23</td>
-<td>Available spots shall be adjusted as a side effect of a booking status change, in the <code>Booking</code> model only.</td>
+<td>Spots left shall be computed from capacity and confirmed and completed bookings, never stored. Confirming takes a spot on each night; cancelling frees it. Pending requests hold no spot.</td>
 <td>M</td>
-<td><code>Booking::booted()</code> · <code>tests/Feature/BookingTest.php</code></td>
+<td><code>App\Support\Availability</code> · <code>tests/Unit/Support/AvailabilityTest.php</code></td>
+</tr>
+<tr>
+<td>FR-23a</td>
+<td>Check-in and check-out times, when the hotel has set them, shall appear on the booking form, confirmation page, booking detail page, and the request and confirmed emails.</td>
+<td>S</td>
+<td><code>PetHotelPolicy::stayTimes()</code> · <code>tests/Feature/BookingTest.php</code>, <code>tests/Feature/NotificationTest.php</code></td>
 </tr>
 <tr>
 <td>FR-24</td>
@@ -526,6 +536,18 @@ tests that verify it.</li>
 <td>M</td>
 <td><code>HotelOwner\BookingResource</code> · <code>tests/Feature/Filament/HotelOwner/BookingResourceTest.php</code></td>
 </tr>
+<tr>
+<td>FR-46</td>
+<td>A hotel owner shall set their hotel's normal capacity and check-in and check-out times.</td>
+<td>M</td>
+<td><code>HotelOwner\Pages\HotelSettings</code> · <code>tests/Feature/Filament/HotelOwner/HotelSettingsTest.php</code></td>
+</tr>
+<tr>
+<td>FR-47</td>
+<td>A hotel owner shall close a range of dates, set a different capacity for a range, and reset a range to normal.</td>
+<td>M</td>
+<td><code>HotelOwner\AvailabilityResource</code> · <code>tests/Feature/Filament/HotelOwner/AvailabilityResourceTest.php</code></td>
+</tr>
 </tbody>
 </table></div>
 <hr />
@@ -669,9 +691,9 @@ tests that verify it.</li>
 </tr>
 <tr>
 <td>NFR-17</td>
-<td>Availability side effects shall exist in exactly one place, <code>Booking::booted()</code>.</td>
+<td>Spots left shall be computed in exactly one place, <code>App\Support\Availability</code>, and a booking shall be confirmed only through <code>Booking::confirm()</code>, which locks the hotel row.</td>
 <td>M</td>
-<td><code>tests/Feature/BookingTest.php</code></td>
+<td><code>tests/Unit/Support/AvailabilityTest.php</code></td>
 </tr>
 </tbody>
 </table></div>
@@ -768,7 +790,7 @@ constrain the data layer:</p>
 </tr>
 <tr>
 <td>DR-03</td>
-<td>Availability shall be stored as one row per hotel per date, holding <code>available_spots</code> and <code>is_blocked</code>.</td>
+<td>Each hotel shall store a normal <code>capacity</code>. A <code>hotel_availabilities</code> row is an owner's change to one date: <code>is_blocked</code>, and a nullable <code>capacity</code> (null keeps the hotel's). Dates without a row use the hotel's capacity.</td>
 </tr>
 <tr>
 <td>DR-04</td>
@@ -876,8 +898,8 @@ NFR-14/NFR-15 (CI quality gates).</p>
 </tr>
 <tr>
 <td>OI-4</td>
-<td><strong>FR-22 is unimplemented.</strong> A customer can book dates that are fully booked or blocked; spots go negative through <code>Booking::booted()</code>. The transaction in <code>BookingController@store</code> already takes <code>lockForUpdate()</code> on the availability rows, so the capacity check was intended — only the assertion is missing. Needs a fix and a regression test.</td>
-<td><em>TBC</em></td>
+<td>~~FR-22 is unimplemented.~~ Resolved 2026-10-10: spots are computed from capacity (FR-23), requests and confirms are checked (FR-22), and owners manage dates (FR-46, FR-47).</td>
+<td>Closed</td>
 </tr>
 <tr>
 <td>OI-5</td>

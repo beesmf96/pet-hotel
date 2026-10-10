@@ -94,6 +94,7 @@ class HotelResourceTest extends TestCase
                 'description' => 'A calm place to stay.',
                 'address' => '12 Bark Lane',
                 'city' => 'Kuala Lumpur',
+                'capacity' => 7,
                 'is_active' => true,
                 'policy' => [
                     'check_in_time' => '14:00',
@@ -108,6 +109,7 @@ class HotelResourceTest extends TestCase
             'name' => 'Paws Palace',
             'slug' => 'paws-palace',
             'city' => 'Kuala Lumpur',
+            'capacity' => 7,
         ]);
     }
 
@@ -150,11 +152,12 @@ class HotelResourceTest extends TestCase
         $hotel = $this->hotelWithPolicy();
 
         Livewire::test(EditHotel::class, ['record' => $hotel->getRouteKey()])
-            ->fillForm(['name' => 'Renamed Hotel'])
+            ->fillForm(['name' => 'Renamed Hotel', 'capacity' => 4])
             ->call('save')
             ->assertHasNoFormErrors();
 
         $this->assertSame('Renamed Hotel', $hotel->fresh()->name);
+        $this->assertSame(4, $hotel->fresh()->capacity);
     }
 
     public function test_slug_uniqueness_ignores_the_record_being_edited(): void

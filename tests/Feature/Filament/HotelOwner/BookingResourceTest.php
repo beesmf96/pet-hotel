@@ -92,6 +92,29 @@ class BookingResourceTest extends TestCase
         $this->assertSame('confirmed', $booking->fresh()->status);
     }
 
+    public function test_confirm_action_refuses_a_booking_that_no_longer_fits(): void
+    {
+        Queue::fake();
+
+        $this->hotel->update(['capacity' => 1]);
+        Booking::factory()->for($this->hotel, 'hotel')->confirmed()->create([
+            'check_in' => '2030-08-01',
+            'check_out' => '2030-08-02',
+        ]);
+        $booking = Booking::factory()->for($this->hotel, 'hotel')->create([
+            'check_in' => '2030-08-01',
+            'check_out' => '2030-08-03',
+            'status' => 'pending',
+        ]);
+
+        Livewire::test(ListBookings::class)
+            ->callTableAction('confirm', $booking)
+            ->assertNotified('Cannot confirm this booking');
+
+        $this->assertSame('pending', $booking->fresh()->status);
+        Queue::assertNothingPushed();
+    }
+
     public function test_decline_action_cancels_a_pending_booking(): void
     {
         Queue::fake();
