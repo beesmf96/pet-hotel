@@ -2,7 +2,7 @@
 plan: availability-management
 status: implemented
 branch: feature/availability-management
-pr: ~
+pr: 61
 implemented: 2026-10-10
 ---
 

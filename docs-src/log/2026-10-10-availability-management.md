@@ -2,7 +2,7 @@
 title: Capacity-based availability, owner date controls, and stay times
 description: Spots left are now computed from a hotel capacity minus confirmed bookings; requests and confirms are checked; owners close dates, change capacity and set check-in and check-out times; times show on every booking page and email.
 date: 2026-10-10
-pr: ~
+pr: 61
 plan: plan-availability-management
 ---
 
