@@ -82,6 +82,22 @@ return [
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Currency
+    |--------------------------------------------------------------------------
+    |
+    | Every price in the app is in this one currency, printed through
+    | App\Support\Money (PHP) and resources/js/money.js (JS). Change both
+    | together. Per-hotel currencies are out of scope until a second market.
+    |
+    */
+
+    'currency' => [
+        'code' => 'MYR',
+        'symbol' => 'RM',
+    ],
+
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
     /*

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\CancelledBy;
 use App\Models\Booking;
 use App\Notifications\BookingCancelled;
 use Illuminate\Bus\Queueable;
@@ -32,11 +33,15 @@ class SendBookingCancelledNotification implements ShouldQueueAfterCommit
      */
     public bool $deleteWhenMissingModels = true;
 
-    public function __construct(public Booking $booking) {}
+    public function __construct(
+        public Booking $booking,
+        public CancelledBy $by,
+        public bool $wasConfirmed,
+    ) {}
 
     public function handle(): void
     {
         $this->booking->loadMissing(['hotel', 'user']);
-        $this->booking->user->notify(new BookingCancelled($this->booking));
+        $this->booking->user->notify(new BookingCancelled($this->booking, $this->by, $this->wasConfirmed));
     }
 }

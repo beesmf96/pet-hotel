@@ -2,6 +2,9 @@
 
 namespace Tests\Feature\Jobs;
 
+use App\Enums\CancelledBy;
+use App\Jobs\NotifyOwnersOfBookingRequest;
+use App\Jobs\NotifyOwnersOfGuestCancellation;
 use App\Jobs\SendBookingCancelledNotification;
 use App\Jobs\SendBookingConfirmationNotification;
 use App\Jobs\SendBookingRequestNotification;
@@ -20,18 +23,24 @@ class NotificationJobPolicyTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const JOBS = [
-        SendBookingRequestNotification::class,
-        SendBookingConfirmationNotification::class,
-        SendBookingCancelledNotification::class,
-    ];
+    /** @return list<object> */
+    private function jobs(Booking $booking): array
+    {
+        return [
+            new SendBookingRequestNotification($booking),
+            new SendBookingConfirmationNotification($booking),
+            new SendBookingCancelledNotification($booking, CancelledBy::Guest, false),
+            new NotifyOwnersOfBookingRequest($booking),
+            new NotifyOwnersOfGuestCancellation($booking),
+        ];
+    }
 
     public function test_every_notification_job_retries_a_transient_failure(): void
     {
         $booking = Booking::factory()->create();
 
-        foreach (self::JOBS as $job) {
-            $instance = new $job($booking);
+        foreach ($this->jobs($booking) as $instance) {
+            $job = $instance::class;
 
             $this->assertSame(3, $instance->tries, "{$job} must retry");
             $this->assertSame([10, 60], $instance->backoff, "{$job} must back off between retries");
@@ -47,17 +56,18 @@ class NotificationJobPolicyTest extends TestCase
     {
         $booking = Booking::factory()->create();
 
-        foreach (self::JOBS as $job) {
+        foreach ($this->jobs($booking) as $instance) {
+            $job = $instance::class;
             $this->assertTrue(
-                (new $job($booking))->deleteWhenMissingModels,
+                $instance->deleteWhenMissingModels,
                 "{$job} must be discarded when its booking no longer exists",
             );
         }
     }
 
     /**
-     * The jobs are dispatched from Booking::booted(), which fires inside the
-     * caller's transaction. A worker is a separate process and would otherwise
+     * Booking::confirm() dispatches inside its transaction, and callers may wrap
+     * other dispatches in one. A worker is a separate process and would otherwise
      * be free to load a booking that has not been committed yet.
      */
     public function test_redis_dispatches_wait_for_the_transaction_to_commit(): void

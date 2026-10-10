@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Enums\CancelledBy;
+use App\Jobs\NotifyOwnersOfGuestCancellation;
 use App\Jobs\SendBookingCancelledNotification;
 use App\Jobs\SendBookingConfirmationNotification;
 use App\Jobs\SendBookingRequestNotification;
@@ -11,8 +13,10 @@ use App\Models\User;
 use App\Notifications\BookingCancelled;
 use App\Notifications\BookingConfirmed;
 use App\Notifications\BookingRequested;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
@@ -46,7 +50,7 @@ class NotificationTest extends TestCase
     {
         $booking = Booking::factory()->make();
 
-        $notification = new BookingCancelled($booking);
+        $notification = new BookingCancelled($booking, CancelledBy::Guest, false);
 
         $this->assertEquals(['mail', 'database'], $notification->via(new User));
     }
@@ -69,7 +73,8 @@ class NotificationTest extends TestCase
         $this->assertStringContainsString('Happy Paws', $lines);
         $this->assertStringContainsString($booking->check_in->format('D, d M Y'), $lines);
         $this->assertStringContainsString($booking->check_out->format('D, d M Y'), $lines);
-        $this->assertStringContainsString('$150.00', $lines);
+        $this->assertStringContainsString('Total: RM 150.00', $lines);
+        $this->assertStringNotContainsString('$', $lines);
     }
 
     public function test_booking_requested_mail_gives_the_hotel_times(): void
@@ -172,28 +177,108 @@ class NotificationTest extends TestCase
         Queue::assertPushed(SendBookingRequestNotification::class);
     }
 
-    public function test_booking_confirmed_dispatches_confirmation_job(): void
+    public function test_confirming_dispatches_the_confirmation_job(): void
     {
         Queue::fake();
 
-        $user = User::factory()->create();
-        $booking = Booking::factory()->for($user)->create(['status' => 'pending']);
+        $booking = Booking::factory()->create(['status' => 'pending']);
 
-        $booking->update(['status' => 'confirmed']);
+        $booking->confirm();
 
         Queue::assertPushed(SendBookingConfirmationNotification::class, fn ($job) => $job->booking->is($booking));
     }
 
-    public function test_booking_cancelled_dispatches_cancelled_job(): void
+    public function test_a_guest_cancelling_dispatches_the_guest_wording_and_tells_the_owners(): void
     {
         Queue::fake();
 
-        $user = User::factory()->create();
-        $booking = Booking::factory()->for($user)->create(['status' => 'pending']);
+        $booking = Booking::factory()->create(['status' => 'pending']);
 
-        $booking->update(['status' => 'cancelled']);
+        $booking->cancel(CancelledBy::Guest);
 
-        Queue::assertPushed(SendBookingCancelledNotification::class, fn ($job) => $job->booking->is($booking));
+        $this->assertSame('cancelled', $booking->fresh()->status);
+        Queue::assertPushed(SendBookingCancelledNotification::class, fn ($job) => $job->booking->is($booking)
+            && $job->by === CancelledBy::Guest && $job->wasConfirmed === false);
+        Queue::assertPushed(NotifyOwnersOfGuestCancellation::class);
+    }
+
+    public function test_a_hotel_cancelling_a_confirmed_stay_says_so_and_spares_the_owners(): void
+    {
+        Queue::fake();
+
+        $booking = Booking::factory()->confirmed()->create();
+
+        $booking->cancel(CancelledBy::Hotel);
+
+        Queue::assertPushed(SendBookingCancelledNotification::class, fn ($job) => $job->by === CancelledBy::Hotel && $job->wasConfirmed);
+        Queue::assertNotPushed(NotifyOwnersOfGuestCancellation::class);
+    }
+
+    public function test_a_plain_status_update_sends_nothing(): void
+    {
+        Queue::fake();
+
+        Booking::factory()->create(['status' => 'pending'])->update(['status' => 'completed']);
+
+        Queue::assertNothingPushed();
+    }
+
+    // ── Cancellation wording ──────────────────────────────────────────────────
+
+    private function cancelledMail(CancelledBy $by, bool $wasConfirmed): MailMessage
+    {
+        $hotel = PetHotel::factory()->create(['name' => 'Happy Paws']);
+        $booking = Booking::factory()->for($hotel, 'hotel')->create();
+
+        return (new BookingCancelled($booking, $by, $wasConfirmed))->toMail($booking->user);
+    }
+
+    public function test_guest_cancel_mail_says_the_guest_cancelled(): void
+    {
+        $mail = $this->cancelledMail(CancelledBy::Guest, false);
+
+        $this->assertSame('Booking Request Cancelled — Happy Paws', $mail->subject);
+        $this->assertStringContainsString('You cancelled your booking request at **Happy Paws**.', implode(' ', $mail->introLines));
+        $this->assertStringContainsString('If you did not cancel it yourself', implode(' ', $mail->outroLines));
+        $this->assertSame(route('hotels.index'), $mail->actionUrl);
+    }
+
+    public function test_decline_mail_says_the_hotel_could_not_take_it(): void
+    {
+        $mail = $this->cancelledMail(CancelledBy::Hotel, false);
+        $lines = implode(' ', $mail->introLines);
+
+        $this->assertSame('Booking Request Declined — Happy Paws', $mail->subject);
+        $this->assertStringContainsString('**Happy Paws** could not take your booking request.', $lines);
+        $this->assertStringContainsString('No booking was made.', $lines);
+        $this->assertStringNotContainsString('did not cancel', $lines.implode(' ', $mail->outroLines));
+        $this->assertSame('Find Another Stay', $mail->actionText);
+    }
+
+    public function test_hotel_cancel_mail_says_the_confirmed_stay_was_cancelled(): void
+    {
+        $mail = $this->cancelledMail(CancelledBy::Hotel, true);
+
+        $this->assertSame('Booking Cancelled by the Hotel — Happy Paws', $mail->subject);
+        $this->assertStringContainsString('**Happy Paws** has cancelled your confirmed booking.', implode(' ', $mail->introLines));
+        $this->assertSame('View Booking', $mail->actionText);
+    }
+
+    public function test_cancelled_database_message_matches_the_wording(): void
+    {
+        $booking = Booking::factory()->create();
+
+        $payload = (new BookingCancelled($booking, CancelledBy::Hotel, false))->toDatabase($booking->user);
+
+        $this->assertSame('booking_cancelled', $payload['type']);
+        $this->assertSame($booking->hotel->name.' could not take your booking request.', $payload['message']);
+    }
+
+    public function test_customer_notifications_are_not_queued_a_second_time(): void
+    {
+        foreach ([BookingRequested::class, BookingConfirmed::class, BookingCancelled::class] as $class) {
+            $this->assertNotInstanceOf(ShouldQueue::class, (new \ReflectionClass($class))->newInstanceWithoutConstructor(), $class);
+        }
     }
 
     // ── NotificationController ────────────────────────────────────────────────

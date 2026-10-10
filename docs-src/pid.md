@@ -118,7 +118,7 @@ each request — which keeps the MVP simple and avoids payment integration.
 | SMS / WhatsApp notifications | Email and the owner panel's bell cover the MVP. SMS or WhatsApp needs a paid provider (e.g. Twilio, WhatsApp Business API), phone-number collection and consent, and per-message cost. Worth revisiting if owners miss emails in testing |
 | Reminders for requests left pending | Needs the Laravel scheduler and a rule for when to nudge (e.g. after 24 hours). Revisit once owners have used email and the bell |
 | Daycare (same-day stays, no night) | Boarding by the night covers the MVP. Daycare needs its own day price, its own capacity, a one-date booking form, and usually repeat bookings and a first-visit temperament check. Revisit if test hotels offer it |
-| Multi-language / multi-currency | Single market at launch |
+| Multi-language / multi-currency | Single market (Malaysia, MYR) at launch. Prices print through one currency setting, so a per-hotel currency is a contained change if a second market comes |
 | Automated availability sync with external calendars | No integration partners identified |
 
 ### 4.3 Assumptions

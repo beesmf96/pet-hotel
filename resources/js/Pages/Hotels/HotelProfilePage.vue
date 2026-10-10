@@ -1,4 +1,5 @@
 <script setup>
+import { formatMoney } from '@/money';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import AvailabilityCalendar from '@/Components/Hotels/AvailabilityCalendar.vue';
 import HotelMap from '@/Components/Hotels/HotelMap.vue';
@@ -27,7 +28,6 @@ const facilityLabels = {
     webcam: 'Live Webcam',
     '24h_care': '24h Care',
 };
-
 
 // Normalised to one shape so the template binds a single key, rather than
 // reading .url off gallery rows and a hand-built cover object that only
@@ -162,7 +162,7 @@ function nextPhoto() {
                                 >
                                     <span class="font-semibold">{{ petTypeLabel(price.pet_type) }}</span>
                                     <span class="font-display font-bold text-lg">
-                                        RM {{ Number(price.price_per_night).toFixed(2)
+                                        {{ formatMoney(price.price_per_night)
                                         }}<span class="font-sans text-sm font-medium text-moss"> / night</span>
                                     </span>
                                 </li>

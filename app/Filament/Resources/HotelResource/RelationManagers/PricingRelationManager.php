@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\HotelResource\RelationManagers;
 
 use App\Enums\PetType;
+use App\Support\Money;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -28,7 +29,7 @@ class PricingRelationManager extends RelationManager
                 ->required(),
             Forms\Components\TextInput::make('price_per_night')
                 ->numeric()
-                ->prefix('RM')
+                ->prefix(config('app.currency.symbol'))
                 ->required()
                 ->minValue(0),
         ]);
@@ -42,7 +43,7 @@ class PricingRelationManager extends RelationManager
                     ->badge()
                     ->formatStateUsing(fn (string $state) => ucfirst($state)),
                 TextColumn::make('price_per_night')
-                    ->money('MYR')
+                    ->formatStateUsing(fn ($state): string => Money::format($state))
                     ->label('Price / Night'),
             ])
             ->headerActions([

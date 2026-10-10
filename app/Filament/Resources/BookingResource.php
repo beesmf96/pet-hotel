@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\CancelledBy;
 use App\Exceptions\BookingDoesNotFit;
 use App\Filament\Resources\BookingResource\Pages;
 use App\Models\Booking;
+use App\Support\Money;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -59,7 +61,7 @@ class BookingResource extends Resource
                     ->date('d M Y')
                     ->sortable(),
                 TextColumn::make('total_price')
-                    ->money('MYR')
+                    ->formatStateUsing(fn ($state): string => Money::format($state))
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
@@ -101,7 +103,7 @@ class BookingResource extends Resource
                     ->modalHeading('Cancel Booking')
                     ->modalDescription('This will cancel the booking and notify the customer.')
                     ->visible(fn (Booking $record): bool => ! in_array($record->status, ['cancelled']))
-                    ->action(fn (Booking $record) => $record->update(['status' => 'cancelled'])),
+                    ->action(fn (Booking $record) => $record->cancel(CancelledBy::Hotel)),
 
                 Action::make('complete')
                     ->label('Mark completed')

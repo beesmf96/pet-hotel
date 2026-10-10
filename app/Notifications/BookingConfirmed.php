@@ -3,15 +3,16 @@
 namespace App\Notifications;
 
 use App\Models\Booking;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Support\Money;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class BookingConfirmed extends Notification implements ShouldQueue
+/**
+ * Not ShouldQueue: SendBookingConfirmationNotification is the queued unit, so its retry
+ * policy covers the mail send.
+ */
+class BookingConfirmed extends Notification
 {
-    use Queueable;
-
     public function __construct(public Booking $booking) {}
 
     public function via(object $notifiable): array
@@ -31,7 +32,7 @@ class BookingConfirmed extends Notification implements ShouldQueue
             ->line('Your booking at **'.$hotel->name.'** has been confirmed.')
             ->line('Check-in: '.$booking->check_in->format('D, d M Y').($times ? ', from '.$times['check_in'] : ''))
             ->line('Check-out: '.$booking->check_out->format('D, d M Y').($times ? ', by '.$times['check_out'] : ''))
-            ->line('Total: $'.number_format($booking->total_price, 2))
+            ->line('Total: '.Money::format($booking->total_price))
             ->action('View Booking', route('bookings.show', $booking))
             ->line('We look forward to welcoming your pet!');
     }

@@ -2,8 +2,11 @@
 
 namespace Tests\Feature\Filament\Admin;
 
+use App\Enums\CancelledBy;
 use App\Filament\Resources\BookingResource\Pages\ListBookings;
 use App\Filament\Resources\BookingResource\Pages\ViewBooking;
+use App\Jobs\NotifyOwnersOfGuestCancellation;
+use App\Jobs\SendBookingCancelledNotification;
 use App\Models\Booking;
 use App\Models\Pet;
 use App\Models\PetHotel;
@@ -43,7 +46,7 @@ class BookingResourceTest extends TestCase
 
         Livewire::test(ListBookings::class)
             ->assertSuccessful()
-            ->assertSee("MYR\u{A0}150.00")
+            ->assertSee('RM 150.00')
             ->assertDontSee('$150.00');
     }
 
@@ -99,6 +102,8 @@ class BookingResourceTest extends TestCase
             ->assertHasNoTableActionErrors();
 
         $this->assertSame('cancelled', $booking->fresh()->status);
+        Queue::assertPushed(SendBookingCancelledNotification::class, fn ($job) => $job->by === CancelledBy::Hotel);
+        Queue::assertNotPushed(NotifyOwnersOfGuestCancellation::class);
     }
 
     public function test_confirm_action_refuses_a_booking_that_no_longer_fits(): void

@@ -42,6 +42,7 @@ php docs-src/build.php # renders stakeholder docs → docs/ (the GitHub Pages si
 ```
 
 First-time setup (hosts, seeded logins, commit hook): `docs-src/local-setup.md`.
+Deferred feature requests: `docs-src/backlog.md`.
 
 Docker: `docker compose up -d` (add `--profile dev` for the Vite container). **Always pass
 `--user appuser` to `docker compose exec`** — without it commands run as root and leave
@@ -61,7 +62,10 @@ service; any hosted deployment needs its own long-running worker process.
 - **Spots left are never stored.** `App\Support\Availability` computes them: the night's
   capacity (`pet_hotels.capacity`, or a `hotel_availabilities` override) minus confirmed and
   completed bookings. Confirm only through `Booking::confirm()`, which checks under a lock on
-  the hotel row. Notification jobs fire from `Booking::booted()` on `updated`, after commit.
+  the hotel row.
+- **Booking status changes that notify go through `Booking::confirm()` and
+  `Booking::cancel(CancelledBy)`** — they dispatch the emails. There are no model events: a
+  plain `update(['status' => ...])` notifies no one (only "Mark completed" uses it, on purpose).
 - **Two Filament panels routed by path** — `/admin` requires `is_admin`, `/owner` requires
   `ownedHotels()->exists()`. Do not add `->domain()` to a panel without updating
   `SecurityHeaders::isFilamentRequest()`, which scopes the `'unsafe-eval'` CSP relaxation.
@@ -86,6 +90,9 @@ service; any hosted deployment needs its own long-running worker process.
   not follow the 302 to Google. Everything else navigates with `<Link>` / `router.visit()`.
 - **Every page wraps itself in `<AppLayout>` or `<AuthLayout>`.** `Landing.vue` is the one
   `layout: null` page.
+- **Every price is printed by `App\Support\Money::format()` or `formatMoney()` from
+  `resources/js/money.js`** — never type "RM" or a currency code. Sum prices in sen
+  (`Money::toSen()` / `toSen()`). The currency is `config('app.currency')`; the JS file is its copy.
 - **Design tokens live in `resources/css/tokens.css` only** — the palette, display font and hard
   shadows, shared by `app.css` and the Filament theme. Never repeat a hex value or shadow
   elsewhere. New customer UI uses the components under `resources/js/Components/Ui/` (`UiButton`,

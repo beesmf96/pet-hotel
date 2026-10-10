@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\CancelledBy;
+use App\Enums\PetType;
 use App\Http\Requests\StoreBookingRequest;
 use App\Jobs\NotifyOwnersOfBookingRequest;
-use App\Jobs\NotifyOwnersOfGuestCancellation;
 use App\Jobs\SendBookingRequestNotification;
 use App\Models\Booking;
 use App\Models\PetHotel;
 use App\Support\Availability;
+use App\Support\Money;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -33,6 +35,15 @@ class BookingController extends Controller
         $hotel = PetHotel::where('slug', $slug)->with('pricing')->firstOrFail();
         $pet = $request->user()->pets()->findOrFail($request->pet_id);
 
+        // No price for this pet type means the hotel has not said it takes it.
+        // A booking at RM 0 would only mislead both sides.
+        $pricing = $hotel->pricing->firstWhere('pet_type', $pet->species);
+        if (! $pricing) {
+            throw ValidationException::withMessages([
+                'pet_id' => $hotel->name.' has no price for '.$pet->name.'\'s pet type ('.PetType::from($pet->species)->label().') yet, so '.$pet->name.' cannot be booked here.',
+            ]);
+        }
+
         $checkIn = $request->date('check_in');
         $checkOut = $request->date('check_out');
 
@@ -44,9 +55,6 @@ class BookingController extends Controller
             ]);
         }
 
-        $pricing = $hotel->pricing->firstWhere('pet_type', $pet->species);
-        $pricePerNight = $pricing ? (float) $pricing->price_per_night : 0;
-
         $booking = Booking::create([
             'user_id' => $request->user()->id,
             'hotel_id' => $hotel->id,
@@ -55,7 +63,7 @@ class BookingController extends Controller
             'check_out' => $checkOut,
             'status' => 'pending',
             'notes' => $request->notes,
-            'total_price' => $pricePerNight * $checkIn->diffInDays($checkOut),
+            'total_price' => Money::fromSen(Money::toSen($pricing->price_per_night) * (int) $checkIn->diffInDays($checkOut)),
         ]);
 
         SendBookingRequestNotification::dispatch($booking);
@@ -132,11 +140,7 @@ class BookingController extends Controller
     {
         $this->authorize('cancel', $booking);
 
-        $booking->update(['status' => 'cancelled']);
-
-        // Here rather than in Booking::booted(): only this path is the guest
-        // cancelling. An owner declining is not news to the owners.
-        NotifyOwnersOfGuestCancellation::dispatch($booking);
+        $booking->cancel(CancelledBy::Guest);
 
         return back()->with('success', 'Booking cancelled.');
     }
