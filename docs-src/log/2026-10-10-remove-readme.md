@@ -2,7 +2,7 @@
 title: README removed, setup guide moved into docs-src
 description: The repo no longer has a README; its local setup steps, everyday commands and commit hook note now live in docs-src/local-setup.md.
 date: 2026-10-10
-pr: ~
+pr: 60
 plan: ~
 ---
 
