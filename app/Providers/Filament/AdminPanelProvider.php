@@ -34,6 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->brandName('PetHotel')
             ->brandLogo(fn () => view('filament.brand', ['panel' => 'Admin']))
+            ->favicon(asset('favicon.svg'))
             ->darkMode(false)
             ->viteTheme('resources/css/filament/theme.css')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
