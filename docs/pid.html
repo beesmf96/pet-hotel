@@ -212,6 +212,14 @@ each request — which keeps the MVP simple and avoids payment integration.</p>
 <td>Owners manage bookings, capacity, closed dates and check-in/out times; the listing itself (name, photos, pricing, policy text) is managed by admins</td>
 </tr>
 <tr>
+<td>SMS / WhatsApp notifications</td>
+<td>Email and the owner panel's bell cover the MVP. SMS or WhatsApp needs a paid provider (e.g. Twilio, WhatsApp Business API), phone-number collection and consent, and per-message cost. Worth revisiting if owners miss emails in testing</td>
+</tr>
+<tr>
+<td>Reminders for requests left pending</td>
+<td>Needs the Laravel scheduler and a rule for when to nudge (e.g. after 24 hours). Revisit once owners have used email and the bell</td>
+</tr>
+<tr>
 <td>Daycare (same-day stays, no night)</td>
 <td>Boarding by the night covers the MVP. Daycare needs its own day price, its own capacity, a one-date booking form, and usually repeat bookings and a first-visit temperament check. Revisit if test hotels offer it</td>
 </tr>
@@ -604,7 +612,7 @@ document and, where implementation work follows, a plan file in <code>.claude/pl
 <tr>
 <td>1.2</td>
 <td>2026-10-10</td>
-<td>Owner availability and hotel settings delivered; daycare recorded as out of scope</td>
+<td>Owner availability and hotel settings delivered; daycare, SMS/WhatsApp and pending reminders recorded as out of scope</td>
 <td><em>TBC</em></td>
 </tr>
 </tbody>

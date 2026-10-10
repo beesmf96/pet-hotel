@@ -34,6 +34,7 @@ class HotelOwnerPanelProvider extends PanelProvider
             ->darkMode(false)
             ->viteTheme('resources/css/filament/theme.css')
             ->discoverResources(in: app_path('Filament/HotelOwner/Resources'), for: 'App\Filament\HotelOwner\Resources')
+            ->databaseNotifications()
             ->discoverPages(in: app_path('Filament/HotelOwner/Pages'), for: 'App\Filament\HotelOwner\Pages')
             ->authGuard('web')
             ->middleware([

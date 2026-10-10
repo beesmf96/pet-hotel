@@ -141,9 +141,10 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | ID | Requirement | Pri | Traces to |
 |----|-------------|-----|-----------|
 | FR-32 | The system shall email the customer when a booking request is submitted, when it is confirmed, and when it is cancelled. | M | Notification jobs · `tests/Feature/NotificationTest.php` |
+| FR-32a | The system shall email every owner of the hotel, and add a notification to the owner panel, when a guest submits a booking request and when a guest cancels their pending request. | M | `NotifyOwnersOfBookingRequest`, `NotifyOwnersOfGuestCancellation` · `tests/Feature/OwnerNotificationTest.php` |
 | FR-33 | Notification emails shall be dispatched through the queue, not sent inline during the web request. | M | `Booking::booted()` dispatch · `tests/Feature/Jobs/NotificationJobPolicyTest.php` |
 | FR-34 | A queued notification job shall fail safely and shall not be retried indefinitely when its subject no longer exists. | M | Job policy · `tests/Feature/Jobs/NotificationJobPolicyTest.php` |
-| FR-35 | A customer shall see an unread notification count and read their recent in-app notifications. | M | `notifications.index` · `tests/Feature/NotificationTest.php` |
+| FR-35 | A customer shall see an unread notification count and read their recent in-app notifications. Owner-panel notifications are not included. | M | `notifications.index` · `tests/Feature/NotificationTest.php` |
 | FR-36 | A customer shall mark one notification, or all of them, as read. | M | `notifications.read`, `notifications.read-all` · `tests/Feature/NotificationTest.php` |
 
 ### 3.7 Administration
@@ -163,7 +164,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 |----|-------------|-----|-----------|
 | FR-43 | Only users owning at least one hotel shall reach the owner panel at `/owner`. | M | `HotelOwnerPanelProvider` · `tests/Feature/Filament/PanelRoutingTest.php` |
 | FR-44 | A hotel owner shall see bookings for their own hotels only, filterable by status. | M | `HotelOwner\BookingResource` · `tests/Feature/HotelOwnerBookingTest.php` |
-| FR-45 | A hotel owner shall confirm or decline a booking for their own hotel. | M | `HotelOwner\BookingResource` · `tests/Feature/Filament/HotelOwner/BookingResourceTest.php` |
+| FR-45 | A hotel owner shall confirm or decline a booking for their own hotel, and see the number of pending requests on the Bookings menu item. | M | `HotelOwner\BookingResource` · `tests/Feature/Filament/HotelOwner/BookingResourceTest.php` |
 | FR-46 | A hotel owner shall set their hotel's normal capacity and check-in and check-out times. | M | `HotelOwner\Pages\HotelSettings` · `tests/Feature/Filament/HotelOwner/HotelSettingsTest.php` |
 | FR-47 | A hotel owner shall close a range of dates, set a different capacity for a range, and reset a range to normal. | M | `HotelOwner\AvailabilityResource` · `tests/Feature/Filament/HotelOwner/AvailabilityResourceTest.php` |
 | FR-48 | A hotel owner shall see, for each night of a chosen month, the capacity, confirmed bookings, spots left and status. | S | `HotelOwner\Pages\DailyOverview` · `tests/Feature/Filament/HotelOwner/DailyOverviewTest.php` |
