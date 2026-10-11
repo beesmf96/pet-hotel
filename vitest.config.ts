@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
 
@@ -11,6 +11,8 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         globals: true,
+        // e2e/ holds the Playwright suite, run by `bun run e2e`, not Vitest.
+        exclude: [...configDefaults.exclude, 'e2e/**'],
         coverage: {
             provider: 'v8',
             reporter: ['text', 'html'],

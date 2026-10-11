@@ -8,13 +8,15 @@
         "test": "vitest",
         "lint": "eslint resources/js",
         "lint:fix": "eslint resources/js --fix",
-        "format": "prettier --write resources/js"
+        "format": "prettier --write resources/js",
+        "e2e": "docker rm -f pet_hotel_e2e >/dev/null 2>&1; vite build && playwright test"
     },
     "devDependencies": {
+        "@playwright/test": "1.64.0",
         "@tailwindcss/vite": "^4.3.3",
         "@types/leaflet": "^1.9.22",
-        "@vitest/coverage-v8": "^4.1.11",
         "@vitejs/plugin-vue": "^6.0.9",
+        "@vitest/coverage-v8": "^4.1.11",
         "@vue/test-utils": "^2.5.1",
         "concurrently": "^9.2.5",
         "eslint": "^10.12.0",

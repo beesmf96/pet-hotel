@@ -37,6 +37,7 @@ composer dev          # PHP server + queue worker + Pail + Vite
 composer test         # Clears config cache, then PHPUnit
 bun run test          # Vitest
 bun run lint          # ESLint (bun run lint:fix to autofix)
+bun run e2e           # Playwright, local only — never add to CI (docs-src/local-setup.md)
 vendor/bin/pint       # PHP formatter
 php docs-src/build.php # renders stakeholder docs → docs/ (the GitHub Pages site)
 ```
@@ -85,6 +86,11 @@ service; any hosted deployment needs its own long-running worker process.
   random password for an OAuth account.
 - **`password` is outside `$fillable`** — assign it with `forceFill()`; `update()` silently
   drops it. `User::forceCreate()` is reserved for registration and first-party OAuth creation.
+- **Before a destructive artisan command (`migrate:fresh`, `db:wipe`, rollback) aimed at a
+  non-default database, print `config('database.default')` with the same flags first.** The
+  shell is zsh, which does not split a flags variable (`docker-compose … $E` passes one
+  argument), and `artisan serve` drops env overrides — both have pointed "e2e" commands at
+  the dev database (`docs-src/knowledge/zsh-does-not-split-unquoted-variables.md`).
 - **Guest auth routes carry `throttle:5,1`** — match it on any new guest-facing auth endpoint.
 - **The OAuth entry link is a plain `<a href="/auth/google">`** — an Inertia `<Link>` will
   not follow the 302 to Google. Everything else navigates with `<Link>` / `router.visit()`.

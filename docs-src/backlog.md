@@ -36,6 +36,18 @@ relation managers are the model), photo uploads through
 out-of-scope row, which this would retire. Decide whether the slug and the
 `is_active` switch stay admin-only.
 
+## Link form labels to their inputs
+
+*Found 2026-10-11, while writing the e2e suite.* `FormField.vue` renders a
+`<label>` beside the input but not tied to it (no `for`/`id`), so screen
+readers do not announce the field name, clicking the label does not focus the
+field, and tests cannot find fields by label (the e2e helpers fall back to
+input types).
+
+Touches: `resources/js/Components/Ui/FormField.vue` (generate an id and pass
+it to the slotted input), the inputs in `Components/Ui/`, and their Vitest
+specs. Then the e2e helpers can switch to `getByLabel`.
+
 ## One owner, several hotels
 
 *Asked 2026-10-10.* The owner panel uses the first hotel an owner is attached
