@@ -59,6 +59,13 @@ test('C1–C8 two guests ask for the last spot', async ({ browser, request }) =>
         await expect(owner.getByRole('link', { name: /Bookings\s*2/ })).toBeVisible();
     });
 
+    await test.step('C4b Ben cannot ask twice for Rex on the same night', async () => {
+        await fillRequest(ben, { pet: 'Rex (Dog)', checkIn: night, checkOut });
+        await ben.getByRole('button', { name: 'Request Booking' }).click();
+        await expect(ben.getByText(`Rex already has a booking request at ${HOTEL.name}`)).toBeVisible();
+        await expect(ben).toHaveURL(/\/book$/);
+    });
+
     // Ben opens the form while the night still has a spot; he submits it after
     // the owner confirms Alice (C8), so only the server can catch it.
     const benLate = await ben.context().newPage();

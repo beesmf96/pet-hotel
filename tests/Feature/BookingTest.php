@@ -464,6 +464,141 @@ class BookingTest extends TestCase
         ])->assertSessionHasNoErrors();
     }
 
+    // ── One place a night per pet ─────────────────────────────────────────────
+
+    public function test_store_rejects_a_pet_with_a_request_elsewhere_on_a_shared_night(): void
+    {
+        Queue::fake();
+
+        [$user, $hotel, $pet] = $this->bookable();
+        $other = PetHotel::factory()->create(['name' => 'Other Inn']);
+        Booking::factory()->for($other, 'hotel')->for($pet)->create([
+            'check_in' => $this->futureDate(32),
+            'check_out' => $this->futureDate(35),
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
+            'pet_id' => $pet->id,
+            'check_in' => $this->futureDate(30),
+            'check_out' => $this->futureDate(33),
+        ])->assertSessionHasErrors([
+            'pet_id' => 'Buddy already has a booking request at Other Inn from '.$this->longDate(32).' to '.$this->longDate(35)
+                .'. A pet can only stay in one place a night, so pick other dates or cancel that request first.',
+        ]);
+
+        $this->assertDatabaseCount('bookings', 1);
+        Queue::assertNothingPushed();
+    }
+
+    public function test_store_rejects_a_pet_with_a_confirmed_stay_on_a_shared_night(): void
+    {
+        [$user, $hotel, $pet] = $this->bookable();
+        Booking::factory()->for($hotel, 'hotel')->for($pet)->confirmed()->create([
+            'check_in' => $this->futureDate(30),
+            'check_out' => $this->futureDate(31),
+        ]);
+
+        $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
+            'pet_id' => $pet->id,
+            'check_in' => $this->futureDate(30),
+            'check_out' => $this->futureDate(33),
+        ])->assertSessionHasErrors([
+            'pet_id' => 'Buddy already has a booking at '.$hotel->name.' from '.$this->longDate(30).' to '.$this->longDate(31)
+                .'. A pet can only stay in one place a night, so pick other dates.',
+        ]);
+    }
+
+    public function test_store_allows_back_to_back_stays_for_one_pet(): void
+    {
+        Queue::fake();
+
+        [$user, $hotel, $pet] = $this->bookable();
+        Booking::factory()->for($hotel, 'hotel')->for($pet)->confirmed()->create([
+            'check_in' => $this->futureDate(27),
+            'check_out' => $this->futureDate(30),
+        ]);
+        Booking::factory()->for($hotel, 'hotel')->for($pet)->create([
+            'check_in' => $this->futureDate(33),
+            'check_out' => $this->futureDate(35),
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
+            'pet_id' => $pet->id,
+            'check_in' => $this->futureDate(30),
+            'check_out' => $this->futureDate(33),
+        ])->assertSessionHasNoErrors();
+    }
+
+    public function test_store_ignores_the_pets_cancelled_bookings(): void
+    {
+        Queue::fake();
+
+        [$user, $hotel, $pet] = $this->bookable();
+        Booking::factory()->for($hotel, 'hotel')->for($pet)->create([
+            'check_in' => $this->futureDate(30),
+            'check_out' => $this->futureDate(33),
+            'status' => 'cancelled',
+        ]);
+
+        $this->actingAs($user)->post("/hotels/{$hotel->slug}/bookings", [
+            'pet_id' => $pet->id,
+            'check_in' => $this->futureDate(30),
+            'check_out' => $this->futureDate(33),
+        ])->assertSessionHasNoErrors();
+    }
+
+    public function test_confirm_is_refused_when_the_pet_is_confirmed_elsewhere(): void
+    {
+        Queue::fake();
+
+        $pet = Pet::factory()->create();
+        Booking::factory()->for($pet)->confirmed()->create([
+            'check_in' => '2030-08-03',
+            'check_out' => '2030-08-05',
+        ]);
+        $booking = Booking::factory()->for($pet)->create([
+            'check_in' => '2030-08-01',
+            'check_out' => '2030-08-04',
+            'status' => 'pending',
+        ]);
+
+        try {
+            $booking->confirm();
+            $this->fail('Expected BookingDoesNotFit.');
+        } catch (BookingDoesNotFit $e) {
+            $this->assertStringContainsString('already has a confirmed stay', $e->getMessage());
+            $this->assertSame('pending', $booking->fresh()->status);
+            Queue::assertNotPushed(SendBookingConfirmationNotification::class);
+        }
+    }
+
+    public function test_confirm_ignores_the_pets_other_open_requests(): void
+    {
+        Queue::fake();
+
+        $pet = Pet::factory()->create();
+        $other = Booking::factory()->for($pet)->create([
+            'check_in' => '2030-08-01',
+            'check_out' => '2030-08-04',
+            'status' => 'pending',
+        ]);
+        $booking = Booking::factory()->for($pet)->create([
+            'check_in' => '2030-08-01',
+            'check_out' => '2030-08-04',
+            'status' => 'pending',
+        ]);
+
+        $booking->confirm();
+
+        $this->assertSame('confirmed', $booking->fresh()->status);
+
+        // Once one is confirmed, the other can no longer be.
+        $this->expectException(BookingDoesNotFit::class);
+        $other->confirm();
+    }
+
     // ── Check-in and check-out times ──────────────────────────────────────────
 
     public function test_booking_pages_pass_the_hotel_times(): void
@@ -502,6 +637,11 @@ class BookingTest extends TestCase
     private function futureDate(int $daysFromNow): string
     {
         return now()->addDays($daysFromNow)->toDateString();
+    }
+
+    private function longDate(int $daysFromNow): string
+    {
+        return now()->addDays($daysFromNow)->format('j M Y');
     }
 
     /** @return array{User, PetHotel, Pet} */

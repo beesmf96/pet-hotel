@@ -7,9 +7,11 @@ use App\Filament\HotelOwner\Resources\BookingResource\Pages\ListBookings;
 use App\Jobs\NotifyOwnersOfGuestCancellation;
 use App\Jobs\SendBookingCancelledNotification;
 use App\Models\Booking;
+use App\Models\Pet;
 use App\Models\PetHotel;
 use App\Models\User;
 use Filament\Facades\Filament;
+use Filament\Notifications\Notification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Livewire\Livewire;
@@ -113,6 +115,34 @@ class BookingResourceTest extends TestCase
         Livewire::test(ListBookings::class)
             ->callTableAction('confirm', $booking)
             ->assertNotified('Cannot confirm this booking');
+
+        $this->assertSame('pending', $booking->fresh()->status);
+        Queue::assertNothingPushed();
+    }
+
+    public function test_confirm_action_refuses_a_pet_confirmed_at_another_hotel(): void
+    {
+        Queue::fake();
+
+        $pet = Pet::factory()->create();
+        Booking::factory()->for($pet)->confirmed()->create([
+            'check_in' => '2030-08-01',
+            'check_out' => '2030-08-03',
+        ]);
+        $booking = Booking::factory()->for($this->hotel, 'hotel')->for($pet)->create([
+            'check_in' => '2030-08-02',
+            'check_out' => '2030-08-04',
+            'status' => 'pending',
+        ]);
+
+        Livewire::test(ListBookings::class)
+            ->callTableAction('confirm', $booking)
+            ->assertNotified(
+                Notification::make()
+                    ->danger()
+                    ->title('Cannot confirm this booking')
+                    ->body('This pet already has a confirmed stay on at least one of these nights, here or at another hotel. A pet can only stay in one place a night, so decline this request.')
+            );
 
         $this->assertSame('pending', $booking->fresh()->status);
         Queue::assertNothingPushed();
