@@ -2,7 +2,7 @@
 title: A local Playwright suite for the booking flow
 description: `bun run e2e` runs the manual booking checklist (A–G, 22 checks) in Chromium against a throwaway e2e app with its own SQLite database; not in CI.
 date: 2026-10-11
-pr: ~
+pr: 64
 plan: plan-e2e-playwright
 ---
 

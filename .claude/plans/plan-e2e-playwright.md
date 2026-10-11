@@ -2,7 +2,7 @@
 plan: e2e-playwright
 status: implemented
 branch: feature/e2e-playwright
-pr: ~
+pr: 64
 implemented: 2026-10-11
 ---
 
