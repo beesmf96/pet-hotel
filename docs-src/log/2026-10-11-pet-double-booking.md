@@ -2,7 +2,7 @@
 title: One place a night per pet
 description: A pet can no longer be requested or confirmed at two hotels for the same night.
 date: 2026-10-11
-pr: ~
+pr: 65
 plan: ~
 ---
 
