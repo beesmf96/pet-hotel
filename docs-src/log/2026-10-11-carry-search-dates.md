@@ -2,7 +2,7 @@
 title: Search dates carry to the booking form
 description: Dates searched for travel from the results to the hotel page and pre-fill the booking form.
 date: 2026-10-11
-pr: ~
+pr: 68
 plan: ~
 ---
 
