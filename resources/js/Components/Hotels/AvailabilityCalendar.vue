@@ -22,8 +22,11 @@ const emit = defineEmits(['update:modelValue']);
 const today = new Date();
 const todayKey = today.toISOString().slice(0, 10);
 
-const currentYear = ref(today.getFullYear());
-const currentMonth = ref(today.getMonth()); // 0-indexed
+// Open on the month of a check-in passed in (dates carried from search),
+// otherwise this month.
+const opening = props.modelValue?.checkIn ? new Date(`${props.modelValue.checkIn}T00:00:00`) : today;
+const currentYear = ref(opening.getFullYear());
+const currentMonth = ref(opening.getMonth()); // 0-indexed
 
 const loading = ref(false);
 const error = ref(null);

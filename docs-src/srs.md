@@ -103,7 +103,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | ID | Requirement | Pri | Traces to |
 |----|-------------|-----|-----------|
 | FR-11 | A guest shall search hotels by city. | M | `GET /hotels` · `tests/Feature/HotelSearchTest.php` |
-| FR-12 | A guest shall filter results by pet type, price range, and facilities. With both stay dates set and check-out after check-in, results shall hold only hotels with a spot on every night (FR-22); otherwise the dates filter nothing. | M | `HotelSearchController` · `tests/Feature/HotelSearchTest.php` |
+| FR-12 | A guest shall filter results by pet type, price range, and facilities. With both stay dates set and check-out after check-in, results shall hold only hotels with a spot on every night (FR-22); otherwise the dates filter nothing. Upcoming dates shall carry to the hotel page and pre-fill the booking form. | M | `HotelSearchController` · `tests/Feature/HotelSearchTest.php` |
 | FR-13 | A guest shall sort results by newest, ascending price, or descending price. The backend also accepts a distance sort given coordinates, but no control exposes it — see OI-3. | S | `HotelSearchController` · `tests/Feature/HotelSearchTest.php` |
 | FR-14 | Search results shall be paginated at 15 per page. | M | `HotelSearchController` · `tests/Feature/HotelSearchTest.php` |
 | FR-15 | The system shall show an empty state when no hotel matches the criteria. | S | `SearchPage.vue` · Vitest component suite |

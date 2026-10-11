@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\PetHotel;
 use App\Models\Review;
+use App\Support\Stay;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class HotelController extends Controller
 {
-    public function show(string $slug): Response
+    public function show(Request $request, string $slug): Response
     {
         $hotel = PetHotel::where('slug', $slug)
             ->where('is_active', true)
@@ -37,6 +39,7 @@ class HotelController extends Controller
 
         return Inertia::render('Hotels/HotelProfilePage', [
             'hotel' => $hotel,
+            'stay' => Stay::upcomingFromRequest($request)?->toArray(),
             'reviews' => $reviews,
             'reviewsCount' => $reviewsCount,
             'averageRating' => $averageRating,

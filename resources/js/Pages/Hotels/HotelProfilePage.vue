@@ -6,6 +6,8 @@ import HotelMap from '@/Components/Hotels/HotelMap.vue';
 import ReviewList from '@/Components/Hotels/ReviewList.vue';
 import { ref, computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
+import { stayQuery } from '@/stay';
+import { useFormatDate } from '@/composables/useFormatDate';
 import PawIcon from '@/Components/Ui/PawIcon.vue';
 import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
@@ -16,7 +18,11 @@ const props = defineProps({
     reviews: { type: Array, default: () => [] },
     reviewsCount: { type: Number, default: 0 },
     averageRating: { type: Number, default: null },
+    // The dates searched for, if any, carried on to the booking form.
+    stay: { type: Object, default: null },
 });
+
+const { formatDate } = useFormatDate();
 
 const facilityLabels = {
     grooming: 'Grooming',
@@ -168,11 +174,22 @@ function nextPhoto() {
                                 </li>
                             </ul>
                         </template>
-                        <UiButton as="link" size="lg" block :href="`/hotels/${hotel.slug}/book`"> Book Now </UiButton>
+                        <UiButton as="link" size="lg" block :href="`/hotels/${hotel.slug}/book${stayQuery(stay)}`">
+                            Book Now
+                        </UiButton>
+                        <p v-if="stay" data-testid="stay-dates" class="mt-2 text-center text-sm text-moss">
+                            For {{ formatDate(stay.check_in) }} to {{ formatDate(stay.check_out) }} ({{
+                                stay.nights
+                            }}
+                            night{{ stay.nights !== 1 ? 's' : '' }})
+                        </p>
                     </div>
 
                     <!-- Availability Calendar -->
-                    <AvailabilityCalendar :hotel-slug="hotel.slug" />
+                    <AvailabilityCalendar
+                        :hotel-slug="hotel.slug"
+                        :model-value="stay ? { checkIn: stay.check_in, checkOut: stay.check_out } : null"
+                    />
 
                     <!-- Location -->
                     <div v-if="hotel.lat != null && hotel.lng != null" class="card-hard p-6">

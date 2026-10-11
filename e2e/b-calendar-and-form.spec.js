@@ -61,3 +61,17 @@ test('B5 the price summary uses ringgit with separators', async ({ page }) => {
     await expect(page.getByText('RM 650.00 × 2 nights')).toBeVisible();
     await expect(page.getByText('RM 1,300.00').first()).toBeVisible();
 });
+
+test('B6 searched dates carry through to the booking form', async ({ page }) => {
+    const checkIn = dayOfNextMonth(13);
+    const checkOut = dayOfNextMonth(15);
+    await page.goto(`/hotels?check_in=${iso(checkIn)}&check_out=${iso(checkOut)}`);
+    await page.getByText(HOTEL.name).click();
+    await expect(page.getByText(/\(2\s+nights\)/)).toBeVisible();
+
+    await page.getByRole('link', { name: 'Book Now' }).click();
+    await page.locator('select').first().selectOption({ label: 'Buddy (Dog)' });
+    await expect(dayCell(page, checkIn)).toHaveClass(/bg-ink/);
+    await expect(dayCell(page, checkOut)).toHaveClass(/bg-ink/);
+    await expect(page.getByText('RM 650.00 × 2 nights')).toBeVisible();
+});
