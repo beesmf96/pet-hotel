@@ -33,7 +33,7 @@ Hard deletes with cascading FKs throughout.
 ## Commands
 
 ```bash
-composer dev          # PHP server + queue worker + Pail + Vite
+composer dev          # PHP server + queue worker + scheduler + Pail + Vite
 composer test         # Clears config cache, then PHPUnit
 bun run test          # Vitest
 bun run lint          # ESLint (bun run lint:fix to autofix)
@@ -56,7 +56,8 @@ redirect URIs, so Google login is tested end to end on `http://localhost`.
 **Queue worker.** Booking notifications are queued jobs and are the only thing that tells a
 customer their booking was requested, confirmed, or cancelled. Without a worker, bookings
 still succeed and no one is notified — there is no error. Docker runs one as the `queue`
-service; any hosted deployment needs its own long-running worker process.
+service; any hosted deployment needs its own long-running worker process. Likewise the
+`scheduler` service runs `schedule:work` — without it, unanswered requests never expire.
 
 ## Traps and decisions
 
