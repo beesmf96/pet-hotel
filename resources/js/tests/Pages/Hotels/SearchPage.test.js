@@ -52,6 +52,34 @@ describe('SearchPage — hotel grid vs empty state', () => {
     });
 });
 
+describe('SearchPage — stay dates', () => {
+    const stay = { check_in: '2026-10-25', check_out: '2026-10-28', nights: 3 };
+
+    it('says which nights the results have space for', () => {
+        const w = mount(SearchPage, { props: { hotels: makeHotels(2), filters: baseFilters, stay } });
+        expect(w.find('[data-testid="stay-summary"]').text()).toMatch(
+            /With a spot every night from Oct 25, 2026 to\s+Oct 28, 2026 \(3 nights\)/,
+        );
+    });
+
+    it('says "night" for a one-night stay', () => {
+        const oneNight = { check_in: '2026-10-25', check_out: '2026-10-26', nights: 1 };
+        const w = mount(SearchPage, { props: { hotels: makeHotels(2), filters: baseFilters, stay: oneNight } });
+        expect(w.find('[data-testid="stay-summary"]').text()).toContain('(1 night)');
+    });
+
+    it('shows no summary without a stay', () => {
+        const w = mount(SearchPage, { props: { hotels: makeHotels(2), filters: baseFilters } });
+        expect(w.find('[data-testid="stay-summary"]').exists()).toBe(false);
+    });
+
+    it('explains an empty result when dates were searched', () => {
+        const w = mount(SearchPage, { props: { hotels: makeHotels(0), filters: baseFilters, stay } });
+        expect(w.text()).toContain('No hotels with space');
+        expect(w.text()).not.toContain('No hotels found');
+    });
+});
+
 describe('SearchPage — pagination', () => {
     it('renders pagination buttons when last_page > 1', () => {
         const hotels = makeHotels(20, 3);

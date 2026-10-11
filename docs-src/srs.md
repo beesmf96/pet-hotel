@@ -103,7 +103,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | ID | Requirement | Pri | Traces to |
 |----|-------------|-----|-----------|
 | FR-11 | A guest shall search hotels by city. | M | `GET /hotels` · `tests/Feature/HotelSearchTest.php` |
-| FR-12 | A guest shall filter results by pet type, price range, and facilities. Stay dates entered in the search bar are carried to the booking form but do not filter results — see OI-6. | M | `HotelSearchController` · `tests/Feature/HotelSearchTest.php` |
+| FR-12 | A guest shall filter results by pet type, price range, and facilities. With both stay dates set and check-out after check-in, results shall hold only hotels with a spot on every night (FR-22); otherwise the dates filter nothing. | M | `HotelSearchController` · `tests/Feature/HotelSearchTest.php` |
 | FR-13 | A guest shall sort results by newest, ascending price, or descending price. The backend also accepts a distance sort given coordinates, but no control exposes it — see OI-3. | S | `HotelSearchController` · `tests/Feature/HotelSearchTest.php` |
 | FR-14 | Search results shall be paginated at 15 per page. | M | `HotelSearchController` · `tests/Feature/HotelSearchTest.php` |
 | FR-15 | The system shall show an empty state when no hotel matches the criteria. | S | `SearchPage.vue` · Vitest component suite |
@@ -286,4 +286,4 @@ NFR-14/NFR-15 (CI quality gates).
 | OI-3 | Distance sorting exists in the backend but has no UI control, and depends on coordinates that admins enter manually with no validation. Decide whether to expose it or remove it. | *TBC* |
 | OI-4 | ~~FR-22 is unimplemented.~~ Resolved 2026-10-10: spots are computed from capacity (FR-23), requests and confirms are checked (FR-22), and owners manage dates (FR-46, FR-47). | Closed |
 | OI-5 | ~~A booking for a pet type with no pricing row is created at RM 0.~~ Resolved 2026-10-10: the request is rejected and the form cannot be submitted (FR-21). | Closed |
-| OI-6 | Check-in and check-out dates in the search bar do not narrow results by availability (FR-12); they are only passed through. | *TBC* |
+| OI-6 | ~~Check-in and check-out dates in the search bar do not narrow results by availability (FR-12); they are only passed through.~~ Resolved 2026-10-11: both dates filter results to hotels with a spot every night (FR-12). | Closed |

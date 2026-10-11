@@ -39,7 +39,7 @@ function search() {
         </FormField>
 
         <FormField label="Check-out" class="flex-1 min-w-40">
-            <TextInput v-model="checkOut" type="date" />
+            <TextInput v-model="checkOut" type="date" :min="checkIn || undefined" />
         </FormField>
 
         <FormField label="Pet type" class="flex-1 min-w-40">

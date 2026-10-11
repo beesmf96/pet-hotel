@@ -7,11 +7,17 @@ import { router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import TextInput from '@/Components/Ui/TextInput.vue';
 import EmptyState from '@/Components/Ui/EmptyState.vue';
+import { useFormatDate } from '@/composables/useFormatDate';
 
 const props = defineProps({
     hotels: Object,
     filters: Object,
+    // Set only when both search dates are valid; results then hold only
+    // hotels with a spot on every night.
+    stay: { type: Object, default: null },
 });
+
+const { formatDate } = useFormatDate();
 
 // With no query string the filters prop is an empty array, whose `.sort` is
 // the Array method rather than a string. Only accept a real string value.
@@ -82,9 +88,17 @@ function decodeLabel(label) {
 
                 <div class="flex-1 min-w-0 w-full">
                     <div class="flex items-center justify-between gap-4 mb-5">
-                        <p class="text-sm font-semibold text-moss">
-                            {{ hotels.total }} hotel{{ hotels.total !== 1 ? 's' : '' }} found
-                        </p>
+                        <div class="text-sm text-moss">
+                            <p class="font-semibold">
+                                {{ hotels.total }} hotel{{ hotels.total !== 1 ? 's' : '' }} found
+                            </p>
+                            <p v-if="stay" data-testid="stay-summary">
+                                With a spot every night from {{ formatDate(stay.check_in) }} to
+                                {{ formatDate(stay.check_out) }} ({{ stay.nights }} night{{
+                                    stay.nights !== 1 ? 's' : ''
+                                }})
+                            </p>
+                        </div>
                         <TextInput v-model="sort" :full="false" as="select">
                             <option v-for="opt in SORT_OPTIONS" :key="opt.value" :value="opt.value">
                                 {{ opt.label }}
@@ -99,6 +113,11 @@ function decodeLabel(label) {
                         <HotelCard v-for="hotel in hotels.data" :key="hotel.id" :hotel="hotel" />
                     </div>
 
+                    <EmptyState
+                        v-else-if="stay"
+                        title="No hotels with space"
+                        message="No hotel has a spot on every night of these dates. Try other dates, or a shorter stay."
+                    />
                     <EmptyState v-else title="No hotels found" message="Try adjusting your search or filters." />
 
                     <div v-if="hotels.last_page > 1" class="mt-8 flex items-center justify-center flex-wrap gap-2">

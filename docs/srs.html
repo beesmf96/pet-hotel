@@ -257,7 +257,7 @@ tests that verify it.</li>
 </tr>
 <tr>
 <td>FR-12</td>
-<td>A guest shall filter results by pet type, price range, and facilities. Stay dates entered in the search bar are carried to the booking form but do not filter results — see OI-6.</td>
+<td>A guest shall filter results by pet type, price range, and facilities. With both stay dates set and check-out after check-in, results shall hold only hotels with a spot on every night (FR-22); otherwise the dates filter nothing.</td>
 <td>M</td>
 <td><code>HotelSearchController</code> · <code>tests/Feature/HotelSearchTest.php</code></td>
 </tr>
@@ -932,8 +932,8 @@ NFR-14/NFR-15 (CI quality gates).</p>
 </tr>
 <tr>
 <td>OI-6</td>
-<td>Check-in and check-out dates in the search bar do not narrow results by availability (FR-12); they are only passed through.</td>
-<td><em>TBC</em></td>
+<td>~~Check-in and check-out dates in the search bar do not narrow results by availability (FR-12); they are only passed through.~~ Resolved 2026-10-11: both dates filter results to hotels with a spot every night (FR-12).</td>
+<td>Closed</td>
 </tr>
 </tbody>
 </table></div>
