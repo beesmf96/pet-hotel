@@ -58,6 +58,39 @@ git config core.hooksPath .githooks
 
 It runs gitleaks on staged changes and refuses the commit if something looks like a credential.
 
+## End-to-end tests (local only)
+
+`bun run e2e` clicks through the booking flow in a real browser with
+Playwright: owner settings and availability, the calendar and form, requests
+and confirm, the cancel and decline emails, capacity, prices, and the two
+notification bells. It is not part of CI.
+
+It needs the Docker stack up (`docker compose up -d`). Once per machine,
+download the browser:
+
+```bash
+bunx playwright install chromium
+# On WSL or a bare Linux, if Chromium will not start, add its system libraries:
+sudo bunx playwright install-deps chromium
+```
+
+Then:
+
+```bash
+bun run e2e                          # the whole suite, about 2 minutes
+bun run e2e e2e/c-requests-and-confirm.spec.js   # one file
+```
+
+It starts its own copy of the app on http://localhost:8001 in a throwaway
+container (`pet_hotel_e2e`), with its own SQLite database
+(`database/e2e.sqlite`), mail sent at once, and built assets. Your dev
+database and dev mail are not touched: each spec resets the e2e database
+after checking it really is the e2e one, and only mail to `@e2e.test`
+addresses is read or deleted in Mailpit. Fixed test data comes from
+`E2eSeeder` (password `password` for every account). Failures leave a
+screenshot, a trace and a page snapshot under `storage/e2e-results/`, and an
+HTML report in `storage/e2e-report/`.
+
 ## More
 
 - [Documentation](https://beesmf96.github.io/pet-hotel/) — the stakeholder site, built from `docs-src/` into `docs/`

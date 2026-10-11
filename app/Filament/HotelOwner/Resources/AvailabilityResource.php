@@ -57,7 +57,7 @@ class AvailabilityResource extends Resource
                 ->live(),
             TextInput::make('capacity')
                 ->label('Pets per night')
-                ->helperText(fn () => 'Leave empty to keep the normal capacity ('.static::ownerHotel()->capacity.').')
+                ->helperText(fn () => 'Your normal capacity is '.static::ownerHotel()->capacity.'.')
                 ->integer()
                 ->minValue(0)
                 ->maxValue(1000)
