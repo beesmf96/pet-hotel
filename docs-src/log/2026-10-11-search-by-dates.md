@@ -2,7 +2,7 @@
 title: Search by stay dates
 description: Check-in and check-out in the search bar now hide hotels that are full or closed on any night of the stay; closes SRS OI-6.
 date: 2026-10-11
-pr: ~
+pr: 67
 plan: ~
 ---
 
