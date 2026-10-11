@@ -377,6 +377,12 @@ tests that verify it.</li>
 <td><code>bookings.cancel</code> · <code>tests/Feature/BookingTest.php</code></td>
 </tr>
 <tr>
+<td>FR-26a</td>
+<td>A booking request still <code>pending</code> after its check-in day shall be cancelled automatically, once a day, and the customer emailed that it expired. Owners are not notified.</td>
+<td>M</td>
+<td><code>bookings:expire-pending</code> (scheduled 00:15 UTC) · <code>tests/Feature/ExpirePendingBookingsTest.php</code></td>
+</tr>
+<tr>
 <td>FR-27</td>
 <td>A customer shall access only their own bookings.</td>
 <td>M</td>
@@ -434,7 +440,7 @@ tests that verify it.</li>
 <tbody>
 <tr>
 <td>FR-32</td>
-<td>The system shall email the customer when a booking request is submitted, when it is confirmed, and when it is cancelled. The cancellation email shall say whether the customer cancelled, the hotel declined the request, or the hotel cancelled a confirmed stay.</td>
+<td>The system shall email the customer when a booking request is submitted, when it is confirmed, and when it is cancelled. The cancellation email shall say whether the customer cancelled, the hotel declined the request, the hotel cancelled a confirmed stay, or the request expired.</td>
 <td>M</td>
 <td>Notification jobs · <code>tests/Feature/NotificationTest.php</code></td>
 </tr>

@@ -255,6 +255,17 @@ class NotificationTest extends TestCase
         $this->assertSame('Find Another Stay', $mail->actionText);
     }
 
+    public function test_expiry_mail_says_the_hotel_did_not_answer(): void
+    {
+        $mail = $this->cancelledMail(CancelledBy::Expiry, false);
+        $lines = implode(' ', $mail->introLines);
+
+        $this->assertSame('Booking Request Expired — Happy Paws', $mail->subject);
+        $this->assertStringContainsString('**Happy Paws** did not answer your booking request before check-in, so it has expired.', $lines);
+        $this->assertStringContainsString('No booking was made.', $lines);
+        $this->assertSame('Find Another Stay', $mail->actionText);
+    }
+
     public function test_hotel_cancel_mail_says_the_confirmed_stay_was_cancelled(): void
     {
         $mail = $this->cancelledMail(CancelledBy::Hotel, true);

@@ -126,6 +126,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | FR-24 | A customer shall view a confirmation screen stating the request is pending. | M | `bookings.confirmation` · `tests/Feature/BookingTest.php` |
 | FR-25 | A customer shall list their bookings with status badges and open any one for detail. | M | `bookings.index`, `bookings.show` · `tests/Feature/BookingTest.php` |
 | FR-26 | A customer shall cancel their own booking while it is still `pending`. Confirmed bookings are cancelled by the hotel or an administrator. | M | `bookings.cancel` · `tests/Feature/BookingTest.php` |
+| FR-26a | A booking request still `pending` after its check-in day shall be cancelled automatically, once a day, and the customer emailed that it expired. Owners are not notified. | M | `bookings:expire-pending` (scheduled 00:15 UTC) · `tests/Feature/ExpirePendingBookingsTest.php` |
 | FR-27 | A customer shall access only their own bookings. | M | `BookingPolicy` · `tests/Unit/Policies/BookingPolicyTest.php` |
 
 ### 3.5 Reviews
@@ -141,7 +142,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 
 | ID | Requirement | Pri | Traces to |
 |----|-------------|-----|-----------|
-| FR-32 | The system shall email the customer when a booking request is submitted, when it is confirmed, and when it is cancelled. The cancellation email shall say whether the customer cancelled, the hotel declined the request, or the hotel cancelled a confirmed stay. | M | Notification jobs · `tests/Feature/NotificationTest.php` |
+| FR-32 | The system shall email the customer when a booking request is submitted, when it is confirmed, and when it is cancelled. The cancellation email shall say whether the customer cancelled, the hotel declined the request, the hotel cancelled a confirmed stay, or the request expired. | M | Notification jobs · `tests/Feature/NotificationTest.php` |
 | FR-32a | The system shall email every owner of the hotel, and add a notification to the owner panel, when a guest submits a booking request and when a guest cancels their pending request. | M | `NotifyOwnersOfBookingRequest`, `NotifyOwnersOfGuestCancellation` · `tests/Feature/OwnerNotificationTest.php` |
 | FR-33 | Notification emails shall be dispatched through the queue, not sent inline during the web request. Each is queued once, by its job. | M | `Booking::confirm()`, `Booking::cancel()`, `BookingController@store` · `tests/Feature/Jobs/NotificationJobPolicyTest.php` |
 | FR-34 | A queued notification job shall fail safely and shall not be retried indefinitely when its subject no longer exists. | M | Job policy · `tests/Feature/Jobs/NotificationJobPolicyTest.php` |

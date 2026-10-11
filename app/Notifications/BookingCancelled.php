@@ -8,9 +8,9 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
- * Tells the guest their booking has ended, in one of three ways: they
- * cancelled their own request, the hotel declined it, or the hotel cancelled
- * a stay it had confirmed.
+ * Tells the guest their booking has ended, in one of four ways: they
+ * cancelled their own request, the hotel declined it, the hotel cancelled a
+ * stay it had confirmed, or the request expired with no answer.
  *
  * Not ShouldQueue: SendBookingCancelledNotification is the queued unit.
  */
@@ -36,6 +36,7 @@ class BookingCancelled extends Notification
     {
         return match (true) {
             $this->by === CancelledBy::Guest => 'Booking Request Cancelled',
+            $this->by === CancelledBy::Expiry => 'Booking Request Expired',
             $this->declined() => 'Booking Request Declined',
             default => 'Booking Cancelled by the Hotel',
         };
@@ -47,6 +48,7 @@ class BookingCancelled extends Notification
 
         return match (true) {
             $this->by === CancelledBy::Guest => 'You cancelled your booking request at '.$hotel.'.',
+            $this->by === CancelledBy::Expiry => $hotel.' did not answer your booking request before check-in, so it has expired.',
             $this->declined() => $hotel.' could not take your booking request.',
             default => $hotel.' has cancelled your confirmed booking.',
         };
@@ -67,7 +69,7 @@ class BookingCancelled extends Notification
             $this->by === CancelledBy::Guest => $mail
                 ->action('Browse Hotels', route('hotels.index'))
                 ->line('If you did not cancel it yourself, please contact support.'),
-            $this->declined() => $mail
+            $this->by === CancelledBy::Expiry, $this->declined() => $mail
                 ->line('No booking was made. You can ask for other dates, or find another hotel.')
                 ->action('Find Another Stay', route('hotels.index')),
             default => $mail
