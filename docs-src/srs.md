@@ -120,6 +120,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | FR-20 | A new booking shall be created with status `pending`; the system shall never confirm it automatically. | M | `BookingController@store` · `tests/Feature/BookingTest.php` |
 | FR-21 | The system shall calculate total price from the hotel's per-night rate for the pet's type and the number of nights, summed in whole sen. A request for a pet type the hotel has no rate for shall be rejected. | M | `BookingController@store` · `tests/Feature/BookingTest.php` |
 | FR-22 | The system shall reject a booking request, and refuse to confirm a booking, when any night of the stay is closed or has no spot left. The check-out day is not a night. | M | `Availability::fits()`, `BookingController@store`, `Booking::confirm()` · `tests/Feature/BookingTest.php`, `tests/Unit/Support/AvailabilityTest.php` |
+| FR-22a | A pet shall stay in one place a night. The system shall reject a request for a pet that already has a pending, confirmed or completed booking sharing a night with it, at any hotel, and refuse to confirm a booking whose pet is confirmed elsewhere on a shared night. Back-to-back stays share no night. | M | `Booking::clashFor()`, `BookingController@store`, `Booking::confirm()` · `tests/Feature/BookingTest.php` |
 | FR-23 | Spots left shall be computed from capacity and confirmed and completed bookings, never stored. Confirming takes a spot on each night; cancelling frees it. Pending requests hold no spot. | M | `App\Support\Availability` · `tests/Unit/Support/AvailabilityTest.php` |
 | FR-23a | Check-in and check-out times, when the hotel has set them, shall appear on the booking form, confirmation page, booking detail page, and the request and confirmed emails. | S | `PetHotelPolicy::stayTimes()` · `tests/Feature/BookingTest.php`, `tests/Feature/NotificationTest.php` |
 | FR-24 | A customer shall view a confirmation screen stating the request is pending. | M | `bookings.confirmation` · `tests/Feature/BookingTest.php` |
@@ -257,7 +258,7 @@ constrain the data layer:
 | 1. Search pet hotels by location | FR-11, FR-14 |
 | 2. View available dates and times | FR-18 |
 | 3. View pet hotel profiles | FR-16, FR-17 |
-| 4. Book a pet hotel (manual process) | FR-19 – FR-24, FR-39, FR-45 |
+| 4. Book a pet hotel (manual process) | FR-19 – FR-24 (with FR-22a), FR-39, FR-45 |
 | 5. User and pet profile management | FR-07 – FR-10 |
 | 6. View ratings and reviews | FR-30, FR-31 |
 | 7. Filter and sort search results | FR-12, FR-13, FR-15 |

@@ -55,6 +55,18 @@ class BookingController extends Controller
             ]);
         }
 
+        // A pet sleeps in one place a night. Open requests count too: the
+        // customer should cancel one before asking somewhere else.
+        $clash = Booking::clashFor($pet->id, $checkIn, $checkOut, ['pending', ...Availability::HOLDING_STATUSES]);
+        if ($clash) {
+            $pending = $clash->status === 'pending';
+            throw ValidationException::withMessages([
+                'pet_id' => $pet->name.' already has '.($pending ? 'a booking request' : 'a booking')
+                    .' at '.$clash->hotel->name.' from '.$clash->check_in->format('j M Y').' to '.$clash->check_out->format('j M Y')
+                    .'. A pet can only stay in one place a night, so pick other dates'.($pending ? ' or cancel that request first.' : '.'),
+            ]);
+        }
+
         $booking = Booking::create([
             'user_id' => $request->user()->id,
             'hotel_id' => $hotel->id,

@@ -138,7 +138,7 @@ class BookingResource extends Resource
 
     /**
      * The stay may have stopped fitting since it was requested: other bookings
-     * were confirmed, or the owner closed a date.
+     * were confirmed, the owner closed a date, or the pet was confirmed elsewhere.
      */
     protected static function confirm(Booking $record): void
     {
@@ -148,7 +148,7 @@ class BookingResource extends Resource
             Notification::make()
                 ->danger()
                 ->title('Cannot confirm this booking')
-                ->body($e->getMessage().' Decline it, or open more spots on those dates first.')
+                ->body($e->getMessage())
                 ->send();
         }
     }
