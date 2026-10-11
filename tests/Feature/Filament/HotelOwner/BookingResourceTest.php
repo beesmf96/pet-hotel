@@ -6,10 +6,12 @@ use App\Enums\CancelledBy;
 use App\Filament\HotelOwner\Resources\BookingResource\Pages\ListBookings;
 use App\Jobs\NotifyOwnersOfGuestCancellation;
 use App\Jobs\SendBookingCancelledNotification;
+use App\Jobs\SendBookingConfirmationNotification;
 use App\Models\Booking;
 use App\Models\Pet;
 use App\Models\PetHotel;
 use App\Models\User;
+use Filament\Actions\Testing\TestAction;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -146,6 +148,130 @@ class BookingResourceTest extends TestCase
 
         $this->assertSame('pending', $booking->fresh()->status);
         Queue::assertNothingPushed();
+    }
+
+    // ── Booking pop-up ────────────────────────────────────────────────────────
+
+    public function test_view_pop_up_shows_the_stay_the_pet_and_the_guest(): void
+    {
+        $this->hotel->policy()->create(['check_in_time' => '14:00', 'check_out_time' => '12:00']);
+        $guest = User::factory()->create(['name' => 'Ada Guest', 'email' => 'ada@example.com', 'phone' => '012-345 6789']);
+        $pet = Pet::factory()->for($guest)->create([
+            'name' => 'Buddy', 'species' => 'dog', 'breed' => 'Beagle', 'age' => 3, 'special_needs' => 'Pills at 8am',
+        ]);
+        $booking = Booking::factory()->for($this->hotel, 'hotel')->for($guest)->for($pet)->create([
+            'check_in' => '2030-10-25',
+            'check_out' => '2030-10-28',
+            'status' => 'pending',
+            'total_price' => 1950,
+            'notes' => 'Please walk him twice',
+        ]);
+
+        Livewire::test(ListBookings::class)
+            ->mountTableAction('view', $booking)
+            ->assertMountedActionModalSee('Booking from Ada Guest')
+            ->assertMountedActionModalSee('Fri, 25 Oct 2030, from 2:00 PM')
+            ->assertMountedActionModalSee('Mon, 28 Oct 2030, by 12:00 PM')
+            ->assertMountedActionModalSee('3 nights')
+            ->assertMountedActionModalSee('RM 1,950.00')
+            ->assertMountedActionModalSee('Please walk him twice')
+            ->assertMountedActionModalSee('Beagle')
+            ->assertMountedActionModalSee('Pills at 8am')
+            ->assertMountedActionModalSee('ada@example.com')
+            ->assertMountedActionModalSee('012-345 6789');
+    }
+
+    public function test_view_pop_up_without_hotel_times_or_optional_details(): void
+    {
+        $pet = Pet::factory()->create(['breed' => null, 'age' => null, 'special_needs' => null]);
+        $booking = Booking::factory()->for($this->hotel, 'hotel')->for($pet)->create([
+            'check_in' => '2030-10-25',
+            'check_out' => '2030-10-26',
+            'notes' => null,
+        ]);
+
+        Livewire::test(ListBookings::class)
+            ->mountTableAction('view', $booking)
+            ->assertMountedActionModalSee('Fri, 25 Oct 2030')
+            ->assertMountedActionModalDontSee('from 2:00 PM')
+            ->assertMountedActionModalSee('1 night');
+    }
+
+    public function test_confirm_from_the_pop_up_confirms_and_closes_it(): void
+    {
+        Queue::fake();
+
+        $booking = Booking::factory()->for($this->hotel, 'hotel')->create(['status' => 'pending']);
+
+        $component = Livewire::test(ListBookings::class)
+            ->callAction([
+                TestAction::make('view')->table($booking),
+                TestAction::make('confirmFromView')->table($booking),
+            ])
+            ->assertHasNoActionErrors();
+
+        $this->assertSame([], $component->instance()->mountedActions);
+        $this->assertSame('confirmed', $booking->fresh()->status);
+        Queue::assertPushed(SendBookingConfirmationNotification::class);
+    }
+
+    public function test_decline_from_the_pop_up_declines(): void
+    {
+        Queue::fake();
+
+        $booking = Booking::factory()->for($this->hotel, 'hotel')->create(['status' => 'pending']);
+
+        Livewire::test(ListBookings::class)
+            ->callAction([
+                TestAction::make('view')->table($booking),
+                TestAction::make('declineFromView')->table($booking),
+            ]);
+
+        $this->assertSame('cancelled', $booking->fresh()->status);
+        Queue::assertPushed(
+            SendBookingCancelledNotification::class,
+            fn ($job) => $job->by === CancelledBy::Hotel && ! $job->wasConfirmed,
+        );
+    }
+
+    public function test_pop_up_has_no_confirm_or_decline_once_answered(): void
+    {
+        $booking = Booking::factory()->for($this->hotel, 'hotel')->confirmed()->create();
+
+        Livewire::test(ListBookings::class)
+            ->assertActionHidden([
+                TestAction::make('view')->table($booking),
+                TestAction::make('confirmFromView')->table($booking),
+            ])
+            ->assertActionHidden([
+                TestAction::make('view')->table($booking),
+                TestAction::make('declineFromView')->table($booking),
+            ]);
+    }
+
+    public function test_notification_link_opens_the_pop_up_for_that_booking(): void
+    {
+        $booking = Booking::factory()->for($this->hotel, 'hotel')->create();
+        $booking->user->update(['name' => 'Ada Guest']);
+
+        $component = Livewire::withQueryParams(['tableAction' => 'view', 'tableActionRecord' => $booking->id])
+            ->test(ListBookings::class);
+
+        // The page opens it from the browser once loaded (wire:init); do that step here.
+        $component->call('mountAction', 'view', [], $component->instance()->getDefaultTableActionUrlContext())
+            ->assertMountedActionModalSee('Booking from Ada Guest');
+    }
+
+    public function test_notification_link_does_not_open_another_hotels_booking(): void
+    {
+        $other = Booking::factory()->create();
+        $other->user->update(['name' => 'Someone Else']);
+
+        $component = Livewire::withQueryParams(['tableAction' => 'view', 'tableActionRecord' => $other->id])
+            ->test(ListBookings::class);
+        $component->call('mountAction', 'view', [], $component->instance()->getDefaultTableActionUrlContext());
+
+        $this->assertSame([], $component->instance()->mountedActions);
     }
 
     public function test_decline_action_cancels_a_pending_booking(): void
