@@ -40,6 +40,14 @@ describe('SearchBar — emitting a search', () => {
         expect(lastSearch(w)).toMatchObject({ check_in: '2026-10-01', check_out: '2026-10-03' })
     })
 
+    it('check-out cannot be picked before check-in', async () => {
+        const w = mount(SearchBar, { props: { filters: {} } })
+        const [checkIn, checkOut] = w.findAll('input[type="date"]')
+        expect(checkOut.attributes('min')).toBeUndefined()
+        await checkIn.setValue('2026-10-01')
+        expect(checkOut.attributes('min')).toBe('2026-10-01')
+    })
+
     it('pressing Enter in the city field searches too', async () => {
         const w = mount(SearchBar, { props: { filters: {} } })
         await w.find('input[type="text"]').trigger('keyup.enter')

@@ -92,6 +92,41 @@ class Availability
     }
 
     /**
+     * Hotels that cannot take one more pet on every night of the stay — for
+     * search, which must filter in the query to keep its pagination.
+     *
+     * Only a hotel with a date override or a booking holding a spot in the
+     * range, or with no normal capacity, can fail; every other hotel fits.
+     * So only those few are checked night by night.
+     *
+     * @return list<int>
+     */
+    public static function unavailableHotelIds(CarbonInterface $checkIn, CarbonInterface $checkOut): array
+    {
+        $first = Carbon::parse($checkIn)->startOfDay();
+        $end = Carbon::parse($checkOut)->startOfDay();
+
+        // Wide windows; fits() decides exactly. SQLite keeps whatever time
+        // part was written into a date column.
+        $candidates = HotelAvailability::where('date', '>=', $first->copy()->subDay())
+            ->where('date', '<', $end->copy()->addDay())
+            ->pluck('hotel_id')
+            ->merge(Booking::whereIn('status', self::HOLDING_STATUSES)
+                ->where('check_in', '<', $end->copy()->addDay())
+                ->where('check_out', '>', $first->copy()->subDay())
+                ->pluck('hotel_id'))
+            ->unique();
+
+        return PetHotel::whereIn('id', $candidates)
+            ->orWhere('capacity', '<', 1)
+            ->get()
+            ->reject(fn (PetHotel $hotel) => self::fits($hotel, $first, $end))
+            ->pluck('id')
+            ->values()
+            ->all();
+    }
+
+    /**
      * @return array<string, int>
      */
     private static function bookedPerNight(PetHotel $hotel, Carbon $first, Carbon $last): array

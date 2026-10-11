@@ -84,13 +84,18 @@ test('C1–C8 two guests ask for the last spot', async ({ browser, request }) =>
         await expect(owner.locator('table tbody tr').filter({ hasText: 'Ben Guest' })).toContainText(/pending/i);
     });
 
-    await test.step('C7 the night shows as full everywhere', async () => {
+    await test.step('C7 the night shows as full everywhere, search included', async () => {
         await ben.goto(`/hotels/${HOTEL.slug}`);
         await showMonth(ben, night);
         await expect(dayCell(ben, night)).toHaveAttribute('title', 'Full');
 
         const row = await overviewRow(owner, night);
         await expect(row).toContainText('Full');
+
+        await ben.goto(`/hotels?check_in=${iso(night)}&check_out=${iso(checkOut)}`);
+        await expect(ben.getByText('No hotels with space')).toBeVisible();
+        await ben.goto(`/hotels?check_in=${iso(checkOut)}&check_out=${iso(dayOfNextMonth(22))}`);
+        await expect(ben.getByText(HOTEL.name)).toBeVisible();
     });
 
     await test.step('C8 a request sent after the night filled is refused', async () => {

@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Booking;
+use App\Models\HotelAvailability;
 use App\Models\PetHotel;
 use App\Models\PetHotelFacility;
 use App\Models\PetHotelPricing;
@@ -221,6 +223,87 @@ class HotelSearchTest extends TestCase
                 ->where('filters.check_in', '2025-06-01')
                 ->where('filters.check_out', '2025-06-07')
             );
+    }
+
+    // ── Stay dates ────────────────────────────────────────────────────────────
+
+    public function test_stay_dates_hide_hotels_full_or_closed_on_any_night(): void
+    {
+        $open = $this->makeHotel(['name' => 'Open Inn', 'capacity' => 1]);
+        $full = $this->makeHotel(['name' => 'Full Inn', 'capacity' => 1]);
+        Booking::factory()->for($full, 'hotel')->confirmed()->create([
+            'check_in' => '2030-08-02',
+            'check_out' => '2030-08-03',
+        ]);
+        $closed = $this->makeHotel(['name' => 'Closed Inn']);
+        HotelAvailability::create(['hotel_id' => $closed->id, 'date' => '2030-08-03', 'is_blocked' => true]);
+
+        $this->get('/hotels?check_in=2030-08-01&check_out=2030-08-04')
+            ->assertInertia(fn ($page) => $page
+                ->where('hotels.total', 1)
+                ->where('hotels.data.0.name', 'Open Inn')
+                ->where('stay', ['check_in' => '2030-08-01', 'check_out' => '2030-08-04', 'nights' => 3])
+            );
+    }
+
+    public function test_stay_dates_keep_hotels_whose_problem_night_is_outside_the_stay(): void
+    {
+        $hotel = $this->makeHotel(['capacity' => 1]);
+        Booking::factory()->for($hotel, 'hotel')->confirmed()->create([
+            'check_in' => '2030-07-30',
+            'check_out' => '2030-08-01',
+        ]);
+        // Check-out day is not a night.
+        HotelAvailability::create(['hotel_id' => $hotel->id, 'date' => '2030-08-04', 'is_blocked' => true]);
+        // Pending requests hold no spot.
+        Booking::factory()->for($hotel, 'hotel')->create([
+            'check_in' => '2030-08-01',
+            'check_out' => '2030-08-04',
+            'status' => 'pending',
+        ]);
+
+        $this->get('/hotels?check_in=2030-08-01&check_out=2030-08-04')
+            ->assertInertia(fn ($page) => $page->where('hotels.total', 1));
+    }
+
+    public function test_stay_dates_use_a_raised_capacity_for_the_night(): void
+    {
+        $hotel = $this->makeHotel(['capacity' => 1]);
+        Booking::factory()->for($hotel, 'hotel')->confirmed()->create([
+            'check_in' => '2030-08-01',
+            'check_out' => '2030-08-02',
+        ]);
+        HotelAvailability::create(['hotel_id' => $hotel->id, 'date' => '2030-08-01', 'capacity' => 2]);
+
+        $this->get('/hotels?check_in=2030-08-01&check_out=2030-08-02')
+            ->assertInertia(fn ($page) => $page->where('hotels.total', 1));
+    }
+
+    public function test_stay_dates_hide_a_hotel_with_no_capacity(): void
+    {
+        $this->makeHotel(['capacity' => 0]);
+
+        $this->get('/hotels?check_in=2030-08-01&check_out=2030-08-02')
+            ->assertInertia(fn ($page) => $page->where('hotels.total', 0));
+    }
+
+    public function test_incomplete_or_invalid_stay_dates_filter_nothing(): void
+    {
+        $hotel = $this->makeHotel(['capacity' => 1]);
+        HotelAvailability::create(['hotel_id' => $hotel->id, 'date' => '2030-08-01', 'is_blocked' => true]);
+
+        foreach ([
+            'check_in=2030-08-01',
+            'check_in=2030-08-02&check_out=2030-08-01',
+            'check_in=2030-08-01&check_out=2030-08-01',
+            'check_in=2030-02-30&check_out=2030-03-02',
+            'check_in=tomorrow&check_out=2030-08-02',
+            'check_in[]=2030-08-01&check_out=2030-08-02',
+        ] as $query) {
+            $this->get("/hotels?{$query}")
+                ->assertOk()
+                ->assertInertia(fn ($page) => $page->where('hotels.total', 1)->where('stay', null));
+        }
     }
 
     public function test_pagination_page_two_returns_remaining_results(): void
