@@ -2,7 +2,7 @@
 plan: owner-booking-popup
 status: implemented
 branch: feature/owner-booking-popup
-pr: ~
+pr: 69
 implemented: 2026-10-11
 ---
 

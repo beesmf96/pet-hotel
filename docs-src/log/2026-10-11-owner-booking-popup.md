@@ -2,7 +2,7 @@
 title: Booking pop-up for owners
 description: Owners open a booking's details in a pop-up — from its row, the bell or the email — and confirm or decline it there.
 date: 2026-10-11
-pr: ~
+pr: 69
 plan: .claude/plans/plan-owner-booking-popup.md
 ---
 
