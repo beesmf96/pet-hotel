@@ -5,7 +5,7 @@ import { HOTEL, USERS } from './support/env.js';
 import { dayOfNextMonth, iso, longDate } from './support/dates.js';
 import { clearE2eMail, findMail } from './support/mailpit.js';
 import { fillRequest, requestStay } from './support/customer.js';
-import { bookingAction, expectNotice, overviewRow } from './support/owner.js';
+import { bookingAction, expectNotice, openFromBell, overviewRow } from './support/owner.js';
 import { dayCell, showMonth } from './support/calendar.js';
 
 // Checklist C: requests, the owner's notices, confirm, and the last spot.
@@ -71,8 +71,17 @@ test('C1–C8 two guests ask for the last spot', async ({ browser, request }) =>
     const benLate = await ben.context().newPage();
     await fillRequest(benLate, { pet: 'Rex (Dog)', checkIn: night, checkOut });
 
-    await test.step('C5 confirming Alice works and emails her', async () => {
-        await bookingAction(owner, 'owner', 'Alice Guest', 'Confirm');
+    await test.step('C5 confirming Alice from the bell pop-up works and emails her', async () => {
+        const popup = await openFromBell(owner, 'Alice Guest');
+        await expect(popup).toContainText('Beagle');
+        await expect(popup).toContainText('Needs a walk at 7am');
+        await expect(popup).toContainText('from 2:00 PM');
+        await popup.getByRole('button', { name: 'Confirm', exact: true }).click();
+        await owner
+            .locator('.fi-modal-window:visible')
+            .filter({ hasText: 'This will confirm the booking' })
+            .getByRole('button', { name: 'Confirm', exact: true })
+            .click();
         const mail = await findMail(request, { to: USERS.alice, subject: `Booking Confirmed — ${HOTEL.name}` });
         expect(mail.text).toContain('Total: RM 650.00');
     });

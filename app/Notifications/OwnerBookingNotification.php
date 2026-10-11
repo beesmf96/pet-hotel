@@ -48,7 +48,7 @@ abstract class OwnerBookingNotification extends Notification
             $mail->line('Notes: '.$booking->notes);
         }
 
-        return $mail->action('Open bookings', $this->bookingsUrl());
+        return $mail->action('View booking', $this->bookingUrl());
     }
 
     public function toDatabase(object $notifiable): array
@@ -57,9 +57,9 @@ abstract class OwnerBookingNotification extends Notification
             ->title($this->heading())
             ->body($this->booking->user->name.' · '.$this->petDescription().' · '.$this->stayDescription())
             ->actions([
-                Action::make('open')
-                    ->label('Open bookings')
-                    ->url($this->bookingsUrl())
+                Action::make('view')
+                    ->label('View booking')
+                    ->url($this->bookingUrl())
                     ->markAsRead(),
             ])
             ->getDatabaseMessage();
@@ -81,8 +81,16 @@ abstract class OwnerBookingNotification extends Notification
             .' ('.$nights.' '.str('night')->plural($nights).')';
     }
 
-    protected function bookingsUrl(): string
+    /**
+     * The owner panel's bookings list with this booking's pop-up open.
+     * Filament finds the record through the table's query, which only holds
+     * the owner's own hotel.
+     */
+    protected function bookingUrl(): string
     {
-        return BookingResource::getUrl('index', panel: 'hotel-owner');
+        return BookingResource::getUrl('index', [
+            'tableAction' => 'view',
+            'tableActionRecord' => $this->booking->id,
+        ], panel: 'hotel-owner');
     }
 }

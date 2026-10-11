@@ -147,8 +147,11 @@ class OwnerNotificationTest extends TestCase
         $this->assertStringContainsString('Thu, 24 Oct 2030 to Sat, 26 Oct 2030 (2 nights)', $lines);
         $this->assertStringContainsString('Total: RM 120.00', $lines);
         $this->assertStringContainsString('Notes: Needs medication at 8am', $lines);
-        $this->assertSame('Open bookings', $mail->actionText);
-        $this->assertSame(BookingResource::getUrl('index', panel: 'hotel-owner'), $mail->actionUrl);
+        $this->assertSame('View booking', $mail->actionText);
+        $this->assertSame(
+            BookingResource::getUrl('index', ['tableAction' => 'view', 'tableActionRecord' => $booking->id], panel: 'hotel-owner'),
+            $mail->actionUrl,
+        );
     }
 
     public function test_mail_leaves_out_empty_notes_and_says_one_night(): void
@@ -170,12 +173,17 @@ class OwnerNotificationTest extends TestCase
 
     public function test_database_payload_is_in_the_panel_format(): void
     {
-        $payload = (new NewBookingRequest($this->booking()))->toDatabase(new User);
+        $booking = $this->booking();
+        $payload = (new NewBookingRequest($booking))->toDatabase(new User);
 
         $this->assertSame('filament', $payload['format']);
         $this->assertSame('New booking request', $payload['title']);
         $this->assertStringContainsString('Ada · Buddy (Dog)', $payload['body']);
-        $this->assertSame(BookingResource::getUrl('index', panel: 'hotel-owner'), $payload['actions'][0]['url']);
+        $this->assertSame('View booking', $payload['actions'][0]['label']);
+        $this->assertSame(
+            BookingResource::getUrl('index', ['tableAction' => 'view', 'tableActionRecord' => $booking->id], panel: 'hotel-owner'),
+            $payload['actions'][0]['url'],
+        );
     }
 
     // ── The two bells ─────────────────────────────────────────────────────────

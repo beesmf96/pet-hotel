@@ -13,17 +13,6 @@ When one is picked up, it gets a plan in `.claude/plans/` and is removed from
 here in the same PR. Things decided *against* for now live in the PID's
 out-of-scope table instead (SMS/WhatsApp, pending reminders, daycare, payments).
 
-## Booking pop-up from an owner notification
-
-*Asked 2026-10-10.* Clicking a notification in the owner panel's bell opens
-the Bookings list today. Instead it should open a short summary of that one
-booking — guest, pet and its details (species, breed, age, notes), dates and
-nights, total, the guest's notes — with **Confirm** and **Decline** on it.
-
-Touches: the `OwnerBookingNotification` action URL (it needs the booking id),
-a Filament view action or modal on the owner `BookingResource`, and the same
-`Booking::confirm()` / `cancel()` paths the row actions use.
-
 ## Owners edit their hotel details
 
 *Asked 2026-10-10.* Owners can set capacity, closed dates and check-in/out

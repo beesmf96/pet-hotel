@@ -3,6 +3,7 @@
 namespace App\Filament\HotelOwner\Resources;
 
 use App\Enums\CancelledBy;
+use App\Enums\PetType;
 use App\Exceptions\BookingDoesNotFit;
 use App\Filament\HotelOwner\Concerns\ResolvesOwnerHotel;
 use App\Filament\HotelOwner\Resources\BookingResource\Pages;
@@ -10,8 +11,11 @@ use App\Models\Booking;
 use App\Support\Money;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\ViewAction;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -75,13 +79,7 @@ class BookingResource extends Resource
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'pending' => 'warning',
-                        'confirmed' => 'success',
-                        'cancelled' => 'danger',
-                        'completed' => 'info',
-                        default => 'gray',
-                    })
+                    ->color(fn (string $state): string => static::statusColor($state))
                     ->sortable(),
                 TextColumn::make('total_price')
                     ->formatStateUsing(fn ($state): string => Money::format($state))
@@ -101,26 +99,22 @@ class BookingResource extends Resource
                         'completed' => 'Completed',
                     ]),
             ])
+            ->recordAction('view')
             ->recordActions([
-                Action::make('confirm')
-                    ->label('Confirm')
-                    ->icon(Heroicon::OutlinedCheckCircle)
-                    ->color('success')
-                    ->requiresConfirmation()
-                    ->modalHeading('Confirm Booking')
-                    ->modalDescription('This will confirm the booking and notify the guest.')
-                    ->visible(fn (Booking $record): bool => $record->status === 'pending')
-                    ->action(fn (Booking $record) => static::confirm($record)),
+                ViewAction::make()
+                    ->label('View')
+                    // BookingPolicy::view() is the guest's own booking page;
+                    // here the table query already holds only this hotel.
+                    ->authorize(fn (Booking $record): bool => $record->hotel_id === static::ownerHotel()->id)
+                    ->modalHeading(fn (Booking $record): string => 'Booking from '.$record->user->name)
+                    ->modalWidth('2xl')
+                    ->extraModalFooterActions([
+                        static::confirmAction('confirmFromView')->cancelParentActions(),
+                        static::declineAction('declineFromView')->cancelParentActions(),
+                    ]),
 
-                Action::make('decline')
-                    ->label('Decline')
-                    ->icon(Heroicon::OutlinedXCircle)
-                    ->color('danger')
-                    ->requiresConfirmation()
-                    ->modalHeading('Decline Booking')
-                    ->modalDescription('This will decline the booking and notify the guest.')
-                    ->visible(fn (Booking $record): bool => $record->status === 'pending')
-                    ->action(fn (Booking $record) => $record->cancel(CancelledBy::Hotel)),
+                static::confirmAction('confirm'),
+                static::declineAction('decline'),
 
                 Action::make('complete')
                     ->label('Mark completed')
@@ -134,6 +128,111 @@ class BookingResource extends Resource
                     ->visible(fn (Booking $record): bool => $record->status === 'confirmed' && $record->check_out->lte(today()))
                     ->action(fn (Booking $record) => $record->update(['status' => 'completed'])),
             ]);
+    }
+
+    /**
+     * The booking pop-up, opened from a row or straight from a notification
+     * link (OwnerBookingNotification::bookingUrl()).
+     */
+    public static function infolist(Schema $schema): Schema
+    {
+        return $schema->components([
+            TextEntry::make('status')
+                ->badge()
+                ->color(fn (string $state): string => static::statusColor($state)),
+            Section::make('Stay')
+                ->columns(2)
+                ->schema([
+                    TextEntry::make('check_in')
+                        ->formatStateUsing(fn (Booking $record): string => static::stayDate($record, 'check_in')),
+                    TextEntry::make('check_out')
+                        ->formatStateUsing(fn (Booking $record): string => static::stayDate($record, 'check_out')),
+                    TextEntry::make('nights')
+                        ->state(fn (Booking $record): string => ($n = (int) $record->check_in->diffInDays($record->check_out)).' '.str('night')->plural($n)),
+                    TextEntry::make('total_price')
+                        ->label('Total')
+                        ->formatStateUsing(fn ($state): string => Money::format($state)),
+                    TextEntry::make('notes')
+                        ->label("Guest's notes")
+                        ->placeholder('None')
+                        ->columnSpanFull(),
+                ]),
+            Section::make('Pet')
+                ->columns(2)
+                ->schema([
+                    TextEntry::make('pet.name')->label('Name'),
+                    TextEntry::make('pet.species')
+                        ->label('Type')
+                        ->formatStateUsing(fn (string $state): string => PetType::tryFrom($state)?->label() ?? $state),
+                    TextEntry::make('pet.breed')->label('Breed')->placeholder('—'),
+                    TextEntry::make('pet.age')->label('Age')->placeholder('—'),
+                    TextEntry::make('pet.special_needs')
+                        ->label('Special needs')
+                        ->placeholder('None')
+                        ->columnSpanFull(),
+                ]),
+            Section::make('Guest')
+                ->columns(2)
+                ->schema([
+                    TextEntry::make('user.name')->label('Name'),
+                    TextEntry::make('user.email')->label('Email'),
+                    TextEntry::make('user.phone')->label('Phone')->placeholder('—'),
+                    TextEntry::make('created_at')->label('Requested')->dateTime('d M Y, g:i A'),
+                ]),
+        ]);
+    }
+
+    /** The row action and the pop-up's footer button are the same action. */
+    protected static function confirmAction(string $name): Action
+    {
+        return Action::make($name)
+            ->label('Confirm')
+            ->icon(Heroicon::OutlinedCheckCircle)
+            ->color('success')
+            ->requiresConfirmation()
+            ->modalHeading('Confirm Booking')
+            ->modalDescription('This will confirm the booking and notify the guest.')
+            ->visible(fn (Booking $record): bool => $record->status === 'pending')
+            ->action(fn (Booking $record) => static::confirm($record));
+    }
+
+    protected static function declineAction(string $name): Action
+    {
+        return Action::make($name)
+            ->label('Decline')
+            ->icon(Heroicon::OutlinedXCircle)
+            ->color('danger')
+            ->requiresConfirmation()
+            ->modalHeading('Decline Booking')
+            ->modalDescription('This will decline the booking and notify the guest.')
+            ->visible(fn (Booking $record): bool => $record->status === 'pending')
+            ->action(fn (Booking $record) => $record->cancel(CancelledBy::Hotel));
+    }
+
+    protected static function statusColor(string $state): string
+    {
+        return match ($state) {
+            'pending' => 'warning',
+            'confirmed' => 'success',
+            'cancelled' => 'danger',
+            'completed' => 'info',
+            default => 'gray',
+        };
+    }
+
+    /** "Sat, 25 Oct 2026, from 2:00 PM" when the hotel has set its times. */
+    protected static function stayDate(Booking $record, string $field): string
+    {
+        $date = $record->{$field}->format('D, d M Y');
+        $times = $record->hotel->policy?->stayTimes();
+
+        if (! $times) {
+            return $date;
+        }
+
+        return $field === 'check_in'
+            ? $date.', from '.$times['check_in']
+            : $date.', by '.$times['check_out'];
     }
 
     /**
