@@ -26,6 +26,7 @@ vi.mock('@inertiajs/vue3', () => ({
     useForm: vi.fn(() => formState),
 }))
 
+import { useForm } from '@inertiajs/vue3'
 import BookingFormPage from '@/Pages/Bookings/BookingFormPage.vue'
 
 const baseHotel = {
@@ -143,5 +144,20 @@ describe('BookingFormPage — date errors', () => {
         const w = mountPage([{ id: 1, name: 'Buddy', species: 'dog' }])
         expect(w.text()).toContain('Please select a check-out date.')
         formState.errors = {}
+    })
+})
+
+describe('BookingFormPage — dates carried from search', () => {
+    it('starts with empty dates', () => {
+        mountPage([{ id: 1, name: 'Buddy', species: 'dog' }])
+        expect(useForm).toHaveBeenLastCalledWith(expect.objectContaining({ check_in: '', check_out: '' }))
+    })
+
+    it('starts with the searched dates', () => {
+        const stay = { check_in: '2026-10-25', check_out: '2026-10-28', nights: 3 }
+        mount(BookingFormPage, { props: { hotel: baseHotel, pets: [], stay } })
+        expect(useForm).toHaveBeenLastCalledWith(
+            expect.objectContaining({ check_in: '2026-10-25', check_out: '2026-10-28' }),
+        )
     })
 })

@@ -254,3 +254,18 @@ describe('AvailabilityCalendar — limited days and spot labels', () => {
         expect(cell.attributes('title')).toBe('');
     });
 });
+
+describe('AvailabilityCalendar — opening month', () => {
+    it('opens on this month by default', async () => {
+        const w = mountCalendar();
+        await flushPromises();
+        expect(w.text()).toContain('June 2030');
+    });
+
+    it("opens on the check-in's month when one is passed in", async () => {
+        const w = mountCalendar({ checkIn: '2030-09-28', checkOut: '2030-10-02' }, false);
+        await flushPromises();
+        expect(w.text()).toContain('September 2030');
+        expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('month=2030-09'));
+    });
+});

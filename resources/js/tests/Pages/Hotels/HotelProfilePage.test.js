@@ -240,3 +240,28 @@ describe('HotelProfilePage — reviews link', () => {
         expect(book).toBeDefined();
     });
 });
+
+describe('HotelProfilePage — searched dates', () => {
+    const bookNow = (w) => w.findAll('a').find((a) => a.text() === 'Book Now');
+
+    it('books without dates when none were searched', () => {
+        const w = mount(HotelProfilePage, { props: baseProps });
+        expect(bookNow(w).attributes('href')).toBe('/hotels/pawsome-stay/book');
+        expect(w.find('[data-testid="stay-dates"]').exists()).toBe(false);
+    });
+
+    it('carries the searched dates to the booking form and shows them', () => {
+        const stay = { check_in: '2026-10-25', check_out: '2026-10-26', nights: 1 };
+        const w = mount(HotelProfilePage, { props: { ...baseProps, stay } });
+        expect(bookNow(w).attributes('href')).toBe(
+            '/hotels/pawsome-stay/book?check_in=2026-10-25&check_out=2026-10-26',
+        );
+        expect(w.find('[data-testid="stay-dates"]').text()).toMatch(/For Oct 25, 2026 to Oct 26, 2026 \(1\s+night\)/);
+    });
+
+    it('says nights for a longer stay', () => {
+        const stay = { check_in: '2026-10-25', check_out: '2026-10-28', nights: 3 };
+        const w = mount(HotelProfilePage, { props: { ...baseProps, stay } });
+        expect(w.find('[data-testid="stay-dates"]').text()).toMatch(/\(3\s+nights\)/);
+    });
+});

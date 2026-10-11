@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\PetHotel;
 use App\Models\PetHotelPricing;
 use App\Support\Availability;
+use App\Support\Stay;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -50,9 +50,9 @@ class HotelSearchController extends Controller
             }
         }
 
-        $stay = $this->stay($request);
+        $stay = Stay::fromRequest($request);
         if ($stay) {
-            $query->whereNotIn('pet_hotels.id', Availability::unavailableHotelIds($stay['check_in'], $stay['check_out']));
+            $query->whereNotIn('pet_hotels.id', Availability::unavailableHotelIds($stay->checkIn, $stay->checkOut));
         }
 
         match ($request->sort) {
@@ -74,37 +74,8 @@ class HotelSearchController extends Controller
                 'city', 'pet_type', 'price_min', 'price_max',
                 'sort', 'facilities', 'check_in', 'check_out',
             ]),
-            'stay' => $stay ? [
-                'check_in' => $stay['check_in']->toDateString(),
-                'check_out' => $stay['check_out']->toDateString(),
-                'nights' => (int) $stay['check_in']->diffInDays($stay['check_out']),
-            ] : null,
+            'stay' => $stay?->toArray(),
         ]);
-    }
-
-    /**
-     * The stay to filter by: both dates valid and check-out after check-in.
-     * Anything else filters nothing, as the dates did before.
-     *
-     * @return array{check_in: Carbon, check_out: Carbon}|null
-     */
-    private function stay(Request $request): ?array
-    {
-        $dates = [];
-        foreach (['check_in', 'check_out'] as $key) {
-            $value = $request->input($key);
-            if (! is_string($value) || ! preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
-                return null;
-            }
-            // Round trip: 2026-02-30 parses as 2 March, which is not what was typed.
-            $date = Carbon::createFromFormat('!Y-m-d', $value);
-            if ($date->toDateString() !== $value) {
-                return null;
-            }
-            $dates[$key] = $date;
-        }
-
-        return $dates['check_out']->gt($dates['check_in']) ? $dates : null;
     }
 
     private function applyDistanceSort($query, Request $request): void

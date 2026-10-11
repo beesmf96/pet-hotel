@@ -15,12 +15,14 @@ const props = defineProps({
     hotel: { type: Object, required: true },
     pets: { type: Array, default: () => [] },
     times: { type: Object, default: null },
+    // Dates carried from search; the customer can still change them.
+    stay: { type: Object, default: null },
 });
 
 const form = useForm({
     pet_id: '',
-    check_in: '',
-    check_out: '',
+    check_in: props.stay?.check_in ?? '',
+    check_out: props.stay?.check_out ?? '',
     notes: '',
 });
 
