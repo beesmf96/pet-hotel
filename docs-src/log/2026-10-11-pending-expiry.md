@@ -2,7 +2,7 @@
 title: Pending requests expire
 description: A daily scheduled command cancels booking requests still pending after their check-in day and emails the customer; the app gets its first scheduler.
 date: 2026-10-11
-pr: ~
+pr: 66
 plan: ~
 ---
 
