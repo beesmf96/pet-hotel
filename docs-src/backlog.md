@@ -62,3 +62,44 @@ the pending-request count; clicking a day lists that night's bookings, each
 opening the booking pop-up. Decide whether the first version is read-only or
 also blocks days and changes capacity, which would overlap the Availability
 list.
+
+## Say plainly that a booking is a request
+
+*Found 2026-10-18, walking the personas.* The hotel page's button says
+**Book Now**, but it sends a request the owner must accept. The form's button
+says Request Booking, and nothing before it explains that the hotel answers
+first. The confirmation page says the hotel "will confirm shortly", which is
+not a promise the app keeps (see the next entry).
+
+Touches: the Book Now label in `HotelProfilePage.vue` ("Request to book"), a
+short "What happens next" note on `BookingFormPage.vue` and
+`BookingConfirmationPage.vue` (a `Notice`), their Vitest specs, the e2e steps
+that click Book Now, and the user guide. Small and frontend-only.
+
+## An answer deadline for requests
+
+*Found 2026-10-18, walking the personas.* A request stays pending until the
+morning after its check-in day (`bookings:expire-pending`). A customer who
+asks two weeks ahead can learn that the pet has no place only after the trip
+has started.
+
+Touches: the expiry rule in `ExpirePendingBookings` (for example: no answer
+within 48 hours, or by a few days before check-in, whichever comes first), the
+expiry email wording, the owner panel (show the deadline on pending rows and
+in the pop-up), SRS FR-26a, and the user guide. Decide the exact deadline, and
+what happens to requests made less than that long before check-in. Do the
+copy entry above first, so the page can name the deadline.
+
+## Show success messages on every page
+
+*Found 2026-10-18, running the persona journeys.* Seven actions send a
+success message (`back()->with('success', ...)`), but only
+`BookingDetailPage.vue` displays it. After a review ("Your review has been
+submitted.") or adding, changing or removing a pet, nothing says it worked:
+the modal closes or the list changes, and the message is lost. The profile
+page is fine; it shows its own "Saved!".
+
+Touches: render `flash.success` once in `AppLayout.vue` with a `Notice`, and
+remove the page-level one from `BookingDetailPage.vue` so it does not show
+twice. Decide whether Profile keeps its inline "Saved!" or uses the shared
+message. Vitest: one test for the message showing, one for none.

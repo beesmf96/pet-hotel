@@ -26,5 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call(HotelAvailabilitySeeder::class);
         $this->call(AdminUserSeeder::class);
         $this->call(HotelOwnerSeeder::class);
+        // Last: its hotels must not get the Sunday closures above.
+        $this->call(PersonaSeeder::class);
     }
 }
