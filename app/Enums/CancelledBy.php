@@ -13,6 +13,6 @@ enum CancelledBy: string
     case Guest = 'guest';
     case Hotel = 'hotel';
 
-    /** No one answered before check-in; see bookings:expire-pending. */
+    /** The hotel did not answer in time; see Booking::answerBy(). */
     case Expiry = 'expiry';
 }

@@ -34,7 +34,7 @@ class BookingRequested extends Notification
             ->line('Check-out: '.$booking->check_out->format('D, d M Y').($times ? ', by '.$times['check_out'] : ''))
             ->line('Total: '.Money::format($booking->total_price))
             ->action('View Booking', route('bookings.show', $booking))
-            ->line('The hotel will confirm or decline your request, and we will email you either way. Until the hotel confirms, '.$booking->pet->name.' has no place.');
+            ->line('The hotel will confirm or decline your request by '.$booking->answerByText().', and we will email you either way. Until the hotel confirms, '.$booking->pet->name.' has no place.');
     }
 
     public function toDatabase(object $notifiable): array

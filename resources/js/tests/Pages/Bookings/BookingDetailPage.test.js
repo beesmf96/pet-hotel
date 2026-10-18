@@ -25,6 +25,22 @@ function mountPage(booking) {
     return mount(BookingDetailPage, { props: { booking } })
 }
 
+describe('BookingDetailPage — answer deadline', () => {
+    it('says when the hotel answers by while the request is pending', () => {
+        const w = mount(BookingDetailPage, {
+            props: { booking: baseBooking, answerBy: 'Tue, 20 Oct 2026, 10:00 AM' },
+        })
+        expect(w.find('[data-testid="answer-by"]').text()).toContain(
+            'The hotel answers by Tue, 20 Oct 2026, 10:00 AM.',
+        )
+    })
+
+    it('shows no deadline without one', () => {
+        const w = mountPage(baseBooking)
+        expect(w.find('[data-testid="answer-by"]').exists()).toBe(false)
+    })
+})
+
 describe('BookingDetailPage — notes section', () => {
     it('shows notes when booking.notes is non-empty', () => {
         const w = mountPage({ ...baseBooking, notes: 'Give extra treats.' })

@@ -227,6 +227,29 @@ class BookingTest extends TestCase
             ->assertInertia(fn ($page) => $page->component('Bookings/BookingConfirmationPage'));
     }
 
+    public function test_confirmation_and_detail_pages_say_when_the_hotel_answers_by(): void
+    {
+        $user = User::factory()->create();
+        $booking = $this->makeBooking($user);
+
+        $this->actingAs($user)
+            ->get("/bookings/{$booking->id}/confirmation")
+            ->assertInertia(fn ($page) => $page->where('answerBy', $booking->answerByText()));
+        $this->actingAs($user)
+            ->get("/bookings/{$booking->id}")
+            ->assertInertia(fn ($page) => $page->where('answerBy', $booking->answerByText()));
+    }
+
+    public function test_an_answered_booking_has_no_deadline(): void
+    {
+        $user = User::factory()->create();
+        $booking = $this->makeBooking($user, 'confirmed');
+
+        $this->actingAs($user)
+            ->get("/bookings/{$booking->id}")
+            ->assertInertia(fn ($page) => $page->where('answerBy', null));
+    }
+
     public function test_user_cannot_view_another_users_confirmation(): void
     {
         $owner = User::factory()->create();

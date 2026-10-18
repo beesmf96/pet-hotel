@@ -98,6 +98,19 @@ return [
         'symbol' => 'RM',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Display Timezone
+    |--------------------------------------------------------------------------
+    |
+    | The app stores and schedules in UTC ('timezone' above). Clock times shown
+    | to people, and rules set in local time such as a request's answer
+    | deadline (Booking::answerBy()), use this zone: the one market's.
+    |
+    */
+
+    'display_timezone' => 'Asia/Kuala_Lumpur',
+
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
     /*

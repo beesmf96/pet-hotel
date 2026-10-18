@@ -454,7 +454,7 @@
 
   <h3>Booking Confirmation Page</h3>
   <p><span class="route-label">Route</span><span class="route">/bookings/{booking}/confirmation</span></p>
-  <p>Shows a summary of your booking details and a <span class="badge badge-pending">Pending</span> status badge, meaning the hotel has yet to confirm your stay. A <strong>What happens next</strong> box explains the rest: the hotel confirms or declines the request, you get an email either way, and your pet has no place until the hotel confirms. A request the hotel does not answer before check-in expires. You also receive a "booking request received" email and in-app notification.</p>
+  <p>Shows a summary of your booking details and a <span class="badge badge-pending">Pending</span> status badge, meaning the hotel has yet to confirm your stay. A <strong>What happens next</strong> box explains the rest: the hotel confirms or declines the request, you get an email either way, and your pet has no place until the hotel confirms. It also says when the hotel must answer by: 48 hours after you send the request, or noon the day before check-in if that is sooner. If the hotel has not answered by then, the request expires and you get an email, so you still have time to book somewhere else. The deadline also shows on the booking's detail page while it is pending. You also receive a "booking request received" email and in-app notification.</p>
 
   <hr />
 
@@ -724,6 +724,8 @@
 
   <h3>Booking Details</h3>
   <p>Click a row, or its <strong>View</strong> action, to open the booking's details in a pop-up: the dates with your check-in and check-out times, the number of nights, the total, the guest's notes, the pet (type, breed, age, special needs) and the guest (name, email, phone). While the booking is <span class="badge badge-pending">Pending</span>, the pop-up has <strong>Confirm</strong> and <strong>Decline</strong> buttons that work exactly like the row actions below.</p>
+  <h3>Answer by</h3>
+  <p>Every <span class="badge badge-pending">Pending</span> booking shows an <strong>Answer by</strong> time, in the bookings list, in the pop-up and in the new-request email. It is 48 hours after the guest sent the request, or noon the day before check-in if that is sooner. If you have not confirmed or declined by then, the request expires: it becomes Cancelled, the guest is emailed, and it no longer counts as pending.</p>
 
   <h3>Filter by Status</h3>
   <p>Use the <strong>Status</strong> filter to show only Pending, Confirmed, Cancelled, or Completed bookings.</p>

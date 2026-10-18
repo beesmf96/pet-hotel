@@ -7,26 +7,23 @@ use App\Models\Booking;
 use Illuminate\Console\Command;
 
 /**
- * Ends requests the hotel never answered. Once the check-in day has passed a
- * pending request can only mislead: the customer is still waiting, and the
- * owner's pending count includes a stay that cannot happen.
+ * Ends requests the hotel did not answer in time (Booking::answerBy()), so
+ * the guest hears while there is still time to book elsewhere, and the
+ * owner's pending count drops a stay they did not take.
  */
 class ExpirePendingBookings extends Command
 {
     protected $signature = 'bookings:expire-pending';
 
-    protected $description = 'Cancel pending booking requests whose check-in day has passed';
+    protected $description = 'Cancel pending booking requests the hotel did not answer in time';
 
     public function handle(): int
     {
-        $today = today();
-
-        // Exact dates from the casts after the query, as in Availability:
-        // SQLite keeps whatever time part was written into a date column.
+        // Deadlines depend on when each request was sent, so they are worked
+        // out in PHP; pending requests are few.
         $expired = Booking::where('status', 'pending')
-            ->where('check_in', '<', $today->copy()->addDay())
             ->get()
-            ->filter(fn (Booking $booking) => $booking->check_in->lt($today));
+            ->filter(fn (Booking $booking) => $booking->answerBy()->lte(now()));
 
         $expired->each(fn (Booking $booking) => $booking->cancel(CancelledBy::Expiry));
 

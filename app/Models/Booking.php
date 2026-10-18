@@ -24,6 +24,9 @@ class Booking extends Model
     /** @use HasFactory<BookingFactory> */
     use HasFactory;
 
+    /** How long a hotel has to answer a request; see answerBy(). */
+    public const ANSWER_WITHIN_HOURS = 48;
+
     protected $casts = [
         'check_in' => 'date',
         'check_out' => 'date',
@@ -77,6 +80,35 @@ class Booking extends Model
         if ($by === CancelledBy::Guest) {
             NotifyOwnersOfGuestCancellation::dispatch($this);
         }
+    }
+
+    /**
+     * When the hotel must answer this request by, or it expires
+     * (bookings:expire-pending): 48 hours after it was sent, or noon the day
+     * before check-in if that is sooner, so the guest learns in time to look
+     * elsewhere. A request sent after that noon has until the end of its
+     * check-in day. Noon and day ends are local (app.display_timezone).
+     */
+    public function answerBy(): Carbon
+    {
+        $zone = config('app.display_timezone');
+        $checkInDay = Carbon::parse($this->check_in->toDateString(), $zone);
+        $requested = Carbon::parse($this->created_at);
+
+        $deadline = $requested->copy()->addHours(self::ANSWER_WITHIN_HOURS)
+            ->min($checkInDay->copy()->subDay()->setTime(12, 0));
+
+        if ($deadline->lte($requested)) {
+            $deadline = $checkInDay->copy()->endOfDay();
+        }
+
+        return $deadline->copy()->utc();
+    }
+
+    /** answerBy() in local time, as people read it: "Mon, 20 Oct 2026, 2:00 PM". */
+    public function answerByText(): string
+    {
+        return $this->answerBy()->timezone(config('app.display_timezone'))->format('D, d M Y, g:i A');
     }
 
     /**

@@ -6,11 +6,13 @@ import { useFormatDate } from '@/composables/useFormatDate.js';
 import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
 import StatusPill from '@/Components/Ui/StatusPill.vue';
+import Notice from '@/Components/Ui/Notice.vue';
 import { petTypeLabel } from '@/petTypes';
 
 const props = defineProps({
     booking: { type: Object, required: true },
     times: { type: Object, default: null },
+    answerBy: { type: String, default: null },
 });
 
 const { formatDate } = useFormatDate();
@@ -38,6 +40,11 @@ function cancelBooking() {
         </template>
 
         <div class="max-w-2xl space-y-6">
+            <Notice v-if="answerBy" data-testid="answer-by"
+                >The hotel answers by <strong>{{ answerBy }}</strong
+                >. If it does not, the request expires and we email you.</Notice
+            >
+
             <!-- Details card -->
             <div class="card-hard p-6 space-y-4">
                 <SectionTitle>Booking Details</SectionTitle>

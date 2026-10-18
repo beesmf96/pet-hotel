@@ -48,7 +48,7 @@ class BookingCancelled extends Notification
 
         return match (true) {
             $this->by === CancelledBy::Guest => 'You cancelled your booking request at '.$hotel.'.',
-            $this->by === CancelledBy::Expiry => $hotel.' did not answer your booking request before check-in, so it has expired.',
+            $this->by === CancelledBy::Expiry => $hotel.' did not answer your booking request in time, so it has expired.',
             $this->declined() => $hotel.' could not take your booking request.',
             default => $hotel.' has cancelled your confirmed booking.',
         };
