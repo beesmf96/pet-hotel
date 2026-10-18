@@ -2,6 +2,7 @@
 
 namespace App\Filament\HotelOwner\Resources;
 
+use App\Enums\BookingStatus;
 use App\Enums\CancelledBy;
 use App\Enums\PetType;
 use App\Exceptions\BookingDoesNotFit;
@@ -72,14 +73,14 @@ class BookingResource extends Resource
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('check_in')
-                    ->date('d M Y')
+                    ->date()
                     ->sortable(),
                 TextColumn::make('check_out')
-                    ->date('d M Y')
+                    ->date()
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => static::statusColor($state))
+                    ->color(fn (string $state): string => BookingStatus::colorOf($state))
                     ->sortable(),
                 TextColumn::make('total_price')
                     ->formatStateUsing(fn ($state): string => Money::format($state))
@@ -92,19 +93,14 @@ class BookingResource extends Resource
                         : null)
                     ->placeholder('—'),
                 TextColumn::make('created_at')
-                    ->date('d M Y')
+                    ->date()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('status')
-                    ->options([
-                        'pending' => 'Pending',
-                        'confirmed' => 'Confirmed',
-                        'cancelled' => 'Cancelled',
-                        'completed' => 'Completed',
-                    ]),
+                    ->options(BookingStatus::options()),
             ])
             ->recordAction('view')
             ->recordActions([
@@ -146,7 +142,7 @@ class BookingResource extends Resource
         return $schema->components([
             TextEntry::make('status')
                 ->badge()
-                ->color(fn (string $state): string => static::statusColor($state)),
+                ->color(fn (string $state): string => BookingStatus::colorOf($state)),
             TextEntry::make('answer_by')
                 ->label('Answer by')
                 ->state(fn (Booking $record): string => $record->answerByText())
@@ -156,11 +152,11 @@ class BookingResource extends Resource
                 ->columns(2)
                 ->schema([
                     TextEntry::make('check_in')
-                        ->formatStateUsing(fn (Booking $record): string => static::stayDate($record, 'check_in')),
+                        ->formatStateUsing(fn (Booking $record): string => $record->checkInText()),
                     TextEntry::make('check_out')
-                        ->formatStateUsing(fn (Booking $record): string => static::stayDate($record, 'check_out')),
+                        ->formatStateUsing(fn (Booking $record): string => $record->checkOutText()),
                     TextEntry::make('nights')
-                        ->state(fn (Booking $record): string => ($n = (int) $record->check_in->diffInDays($record->check_out)).' '.str('night')->plural($n)),
+                        ->state(fn (Booking $record): string => $record->nightsText()),
                     TextEntry::make('total_price')
                         ->label('Total')
                         ->formatStateUsing(fn ($state): string => Money::format($state)),
@@ -219,32 +215,6 @@ class BookingResource extends Resource
             ->modalDescription('This will decline the booking and notify the guest.')
             ->visible(fn (Booking $record): bool => $record->status === 'pending')
             ->action(fn (Booking $record) => $record->cancel(CancelledBy::Hotel));
-    }
-
-    protected static function statusColor(string $state): string
-    {
-        return match ($state) {
-            'pending' => 'warning',
-            'confirmed' => 'success',
-            'cancelled' => 'danger',
-            'completed' => 'info',
-            default => 'gray',
-        };
-    }
-
-    /** "Sat, 25 Oct 2026, from 2:00 PM" when the hotel has set its times. */
-    protected static function stayDate(Booking $record, string $field): string
-    {
-        $date = $record->{$field}->format('D, d M Y');
-        $times = $record->hotel->policy?->stayTimes();
-
-        if (! $times) {
-            return $date;
-        }
-
-        return $field === 'check_in'
-            ? $date.', from '.$times['check_in']
-            : $date.', by '.$times['check_out'];
     }
 
     /**

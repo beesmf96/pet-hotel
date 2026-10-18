@@ -10,6 +10,7 @@ import TextInput from '@/Components/Ui/TextInput.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
 import Notice from '@/Components/Ui/Notice.vue';
 import { petTypeLabel } from '@/petTypes';
+import { nightsBetween, nightsLabel } from '@/stay';
 
 const props = defineProps({
     hotel: { type: Object, required: true },
@@ -35,8 +36,7 @@ const pricing = computed(() => {
 
 const nights = computed(() => {
     if (!form.check_in || !form.check_out) return 0;
-    const diff = (new Date(form.check_out) - new Date(form.check_in)) / 86400000;
-    return diff > 0 ? diff : 0;
+    return Math.max(nightsBetween(form.check_in, form.check_out), 0);
 });
 
 const totalPrice = computed(() => {
@@ -131,9 +131,7 @@ function submit() {
                     <div v-if="totalPrice !== null" class="space-y-2 text-sm">
                         <div class="flex justify-between text-teal-light">
                             <span
-                                >{{ formatMoney(pricing.price_per_night) }} × {{ nights }} night{{
-                                    nights !== 1 ? 's' : ''
-                                }}</span
+                                >{{ formatMoney(pricing.price_per_night) }} × {{ nightsLabel(nights) }}</span
                             >
                             <span>{{ formatMoney(totalPrice) }}</span>
                         </div>

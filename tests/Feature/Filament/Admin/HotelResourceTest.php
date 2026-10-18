@@ -338,4 +338,27 @@ class HotelResourceTest extends TestCase
             ->assertSuccessful()
             ->assertCanSeeTableRecords([$owner]);
     }
+
+    public function test_owners_relation_manager_dates_the_assignment_day_first(): void
+    {
+        $this->travelTo('2030-10-25 09:00');
+        $hotel = PetHotel::factory()->create();
+        $owner = User::factory()->create();
+        $hotel->owners()->attach($owner, ['role' => 'owner']);
+
+        Livewire::test(OwnersRelationManager::class, [
+            'ownerRecord' => $hotel,
+            'pageClass' => EditHotel::class,
+        ])
+            ->assertTableColumnFormattedStateSet('pivot.created_at', '25 Oct 2030', $owner);
+    }
+
+    public function test_list_page_dates_hotels_month_first(): void
+    {
+        $this->travelTo('2030-10-25 09:00');
+        $hotel = PetHotel::factory()->create();
+
+        Livewire::test(ListHotels::class)
+            ->assertTableColumnFormattedStateSet('created_at', 'Oct 25, 2030', $hotel);
+    }
 }

@@ -8,6 +8,7 @@ import UiButton from '@/Components/Ui/UiButton.vue';
 import StatusPill from '@/Components/Ui/StatusPill.vue';
 import Notice from '@/Components/Ui/Notice.vue';
 import { petTypeLabel } from '@/petTypes';
+import { nightsBetween, nightsLabel } from '@/stay';
 
 const props = defineProps({
     booking: { type: Object, required: true },
@@ -16,10 +17,6 @@ const props = defineProps({
 });
 
 const { formatDate } = useFormatDate();
-
-function nights() {
-    return Math.round((new Date(props.booking.check_out) - new Date(props.booking.check_in)) / 86400000);
-}
 
 function cancelBooking() {
     if (!confirm('Are you sure you want to cancel this booking?')) return;
@@ -84,7 +81,7 @@ function cancelBooking() {
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-moss">Duration</dt>
-                        <dd class="text-ink">{{ nights() }} night{{ nights() !== 1 ? 's' : '' }}</dd>
+                        <dd class="text-ink">{{ nightsLabel(nightsBetween(booking.check_in, booking.check_out)) }}</dd>
                     </div>
                     <div class="border-t-2 border-ink/10 pt-3 flex justify-between items-baseline">
                         <dt>Total</dt>
@@ -101,7 +98,7 @@ function cancelBooking() {
 
             <!-- Actions -->
             <div class="flex items-center justify-between">
-                <a href="/bookings" class="text-sm font-bold text-teal hover:underline"> Back to My Bookings </a>
+                <a href="/bookings" class="link-bold text-teal"> Back to My Bookings </a>
 
                 <UiButton v-if="booking.status === 'pending'" variant="coral" @click="cancelBooking">
                     Cancel Booking

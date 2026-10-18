@@ -6,7 +6,7 @@ import HotelMap from '@/Components/Hotels/HotelMap.vue';
 import ReviewList from '@/Components/Hotels/ReviewList.vue';
 import { ref, computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
-import { stayQuery } from '@/stay';
+import { nightsLabel, stayQuery } from '@/stay';
 import { useFormatDate } from '@/composables/useFormatDate';
 import PawIcon from '@/Components/Ui/PawIcon.vue';
 import SectionTitle from '@/Components/Ui/SectionTitle.vue';
@@ -179,9 +179,8 @@ function nextPhoto() {
                         </UiButton>
                         <p v-if="stay" data-testid="stay-dates" class="mt-2 text-center text-sm text-moss">
                             For {{ formatDate(stay.check_in) }} to {{ formatDate(stay.check_out) }} ({{
-                                stay.nights
-                            }}
-                            night{{ stay.nights !== 1 ? 's' : '' }})
+                                nightsLabel(stay.nights)
+                            }})
                         </p>
                     </div>
 

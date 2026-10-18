@@ -102,3 +102,16 @@ describe('BookingDetailPage — check-in and check-out times', () => {
         expect(w.text()).not.toContain(', by ')
     })
 })
+
+describe('BookingDetailPage — duration', () => {
+    it('counts the nights of the stay', () => {
+        const w = mountPage(baseBooking)
+        expect(w.text()).toContain('2 nights')
+    })
+
+    it('says "night" for a one-night stay', () => {
+        const w = mountPage({ ...baseBooking, check_out: '2025-06-02' })
+        expect(w.text()).toContain('1 night')
+        expect(w.text()).not.toContain('1 nights')
+    })
+})

@@ -28,6 +28,12 @@
     box-shadow: var(--shadow-hard-lg);
 }
 
+/* A bold text link or text button. Add the colour where it is used
+   (text-teal, or text-coral for a destructive action). */
+@utility link-bold {
+    @apply text-sm font-bold hover:underline;
+}
+
 @utility field-hard {
     background-color: white;
     border: 2px solid var(--color-ink);

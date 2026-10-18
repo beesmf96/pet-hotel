@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 
 // The one map from a booking status to its label and colours.
+// dry-keep: the labels twin App\Enums\BookingStatus — PHP is the source; change both together.
 const props = defineProps({
     status: { type: String, required: true },
 });

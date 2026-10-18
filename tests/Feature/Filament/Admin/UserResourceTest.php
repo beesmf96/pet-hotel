@@ -36,6 +36,15 @@ class UserResourceTest extends TestCase
             ->assertCanSeeTableRecords($users->push($this->admin));
     }
 
+    public function test_list_page_dates_users_day_first(): void
+    {
+        $this->travelTo('2030-10-25 09:00');
+        $user = User::factory()->create();
+
+        Livewire::test(ListUsers::class)
+            ->assertTableColumnFormattedStateSet('created_at', '25 Oct 2030', $user);
+    }
+
     public function test_list_page_can_search_by_email(): void
     {
         $match = User::factory()->create(['email' => 'findme@example.test']);

@@ -62,7 +62,7 @@ class ReviewResource extends Resource
                     ->boolean()
                     ->label('Visible'),
                 TextColumn::make('created_at')
-                    ->date('d M Y')
+                    ->date()
                     ->sortable()
                     ->toggleable(),
             ])

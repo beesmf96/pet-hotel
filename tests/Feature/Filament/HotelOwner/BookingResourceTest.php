@@ -61,6 +61,21 @@ class BookingResourceTest extends TestCase
             ->assertCanNotSeeTableRecords([$theirs]);
     }
 
+    public function test_list_page_shows_dates_and_a_colour_per_status(): void
+    {
+        foreach (['pending', 'confirmed', 'cancelled', 'completed'] as $status) {
+            Booking::factory()->for($this->hotel, 'hotel')->create(['status' => $status, 'check_in' => '2030-10-25', 'check_out' => '2030-10-28']);
+        }
+
+        Livewire::test(ListBookings::class)
+            ->assertSee('25 Oct 2030')
+            ->assertSee('28 Oct 2030')
+            ->assertSeeHtml('fi-color-warning')
+            ->assertSeeHtml('fi-color-success')
+            ->assertSeeHtml('fi-color-danger')
+            ->assertSeeHtml('fi-color-info');
+    }
+
     public function test_list_page_can_filter_by_status(): void
     {
         $pending = Booking::factory()->for($this->hotel, 'hotel')->create(['status' => 'pending']);

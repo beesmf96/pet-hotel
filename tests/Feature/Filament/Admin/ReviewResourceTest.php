@@ -33,6 +33,15 @@ class ReviewResourceTest extends TestCase
             ->assertCanSeeTableRecords($reviews);
     }
 
+    public function test_list_page_dates_reviews_day_first(): void
+    {
+        $this->travelTo('2030-10-25 09:00');
+        $review = Review::factory()->create();
+
+        Livewire::test(ListReviews::class)
+            ->assertTableColumnFormattedStateSet('created_at', '25 Oct 2030', $review);
+    }
+
     public function test_list_page_shows_hidden_reviews_too(): void
     {
         $hidden = Review::factory()->hidden()->create();

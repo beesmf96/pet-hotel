@@ -8,16 +8,13 @@ import { useFormatDate } from '@/composables/useFormatDate.js';
 import UiButton from '@/Components/Ui/UiButton.vue';
 import StatusPill from '@/Components/Ui/StatusPill.vue';
 import EmptyState from '@/Components/Ui/EmptyState.vue';
+import { nightsBetween } from '@/stay';
 
 defineProps({
     bookings: { type: Array, default: () => [] },
 });
 
 const { formatDate } = useFormatDate();
-
-function nights(checkIn, checkOut) {
-    return Math.round((new Date(checkOut) - new Date(checkIn)) / 86400000);
-}
 
 const reviewBooking = ref(null);
 
@@ -51,8 +48,9 @@ function closeReview() {
                             <p class="text-sm font-semibold text-moss">{{ booking.pet.name }}</p>
                             <p class="text-sm mt-1">
                                 {{ formatDate(booking.check_in) }} → {{ formatDate(booking.check_out) }}
+                                <!-- dry-keep: always "nights", not nightsLabel() — kept as it was in the 2026-10-18 sweep. -->
                                 <span class="text-moss"
-                                    >({{ nights(booking.check_in, booking.check_out) }} nights)</span
+                                    >({{ nightsBetween(booking.check_in, booking.check_out) }} nights)</span
                                 >
                             </p>
                         </div>
@@ -72,7 +70,7 @@ function closeReview() {
                     class="px-5 pb-4 border-t-2 border-ink/10 pt-3"
                 >
                     <button
-                        class="text-sm font-bold text-teal hover:underline underline-offset-2"
+                        class="link-bold text-teal underline-offset-2"
                         @click="openReview(booking)"
                     >
                         Leave a review →

@@ -83,8 +83,8 @@ function deletePet(pet) {
                     </p>
 
                     <div class="flex gap-3 mt-3">
-                        <button class="text-sm font-bold text-teal hover:underline" @click="openEdit(pet)">Edit</button>
-                        <button class="text-sm font-bold text-coral hover:underline" @click="deletePet(pet)">
+                        <button class="link-bold text-teal" @click="openEdit(pet)">Edit</button>
+                        <button class="link-bold text-coral" @click="deletePet(pet)">
                             Remove
                         </button>
                     </div>

@@ -37,7 +37,7 @@ class OwnersRelationManager extends RelationManager
                     ->badge(),
                 TextColumn::make('pivot.created_at')
                     ->label('Assigned')
-                    ->date('d M Y'),
+                    ->date(),
             ])
             ->headerActions([
                 AttachAction::make()

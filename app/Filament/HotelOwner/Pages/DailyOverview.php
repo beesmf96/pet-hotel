@@ -4,6 +4,7 @@ namespace App\Filament\HotelOwner\Pages;
 
 use App\Filament\HotelOwner\Concerns\ResolvesOwnerHotel;
 use App\Support\Availability;
+use App\Support\Dates;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\EmbeddedTable;
@@ -82,8 +83,9 @@ class DailyOverview extends Page implements HasTable
             })
             ->columns([
                 TextColumn::make('date')
-                    ->date('D, d M Y'),
+                    ->date(Dates::DAY),
                 TextColumn::make('capacity')
+                    // dry-keep: a field label, written out at each capacity field rather than a constant.
                     ->label('Pets per night')
                     ->description(fn (array $record): ?string => $record['changed'] ? 'Changed for this date' : null),
                 TextColumn::make('booked'),

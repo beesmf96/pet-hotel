@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Enums\PetType;
 use App\Filament\HotelOwner\Resources\BookingResource;
 use App\Models\Booking;
+use App\Support\Dates;
 use App\Support\Money;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification as PanelNotification;
@@ -75,10 +76,9 @@ abstract class OwnerBookingNotification extends Notification
     protected function stayDescription(): string
     {
         $booking = $this->booking;
-        $nights = $booking->check_in->diffInDays($booking->check_out);
 
-        return $booking->check_in->format('D, d M Y').' to '.$booking->check_out->format('D, d M Y')
-            .' ('.$nights.' '.str('night')->plural($nights).')';
+        return $booking->check_in->format(Dates::DAY).' to '.$booking->check_out->format(Dates::DAY)
+            .' ('.$booking->nightsText().')';
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Enums\CancelledBy;
 use App\Models\Booking;
+use App\Support\Dates;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -62,8 +63,9 @@ class BookingCancelled extends Notification
             ->subject($this->subject().' — '.$booking->hotel->name)
             ->greeting('Hi '.$notifiable->name.',')
             ->line($this->message(bold: true))
-            ->line('Check-in was: '.$booking->check_in->format('D, d M Y'))
-            ->line('Check-out was: '.$booking->check_out->format('D, d M Y'));
+            // dry-keep: no hotel times here, unlike checkInText() — the stay is off, so the times no longer matter.
+            ->line('Check-in was: '.$booking->check_in->format(Dates::DAY))
+            ->line('Check-out was: '.$booking->check_out->format(Dates::DAY));
 
         return match (true) {
             $this->by === CancelledBy::Guest => $mail

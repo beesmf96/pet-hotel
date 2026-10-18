@@ -49,7 +49,7 @@ class UserResource extends Resource
                     ->label('Pets')
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->date('d M Y')
+                    ->date()
                     ->sortable(),
             ])
             ->defaultSort('created_at', 'desc')
