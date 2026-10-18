@@ -28,7 +28,7 @@ her note about his nerves.
 
 **Journey:** search with 1–5 Nov → only hotels with a spot every night show
 (Whiskers & Wags is closed on 3 Nov, so it is hidden) → open Rahman's Paws
-House, dates already filled in → Book Now, pick Milo, add a note → send the
+House, dates already filled in → Request to Book, pick Milo, add a note → send the
 request → wait for the confirmation email.
 
 **Tests:** search by dates, dates carried to the form, pet details and notes
@@ -92,17 +92,14 @@ the backlog.
 
 ## What the personas show today
 
-Gaps found by walking the stories on 2026-10-18. Both are in
-`backlog.md` ("Say plainly that a booking is a request" and "An answer
-deadline for requests"):
+Gaps found by walking the stories on 2026-10-18:
 
-- **"Book Now" promises more than it does.** The hotel page says Book Now,
-  but it sends a request the owner must accept. The form's button says
-  Request Booking, and nothing before it explains that the hotel answers
-  first.
-- **No answer time.** The confirmation page says the hotel "will confirm
-  shortly". In fact a request can stay pending until the morning after its
+- ~~**"Book Now" promises more than it does.**~~ Fixed 2026-10-18: the
+  button reads "Request to Book", and the form, confirmation page and email
+  say the hotel must confirm.
+- **No answer time.** A request can stay pending until the morning after its
   check-in day. Aisyah could request on 18 October and only learn on
-  2 November, after she has flown, that Milo has no place.
+  2 November, after she has flown, that Milo has no place. In `backlog.md`
+  as "An answer deadline for requests".
 - ~~**Some actions end in silence.**~~ Fixed 2026-10-18: every page now shows
   the success message after an action.

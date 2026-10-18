@@ -156,7 +156,7 @@ function nextPhoto() {
 
                 <!-- Sidebar: Pricing + Ratings -->
                 <div class="space-y-6">
-                    <!-- Pricing + Book Now -->
+                    <!-- Pricing + Request to Book -->
                     <div class="card-hard p-6">
                         <template v-if="hotel.pricing.length > 0">
                             <SectionTitle class="mb-3">Pricing</SectionTitle>
@@ -175,7 +175,7 @@ function nextPhoto() {
                             </ul>
                         </template>
                         <UiButton as="link" size="lg" block :href="`/hotels/${hotel.slug}/book${stayQuery(stay)}`">
-                            Book Now
+                            Request to Book
                         </UiButton>
                         <p v-if="stay" data-testid="stay-dates" class="mt-2 text-center text-sm text-moss">
                             For {{ formatDate(stay.check_in) }} to {{ formatDate(stay.check_out) }} ({{

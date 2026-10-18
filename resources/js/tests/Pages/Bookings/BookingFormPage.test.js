@@ -117,6 +117,15 @@ describe('BookingFormPage — no pricing warning', () => {
     })
 })
 
+describe('BookingFormPage — request note', () => {
+    it('says before sending that the hotel must confirm', () => {
+        const w = mountPage([{ id: 1, name: 'Buddy', species: 'dog' }])
+        expect(w.find('[data-testid="request-note"]').text()).toContain(
+            'Your pet has a place only once the hotel confirms.',
+        )
+    })
+})
+
 describe('BookingFormPage — check-in and check-out times', () => {
     it('shows the hotel times when the hotel has them', () => {
         const w = mount(BookingFormPage, {
