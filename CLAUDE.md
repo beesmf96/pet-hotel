@@ -38,6 +38,7 @@ composer test         # Clears config cache, then PHPUnit
 bun run test          # Vitest
 bun run lint          # ESLint (bun run lint:fix to autofix)
 bun run e2e           # Playwright, local only — never add to CI (docs-src/local-setup.md)
+bun run design:capture # screenshots of every customer page for /design-review (local only)
 vendor/bin/pint       # PHP formatter
 php docs-src/build.php # renders stakeholder docs → docs/ (the GitHub Pages site)
 ```

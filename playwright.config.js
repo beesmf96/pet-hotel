@@ -7,6 +7,8 @@ import { serverCommand } from './e2e/support/server.js';
 // it themselves, so they run one at a time.
 export default defineConfig({
     testDir: './e2e',
+    // Screenshots for /design-review, not tests: playwright.design.config.js.
+    testIgnore: 'design/**',
     fullyParallel: false,
     workers: 1,
     timeout: 60_000,
