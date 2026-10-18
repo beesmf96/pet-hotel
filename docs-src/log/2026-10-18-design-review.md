@@ -2,7 +2,7 @@
 title: First design review
 description: The customer pages checked against the design system in code and in screenshots; 14 Fix and 9 Align findings fixed, with the new rules in the design doc.
 date: 2026-10-18
-pr: ~
+pr: 83
 plan: ~
 ---
 
