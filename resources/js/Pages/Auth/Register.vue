@@ -41,7 +41,7 @@ function submit() {
             </FormField>
 
             <UiButton block type="submit" :disabled="form.processing">
-                {{ form.processing ? 'Creating account...' : 'Create account' }}
+                {{ form.processing ? 'Creating account…' : 'Create account' }}
             </UiButton>
 
             <div class="relative flex items-center">

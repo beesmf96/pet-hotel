@@ -71,7 +71,7 @@ function submit() {
                             v-model="form.comment"
                             as="textarea"
                             rows="4"
-                            placeholder="Share your experience..."
+                            placeholder="Share your experience…"
                         />
                     </FormField>
 
@@ -80,7 +80,7 @@ function submit() {
                             Cancel
                         </UiButton>
                         <UiButton class="flex-1" type="submit" :disabled="form.processing || form.rating === 0">
-                            Submit review
+                            {{ form.processing ? 'Submitting…' : 'Submit review' }}
                         </UiButton>
                     </div>
                 </form>

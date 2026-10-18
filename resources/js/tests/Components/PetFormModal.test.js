@@ -158,6 +158,7 @@ describe('PetFormModal — submit', () => {
         formState.processing = true
         const w = mount(PetFormModal, { props: { show: true, pet: null }, attachTo: document.body })
         expect(body().find('button[type="submit"]').attributes('disabled')).toBeDefined()
+        expect(body().find('button[type="submit"]').text()).toBe('Adding…')
         formState.processing = false
         w.unmount()
     })

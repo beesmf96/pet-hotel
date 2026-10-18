@@ -53,7 +53,7 @@ describe('Login page', () => {
         const w = mount(Login)
         const btn = w.find('button[type="submit"]')
         expect(btn.attributes('disabled')).toBeDefined()
-        expect(btn.text()).toBe('Signing in...')
+        expect(btn.text()).toBe('Signing in…')
         form.processing = false
         expect(mount(Login).find('button[type="submit"]').text()).toBe('Sign in')
     })

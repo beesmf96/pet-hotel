@@ -46,7 +46,7 @@ describe('Register page', () => {
 
     it('changes the button label while processing', () => {
         form.processing = true
-        expect(mount(Register).find('button[type="submit"]').text()).toBe('Creating account...')
+        expect(mount(Register).find('button[type="submit"]').text()).toBe('Creating account…')
         form.processing = false
         expect(mount(Register).find('button[type="submit"]').text()).toBe('Create account')
     })

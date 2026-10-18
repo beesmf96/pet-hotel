@@ -41,7 +41,7 @@ describe('ResetPassword page', () => {
 
     it('changes the button label while processing', () => {
         form.processing = true
-        expect(mount(ResetPassword, { props: { token: 't' } }).find('button[type="submit"]').text()).toBe('Resetting...')
+        expect(mount(ResetPassword, { props: { token: 't' } }).find('button[type="submit"]').text()).toBe('Resetting…')
         form.processing = false
         expect(mount(ResetPassword, { props: { token: 't' } }).find('button[type="submit"]').text()).toBe('Reset password')
     })

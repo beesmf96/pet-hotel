@@ -42,7 +42,7 @@ function submit() {
             </FormField>
 
             <UiButton block type="submit" :disabled="form.processing">
-                {{ form.processing ? 'Resetting...' : 'Reset password' }}
+                {{ form.processing ? 'Resetting…' : 'Reset password' }}
             </UiButton>
         </form>
     </AuthLayout>

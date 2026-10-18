@@ -54,7 +54,7 @@ function submit() {
             </div>
 
             <UiButton block type="submit" :disabled="form.processing">
-                {{ form.processing ? 'Signing in...' : 'Sign in' }}
+                {{ form.processing ? 'Signing in…' : 'Sign in' }}
             </UiButton>
 
             <div class="relative flex items-center">

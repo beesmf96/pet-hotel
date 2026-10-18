@@ -1,6 +1,6 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
-import { watch } from 'vue';
+import { computed, watch } from 'vue';
 import FormField from '@/Components/Ui/FormField.vue';
 import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 import TextInput from '@/Components/Ui/TextInput.vue';
@@ -13,6 +13,11 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close']);
+
+const submitLabel = computed(() => {
+    if (form.processing) return props.pet ? 'Saving…' : 'Adding…';
+    return props.pet ? 'Save changes' : 'Add pet';
+});
 
 const form = useForm({
     name: '',
@@ -104,7 +109,7 @@ function close() {
                     <div class="flex justify-end gap-3 pt-2">
                         <UiButton variant="white" type="button" @click="close"> Cancel </UiButton>
                         <UiButton type="submit" :disabled="form.processing">
-                            {{ pet ? 'Save changes' : 'Add pet' }}
+                            {{ submitLabel }}
                         </UiButton>
                     </div>
                 </form>

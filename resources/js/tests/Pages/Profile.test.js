@@ -100,7 +100,18 @@ describe('Profile page — profile form', () => {
         formState.processing = true
         const w = mount(ProfilePage, { props: { user } })
         expect(w.findAll('form')[0].find('button[type="submit"]').attributes('disabled')).toBeDefined()
+        expect(w.findAll('form')[0].find('button[type="submit"]').text()).toBe('Saving…')
         formState.processing = false
+    })
+
+    it('labels the password button by account type and busy state', () => {
+        const button = (props) => mount(ProfilePage, { props: { user, ...props } }).findAll('form')[1].find('button[type="submit"]')
+        expect(button({ hasPassword: true }).text()).toBe('Update password')
+        expect(button({ hasPassword: false }).text()).toBe('Set password')
+        passwordFormState.processing = true
+        expect(button({ hasPassword: true }).text()).toBe('Updating…')
+        expect(button({ hasPassword: false }).text()).toBe('Saving…')
+        passwordFormState.processing = false
     })
 
     it('renders validation errors for name, phone, and preferred location', () => {

@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { useForm } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import FormField from '@/Components/Ui/FormField.vue';
 import TextInput from '@/Components/Ui/TextInput.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
@@ -27,6 +28,11 @@ const passwordForm = useForm({
     current_password: '',
     password: '',
     password_confirmation: '',
+});
+
+const passwordButtonLabel = computed(() => {
+    if (passwordForm.processing) return props.hasPassword ? 'Updating…' : 'Saving…';
+    return props.hasPassword ? 'Update password' : 'Set password';
 });
 
 function submit() {
@@ -67,7 +73,9 @@ function submitPassword() {
                 </FormField>
 
                 <div class="flex items-center gap-3 pt-2">
-                    <UiButton type="submit" :disabled="form.processing"> Save changes </UiButton>
+                    <UiButton type="submit" :disabled="form.processing">
+                        {{ form.processing ? 'Saving…' : 'Save changes' }}
+                    </UiButton>
                 </div>
             </form>
         </div>
@@ -107,7 +115,7 @@ function submitPassword() {
 
                 <div class="flex items-center gap-3 pt-2">
                     <UiButton type="submit" :disabled="passwordForm.processing">
-                        {{ hasPassword ? 'Update password' : 'Set password' }}
+                        {{ passwordButtonLabel }}
                     </UiButton>
                 </div>
             </form>

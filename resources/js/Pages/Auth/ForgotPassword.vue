@@ -31,7 +31,7 @@ function submit() {
             </FormField>
 
             <UiButton block type="submit" :disabled="form.processing">
-                {{ form.processing ? 'Sending...' : 'Send reset link' }}
+                {{ form.processing ? 'Sending…' : 'Send reset link' }}
             </UiButton>
 
             <p class="text-center text-sm text-moss">
