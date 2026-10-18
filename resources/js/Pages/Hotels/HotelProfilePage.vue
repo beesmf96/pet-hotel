@@ -21,10 +21,11 @@ const props = defineProps({
     averageRating: { type: Number, default: null },
     // The dates searched for, if any, carried on to the booking form.
     stay: { type: Object, default: null },
+    // { check_in: '2:00 PM', check_out: '12:00 PM' } when the hotel has a policy.
+    times: { type: Object, default: null },
 });
 
 const { formatDate } = useFormatDate();
-
 
 // Normalised to one shape so the template binds a single key, rather than
 // reading .url off gallery rows and a hand-built cover object that only
@@ -131,11 +132,11 @@ function nextPhoto() {
                         <div class="grid grid-cols-2 gap-4 mb-4">
                             <div class="bg-cream border-2 border-ink rounded-xl p-4">
                                 <p class="text-xs font-bold uppercase tracking-wide text-moss mb-1">Check-in</p>
-                                <p class="font-display font-bold text-xl">{{ hotel.policy.check_in_time }}</p>
+                                <p class="font-display font-bold text-xl">{{ times?.check_in }}</p>
                             </div>
                             <div class="bg-cream border-2 border-ink rounded-xl p-4">
                                 <p class="text-xs font-bold uppercase tracking-wide text-moss mb-1">Check-out</p>
-                                <p class="font-display font-bold text-xl">{{ hotel.policy.check_out_time }}</p>
+                                <p class="font-display font-bold text-xl">{{ times?.check_out }}</p>
                             </div>
                         </div>
                         <div v-if="hotel.policy.cancellation_policy">

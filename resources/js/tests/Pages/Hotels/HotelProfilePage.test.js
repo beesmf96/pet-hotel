@@ -188,9 +188,11 @@ describe('HotelProfilePage — facilities, policies, and pricing', () => {
             ...baseHotel,
             policy: { check_in_time: '14:00', check_out_time: '11:00', cancellation_policy: null },
         };
-        const w = mount(HotelProfilePage, { props: { ...baseProps, hotel } });
-        expect(w.text()).toContain('14:00');
-        expect(w.text()).toContain('11:00');
+        const times = { check_in: '2:00 PM', check_out: '11:00 AM' };
+        const w = mount(HotelProfilePage, { props: { ...baseProps, hotel, times } });
+        expect(w.text()).toContain('2:00 PM');
+        expect(w.text()).toContain('11:00 AM');
+        expect(w.text()).not.toContain('14:00');
         expect(w.text()).not.toContain('Cancellation');
     });
 
