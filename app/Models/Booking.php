@@ -8,6 +8,7 @@ use App\Jobs\NotifyOwnersOfGuestCancellation;
 use App\Jobs\SendBookingCancelledNotification;
 use App\Jobs\SendBookingConfirmationNotification;
 use App\Support\Availability;
+use App\Support\Dates;
 use Carbon\CarbonInterface;
 use Database\Factories\BookingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -108,7 +109,36 @@ class Booking extends Model
     /** answerBy() in local time, as people read it: "Mon, 20 Oct 2026, 2:00 PM". */
     public function answerByText(): string
     {
-        return $this->answerBy()->timezone(config('app.display_timezone'))->format('D, d M Y, g:i A');
+        return $this->answerBy()->timezone(config('app.display_timezone'))->format(Dates::DAY_TIME);
+    }
+
+    /** "Sat, 25 Oct 2026, from 2:00 PM" when the hotel has set its times. */
+    public function checkInText(): string
+    {
+        $time = $this->hotel->policy?->stayTimes()['check_in'];
+
+        return $this->check_in->format(Dates::DAY).($time ? ', from '.$time : '');
+    }
+
+    /** "Tue, 28 Oct 2026, by 12:00 PM" when the hotel has set its times. */
+    public function checkOutText(): string
+    {
+        $time = $this->hotel->policy?->stayTimes()['check_out'];
+
+        return $this->check_out->format(Dates::DAY).($time ? ', by '.$time : '');
+    }
+
+    public function nights(): int
+    {
+        return (int) $this->check_in->diffInDays($this->check_out);
+    }
+
+    /** "1 night", "3 nights" */
+    public function nightsText(): string
+    {
+        $nights = $this->nights();
+
+        return $nights.' '.str('night')->plural($nights);
     }
 
     /**

@@ -24,14 +24,13 @@ class BookingConfirmed extends Notification
     {
         $booking = $this->booking;
         $hotel = $booking->hotel;
-        $times = $hotel->policy?->stayTimes();
 
         return (new MailMessage)
             ->subject('Booking Confirmed — '.$hotel->name)
             ->greeting('Great news, '.$notifiable->name.'!')
             ->line('Your booking at **'.$hotel->name.'** has been confirmed.')
-            ->line('Check-in: '.$booking->check_in->format('D, d M Y').($times ? ', from '.$times['check_in'] : ''))
-            ->line('Check-out: '.$booking->check_out->format('D, d M Y').($times ? ', by '.$times['check_out'] : ''))
+            ->line('Check-in: '.$booking->checkInText())
+            ->line('Check-out: '.$booking->checkOutText())
             ->line('Total: '.Money::format($booking->total_price))
             ->action('View Booking', route('bookings.show', $booking))
             ->line('We look forward to welcoming your pet!');

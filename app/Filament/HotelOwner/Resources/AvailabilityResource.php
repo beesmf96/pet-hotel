@@ -5,6 +5,7 @@ namespace App\Filament\HotelOwner\Resources;
 use App\Filament\HotelOwner\Concerns\ResolvesOwnerHotel;
 use App\Filament\HotelOwner\Resources\AvailabilityResource\Pages;
 use App\Models\HotelAvailability;
+use App\Support\Dates;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -96,7 +97,7 @@ class AvailabilityResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('date')
-                    ->date('D, d M Y')
+                    ->date(Dates::DAY)
                     ->sortable(),
                 IconColumn::make('is_blocked')
                     ->label('Closed')

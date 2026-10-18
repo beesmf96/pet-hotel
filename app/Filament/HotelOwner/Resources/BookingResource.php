@@ -156,11 +156,11 @@ class BookingResource extends Resource
                 ->columns(2)
                 ->schema([
                     TextEntry::make('check_in')
-                        ->formatStateUsing(fn (Booking $record): string => static::stayDate($record, 'check_in')),
+                        ->formatStateUsing(fn (Booking $record): string => $record->checkInText()),
                     TextEntry::make('check_out')
-                        ->formatStateUsing(fn (Booking $record): string => static::stayDate($record, 'check_out')),
+                        ->formatStateUsing(fn (Booking $record): string => $record->checkOutText()),
                     TextEntry::make('nights')
-                        ->state(fn (Booking $record): string => ($n = (int) $record->check_in->diffInDays($record->check_out)).' '.str('night')->plural($n)),
+                        ->state(fn (Booking $record): string => $record->nightsText()),
                     TextEntry::make('total_price')
                         ->label('Total')
                         ->formatStateUsing(fn ($state): string => Money::format($state)),
@@ -230,21 +230,6 @@ class BookingResource extends Resource
             'completed' => 'info',
             default => 'gray',
         };
-    }
-
-    /** "Sat, 25 Oct 2026, from 2:00 PM" when the hotel has set its times. */
-    protected static function stayDate(Booking $record, string $field): string
-    {
-        $date = $record->{$field}->format('D, d M Y');
-        $times = $record->hotel->policy?->stayTimes();
-
-        if (! $times) {
-            return $date;
-        }
-
-        return $field === 'check_in'
-            ? $date.', from '.$times['check_in']
-            : $date.', by '.$times['check_out'];
     }
 
     /**

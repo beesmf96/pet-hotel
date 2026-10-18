@@ -24,14 +24,13 @@ class BookingRequested extends Notification
     {
         $booking = $this->booking;
         $hotel = $booking->hotel;
-        $times = $hotel->policy?->stayTimes();
 
         return (new MailMessage)
             ->subject('Booking Request Received — '.$hotel->name)
             ->greeting('Hi '.$notifiable->name.',')
             ->line('We\'ve received your booking request for **'.$hotel->name.'**.')
-            ->line('Check-in: '.$booking->check_in->format('D, d M Y').($times ? ', from '.$times['check_in'] : ''))
-            ->line('Check-out: '.$booking->check_out->format('D, d M Y').($times ? ', by '.$times['check_out'] : ''))
+            ->line('Check-in: '.$booking->checkInText())
+            ->line('Check-out: '.$booking->checkOutText())
             ->line('Total: '.Money::format($booking->total_price))
             ->action('View Booking', route('bookings.show', $booking))
             ->line('The hotel will confirm or decline your request by '.$booking->answerByText().', and we will email you either way. Until the hotel confirms, '.$booking->pet->name.' has no place.');
