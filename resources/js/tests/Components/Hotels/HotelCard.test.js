@@ -75,3 +75,20 @@ describe('HotelCard — navigation', () => {
         expect(router.visit).toHaveBeenCalledWith('/hotels/the-bark-lodge');
     });
 });
+
+describe('HotelCard — visiting the hotel', () => {
+    it('opens the hotel page', async () => {
+        const w = mount(HotelCard, { props: { hotel: baseHotel } });
+        await w.trigger('click');
+        expect(router.visit).toHaveBeenLastCalledWith('/hotels/the-bark-lodge');
+    });
+
+    it('carries the searched dates', async () => {
+        const stay = { check_in: '2026-10-25', check_out: '2026-10-28', nights: 3 };
+        const w = mount(HotelCard, { props: { hotel: baseHotel, stay } });
+        await w.trigger('click');
+        expect(router.visit).toHaveBeenLastCalledWith(
+            '/hotels/the-bark-lodge?check_in=2026-10-25&check_out=2026-10-28',
+        );
+    });
+});

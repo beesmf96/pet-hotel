@@ -110,7 +110,7 @@ function decodeLabel(label) {
                         v-if="hotels.data.length > 0"
                         class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 pr-2 pb-2"
                     >
-                        <HotelCard v-for="hotel in hotels.data" :key="hotel.id" :hotel="hotel" />
+                        <HotelCard v-for="hotel in hotels.data" :key="hotel.id" :hotel="hotel" :stay="stay" />
                     </div>
 
                     <EmptyState

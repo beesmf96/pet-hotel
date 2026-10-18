@@ -2,9 +2,11 @@
 import { formatMoney } from '@/money';
 import { router } from '@inertiajs/vue3';
 import PawIcon from '@/Components/Ui/PawIcon.vue';
+import { stayQuery } from '@/stay';
 
 const props = defineProps({
     hotel: Object,
+    stay: { type: Object, default: null },
 });
 
 const facilityLabels = {
@@ -21,7 +23,7 @@ const facilityLabels = {
 const photoTints = ['bg-coral', 'bg-teal text-cream', 'bg-mustard', 'bg-teal-light'];
 
 function visitHotel() {
-    router.visit(`/hotels/${props.hotel.slug}`);
+    router.visit(`/hotels/${props.hotel.slug}${stayQuery(props.stay)}`);
 }
 </script>
 

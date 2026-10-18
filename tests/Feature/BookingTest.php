@@ -74,6 +74,21 @@ class BookingTest extends TestCase
             ->assertInertia(fn ($page) => $page->has('pets', 2));
     }
 
+    public function test_booking_form_starts_with_dates_carried_from_search(): void
+    {
+        [$user, $hotel] = $this->bookable();
+        $in = $this->futureDate(0);
+        $out = $this->futureDate(2);
+
+        $this->actingAs($user)
+            ->get("/hotels/{$hotel->slug}/book?check_in={$in}&check_out={$out}")
+            ->assertInertia(fn ($page) => $page->where('stay', ['check_in' => $in, 'check_out' => $out, 'nights' => 2]));
+
+        $this->actingAs($user)
+            ->get("/hotels/{$hotel->slug}/book?check_in={$out}&check_out={$in}")
+            ->assertInertia(fn ($page) => $page->where('stay', null));
+    }
+
     // ── Store ─────────────────────────────────────────────────────────────────
 
     public function test_user_can_create_booking(): void

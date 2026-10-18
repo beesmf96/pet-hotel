@@ -111,4 +111,28 @@ class HotelTest extends TestCase
                 ->has('hotel.pricing', 0)
             );
     }
+
+    // ── Dates carried from search ─────────────────────────────────────────────
+
+    public function test_profile_passes_on_upcoming_searched_dates(): void
+    {
+        $hotel = PetHotel::factory()->create();
+        $in = now()->addDays(10)->toDateString();
+        $out = now()->addDays(13)->toDateString();
+
+        $this->get("/hotels/{$hotel->slug}?check_in={$in}&check_out={$out}")
+            ->assertInertia(fn ($page) => $page->where('stay', ['check_in' => $in, 'check_out' => $out, 'nights' => 3]));
+    }
+
+    public function test_profile_drops_missing_or_past_dates(): void
+    {
+        $hotel = PetHotel::factory()->create();
+        $past = now()->subDay()->toDateString();
+        $later = now()->addDays(2)->toDateString();
+
+        $this->get("/hotels/{$hotel->slug}")
+            ->assertInertia(fn ($page) => $page->where('stay', null));
+        $this->get("/hotels/{$hotel->slug}?check_in={$past}&check_out={$later}")
+            ->assertInertia(fn ($page) => $page->where('stay', null));
+    }
 }

@@ -11,14 +11,16 @@ use App\Models\Booking;
 use App\Models\PetHotel;
 use App\Support\Availability;
 use App\Support\Money;
+use App\Support\Stay;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class BookingController extends Controller
 {
-    public function create(string $slug): Response
+    public function create(Request $request, string $slug): Response
     {
         $hotel = PetHotel::where('slug', $slug)->with(['pricing', 'policy'])->firstOrFail();
         $pets = auth()->user()->pets()->get(['id', 'name', 'species']);
@@ -27,6 +29,7 @@ class BookingController extends Controller
             'hotel' => $hotel,
             'pets' => $pets,
             'times' => $hotel->policy?->stayTimes(),
+            'stay' => Stay::upcomingFromRequest($request)?->toArray(),
         ]);
     }
 
