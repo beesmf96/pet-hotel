@@ -1,6 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { router } from '@inertiajs/vue3';
+import { useFormatDate } from '@/composables/useFormatDate.js';
+
+const { formatDateTime } = useFormatDate();
 
 const props = defineProps({
     unreadCount: { type: Number, default: 0 },
@@ -158,14 +161,7 @@ const styleFor = (type) => typeStyle[type] ?? { tint: 'bg-teal-light', glyph: 'b
                 <div class="flex-1 min-w-0">
                     <p class="text-sm text-ink leading-snug">{{ n.message }}</p>
                     <p class="text-xs text-moss mt-0.5">
-                        {{
-                            new Date(n.created_at).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                            })
-                        }}
+                        {{ formatDateTime(n.created_at) }}
                     </p>
                 </div>
                 <span v-if="!n.read_at" class="unread-dot mt-1.5 h-2 w-2 rounded-full bg-coral shrink-0" />

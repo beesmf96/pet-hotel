@@ -23,8 +23,8 @@ describe('BookingConfirmationPage', () => {
         expect(w.text()).toContain('The hotel will confirm or decline it');
         expect(w.text()).toContain('Pawsome Stay');
         expect(w.text()).toContain('Buddy');
-        expect(w.text()).toContain('Thu, Oct 1, 2026');
-        expect(w.text()).toContain('Sun, Oct 4, 2026');
+        expect(w.text()).toContain('Thu, 01 Oct 2026');
+        expect(w.text()).toContain('Sun, 04 Oct 2026');
         expect(w.text()).toContain('RM 135.00');
     });
 
@@ -62,8 +62,8 @@ describe('BookingConfirmationPage — ISO timestamp dates', () => {
                 },
             },
         });
-        expect(w.text()).toContain('Thu, Oct 1, 2026');
-        expect(w.text()).toContain('Sun, Oct 4, 2026');
+        expect(w.text()).toContain('Thu, 01 Oct 2026');
+        expect(w.text()).toContain('Sun, 04 Oct 2026');
         expect(w.text()).not.toContain('Invalid Date');
     });
 });
@@ -73,8 +73,8 @@ describe('BookingConfirmationPage — check-in and check-out times', () => {
         const w = mount(BookingConfirmationPage, {
             props: { booking, times: { check_in: '2:00 PM', check_out: '12:00 PM' } },
         });
-        expect(w.text()).toContain('Thu, Oct 1, 2026, from 2:00 PM');
-        expect(w.text()).toContain('Sun, Oct 4, 2026, by 12:00 PM');
+        expect(w.text()).toContain('Thu, 01 Oct 2026, from 2:00 PM');
+        expect(w.text()).toContain('Sun, 04 Oct 2026, by 12:00 PM');
     });
 
     it('shows the dates alone when the hotel has no times', () => {

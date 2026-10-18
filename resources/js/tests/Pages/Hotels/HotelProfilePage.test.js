@@ -258,7 +258,7 @@ describe('HotelProfilePage — searched dates', () => {
         expect(bookNow(w).attributes('href')).toBe(
             '/hotels/pawsome-stay/book?check_in=2026-10-25&check_out=2026-10-26',
         );
-        expect(w.find('[data-testid="stay-dates"]').text()).toMatch(/For Oct 25, 2026 to Oct 26, 2026 \(1\s+night\)/);
+        expect(w.find('[data-testid="stay-dates"]').text()).toMatch(/For 25 Oct 2026 to 26 Oct 2026 \(1\s+night\)/);
     });
 
     it('says nights for a longer stay', () => {
