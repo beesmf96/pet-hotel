@@ -55,6 +55,7 @@ class HotelResource extends Resource
                         ->required()
                         ->columnSpan(1),
                     Forms\Components\TextInput::make('capacity')
+                        // dry-keep: a field label, written out at each capacity field rather than a constant.
                         ->label('Pets per night')
                         ->helperText('The normal capacity. Owners can change single dates under Availability.')
                         ->integer()

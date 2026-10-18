@@ -42,7 +42,6 @@ class BookingController extends Controller
         // A booking at RM 0 would only mislead both sides.
         $pricing = $hotel->pricing->firstWhere('pet_type', $pet->species);
         if (! $pricing) {
-            // dry-keep: 'j M Y', not Dates::DAY — shorter on purpose, inside a sentence.
             throw ValidationException::withMessages([
                 'pet_id' => $hotel->name.' has no price for '.$pet->name.'\'s pet type ('.PetType::from($pet->species)->label().') yet, so '.$pet->name.' cannot be booked here.',
             ]);
@@ -64,6 +63,7 @@ class BookingController extends Controller
         $clash = Booking::clashFor($pet->id, $checkIn, $checkOut, ['pending', ...Availability::HOLDING_STATUSES]);
         if ($clash) {
             $pending = $clash->status === 'pending';
+            // dry-keep: 'j M Y', not Dates::DAY — shorter on purpose, inside a sentence.
             throw ValidationException::withMessages([
                 'pet_id' => $pet->name.' already has '.($pending ? 'a booking request' : 'a booking')
                     .' at '.$clash->hotel->name.' from '.$clash->check_in->format('j M Y').' to '.$clash->check_out->format('j M Y')

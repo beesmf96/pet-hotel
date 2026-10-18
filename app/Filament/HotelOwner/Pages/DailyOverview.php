@@ -85,6 +85,7 @@ class DailyOverview extends Page implements HasTable
                 TextColumn::make('date')
                     ->date(Dates::DAY),
                 TextColumn::make('capacity')
+                    // dry-keep: a field label, written out at each capacity field rather than a constant.
                     ->label('Pets per night')
                     ->description(fn (array $record): ?string => $record['changed'] ? 'Changed for this date' : null),
                 TextColumn::make('booked'),

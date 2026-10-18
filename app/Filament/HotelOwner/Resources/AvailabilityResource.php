@@ -57,6 +57,7 @@ class AvailabilityResource extends Resource
                 ->helperText('No one can book these nights.')
                 ->live(),
             TextInput::make('capacity')
+                // dry-keep: a field label, written out at each capacity field rather than a constant.
                 ->label('Pets per night')
                 ->helperText(fn () => 'Your normal capacity is '.static::ownerHotel()->capacity.'.')
                 ->integer()
@@ -103,6 +104,7 @@ class AvailabilityResource extends Resource
                     ->label('Closed')
                     ->boolean(),
                 TextColumn::make('capacity')
+                    // dry-keep: a field label, written out at each capacity field rather than a constant.
                     ->label('Pets per night')
                     ->placeholder('Normal'),
             ])

@@ -25,6 +25,7 @@ class HotelOwnerPanelProvider extends PanelProvider
             ->path('owner')
             ->login()
             ->colors([
+                // dry-keep: --color-teal in resources/css/tokens.css; PHP cannot read the CSS token.
                 'primary' => Color::hex('#0f766e'),
                 'gray' => Color::Stone,
             ])

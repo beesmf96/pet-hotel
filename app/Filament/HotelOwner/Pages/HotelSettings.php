@@ -55,6 +55,7 @@ class HotelSettings extends Page
                     ->description('Spots left on a night are this number minus the confirmed bookings for that night.')
                     ->schema([
                         TextInput::make('capacity')
+                            // dry-keep: a field label, written out at each capacity field rather than a constant.
                             ->label('Pets per night')
                             ->helperText('Close a date, or set a different number for some dates, under Availability.')
                             ->integer()
