@@ -175,7 +175,7 @@ describe('HotelProfilePage — facilities, policies, and pricing', () => {
         const w = mount(HotelProfilePage, { props: { ...baseProps, hotel } });
         expect(w.text()).toContain('Facilities');
         expect(w.text()).toContain('Grooming');
-        expect(w.text()).toContain('24h Care');
+        expect(w.text()).toContain('24h care');
     });
 
     it('hides the facilities card when there are none', () => {

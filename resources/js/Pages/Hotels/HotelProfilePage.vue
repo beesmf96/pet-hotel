@@ -1,4 +1,5 @@
 <script setup>
+import { facilityLabel } from '@/facilities';
 import { formatMoney } from '@/money';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import AvailabilityCalendar from '@/Components/Hotels/AvailabilityCalendar.vue';
@@ -24,16 +25,6 @@ const props = defineProps({
 
 const { formatDate } = useFormatDate();
 
-const facilityLabels = {
-    grooming: 'Grooming',
-    play_area: 'Play Area',
-    vet_care: 'Vet Care',
-    swimming_pool: 'Swimming Pool',
-    training: 'Training',
-    outdoor_walks: 'Outdoor Walks',
-    webcam: 'Live Webcam',
-    '24h_care': '24h Care',
-};
 
 // Normalised to one shape so the template binds a single key, rather than
 // reading .url off gallery rows and a hand-built cover object that only
@@ -129,7 +120,7 @@ function nextPhoto() {
                                 :key="facility.id"
                                 class="border-2 border-ink rounded-full px-3.5 py-1.5 text-sm font-semibold"
                             >
-                                {{ facilityLabels[facility.type] }}
+                                {{ facilityLabel(facility.type) }}
                             </span>
                         </div>
                     </div>

@@ -1,4 +1,5 @@
 <script setup>
+import { facilityLabel } from '@/facilities';
 import { formatMoney } from '@/money';
 import { router } from '@inertiajs/vue3';
 import PawIcon from '@/Components/Ui/PawIcon.vue';
@@ -9,16 +10,6 @@ const props = defineProps({
     stay: { type: Object, default: null },
 });
 
-const facilityLabels = {
-    grooming: 'Grooming',
-    play_area: 'Play area',
-    vet_care: 'Vet care',
-    swimming_pool: 'Pool',
-    training: 'Training',
-    outdoor_walks: 'Outdoor walks',
-    webcam: 'Webcam',
-    '24h_care': '24h care',
-};
 
 const photoTints = ['bg-coral', 'bg-teal text-cream', 'bg-mustard', 'bg-teal-light'];
 
@@ -69,7 +60,7 @@ function visitHotel() {
                     :key="facility.id"
                     class="border-2 border-ink rounded-full px-2.5 py-0.5 text-xs font-semibold text-ink"
                 >
-                    {{ facilityLabels[facility.type] ?? facility.type }}
+                    {{ facilityLabel(facility.type) }}
                 </span>
                 <span v-if="hotel.facilities.length > 3" class="text-xs text-moss self-center">
                     +{{ hotel.facilities.length - 3 }} more

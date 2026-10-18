@@ -62,7 +62,7 @@ describe('HotelCard — facilities', () => {
         const w = mount(HotelCard, { props: { hotel: { ...baseHotel, facilities } } });
         expect(w.text()).toContain('Grooming');
         expect(w.text()).toContain('Play area');
-        expect(w.text()).toContain('Webcam');
+        expect(w.text()).toContain('Live webcam');
         expect(w.text()).not.toContain('Vet care');
         expect(w.text()).toContain('+1 more');
     });
