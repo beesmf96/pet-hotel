@@ -33,7 +33,9 @@ and in the pop-up.
 - Owner: an **Answer by** column for pending rows (short form,
   "20 Oct, 9:41 PM"), an **Answer by** entry in the pop-up, and "Please
   answer by …, or the request expires." in the new-request email and bell.
-- Docs: SRS FR-26a rewritten; user guide (customer and owner); deployment
+- Docs: SRS FR-26a rewritten, with an "Answer deadline" definition and a
+  table of three worked examples; user guide (customer and owner), with a
+  "When the Hotel Must Answer" section and the same examples; deployment
   checklist's scheduler step; personas gap marked fixed, and a note that the
   seeded pending request expires 48 hours after seeding; backlog entry
   removed.
@@ -64,6 +66,8 @@ and in the pop-up.
   pages; the form note. `bun run test`: 306 passed. `bun run lint`: 0
   errors, the same 5 existing warnings.
 - PHPUnit: 536 passed. Pint clean. `bun run e2e`: 23 passed.
+- The three documented examples, run through `answerByText()` in tinker,
+  give the times the docs state.
 - Dev stack: a request sent at 9:41 PM showed "Tue, 20 Oct 2026, 9:41 PM" on
   the confirmation page, in Rahman's email, in the list (short form) and in
   the pop-up (screenshots checked). `schedule:list` shows `*/5 * * * *`.

@@ -48,6 +48,7 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | Hotel owner | A user linked to a `pet_hotel` through the `hotel_owner` pivot |
 | Administrator | A user with `is_admin = true` |
 | Booking request | A booking in `pending` status, not yet confirmed |
+| Answer deadline | When the hotel must answer a booking request by (FR-26a): 48 hours after it was sent, or 12:00 noon (Malaysia time) on the day before check-in, whichever comes first. 48 hours is the most, not a fixed time |
 | Spot | Room for one pet on one night. Spots left on a night = that night's capacity (`pet_hotels.capacity`, or a `hotel_availabilities.capacity` override) − confirmed and completed bookings covering it |
 | Night | A date a pet sleeps over: a stay covers check-in up to, not including, check-out |
 | Completed stay | A confirmed booking whose check-out date has passed |
@@ -128,6 +129,14 @@ Exclusions are listed in §4.2 of the [PID](pid.html).
 | FR-26 | A customer shall cancel their own booking while it is still `pending`. Confirmed bookings are cancelled by the hotel or an administrator. | M | `bookings.cancel` · `tests/Feature/BookingTest.php` |
 | FR-26a | A hotel shall answer a booking request within 48 hours of it being sent, or by noon (Malaysia time) the day before check-in if that is sooner; a request sent after that noon has until the end of its check-in day. A request still `pending` at its deadline shall be cancelled automatically and the customer emailed that it expired. Owners are not notified. The deadline shall be shown to the customer on the confirmation and detail pages and in the request email, and to owners in the bookings list, the booking pop-up and the new-request email. | M | `Booking::answerBy()`, `bookings:expire-pending` (every five minutes) · `tests/Unit/Models/BookingAnswerByTest.php`, `tests/Feature/ExpirePendingBookingsTest.php` |
 | FR-27 | A customer shall access only their own bookings. | M | `BookingPolicy` · `tests/Unit/Policies/BookingPolicyTest.php` |
+
+FR-26a examples, for a stay with check-in on Sun 1 Nov (Malaysia time):
+
+| Request sent | Answer deadline | Why |
+|---|---|---|
+| Sun 18 Oct, 10:00 AM | Tue 20 Oct, 10:00 AM | 48 hours comes first |
+| Fri 30 Oct, 10:00 AM | Sat 31 Oct, 12:00 PM | Noon the day before check-in comes first |
+| Sat 31 Oct, 3:00 PM | Sun 1 Nov, 11:59 PM (end of the day) | Noon the day before has already passed |
 
 ### 3.5 Reviews
 
