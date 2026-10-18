@@ -8,6 +8,7 @@ import { ref, watch } from 'vue';
 import TextInput from '@/Components/Ui/TextInput.vue';
 import EmptyState from '@/Components/Ui/EmptyState.vue';
 import { useFormatDate } from '@/composables/useFormatDate';
+import { nightsLabel } from '@/stay';
 
 const props = defineProps({
     hotels: Object,
@@ -94,9 +95,7 @@ function decodeLabel(label) {
                             </p>
                             <p v-if="stay" data-testid="stay-summary">
                                 With a spot every night from {{ formatDate(stay.check_in) }} to
-                                {{ formatDate(stay.check_out) }} ({{ stay.nights }} night{{
-                                    stay.nights !== 1 ? 's' : ''
-                                }})
+                                {{ formatDate(stay.check_out) }} ({{ nightsLabel(stay.nights) }})
                             </p>
                         </div>
                         <TextInput v-model="sort" :full="false" as="select">
