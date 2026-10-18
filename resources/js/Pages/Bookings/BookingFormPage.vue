@@ -58,7 +58,7 @@ function submit() {
     <AppLayout>
         <template #header>
             <div class="flex flex-col gap-1">
-                <h1 class="text-3xl sm:text-4xl leading-tight">Book a stay</h1>
+                <h1 class="text-3xl sm:text-4xl">Book a stay</h1>
                 <p class="font-sans font-medium tracking-normal text-sm text-moss">
                     at
                     <Link :href="`/hotels/${hotel.slug}`" class="font-semibold text-teal hover:underline">{{

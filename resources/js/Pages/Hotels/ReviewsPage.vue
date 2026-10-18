@@ -15,7 +15,7 @@ const props = defineProps({
     <AppLayout>
         <template #header>
             <div class="flex flex-col gap-1">
-                <h1 class="text-3xl sm:text-4xl leading-tight">Reviews: {{ hotel.name }}</h1>
+                <h1 class="text-3xl sm:text-4xl">Reviews: {{ hotel.name }}</h1>
                 <Link
                     :href="`/hotels/${hotel.slug}`"
                     class="font-sans tracking-normal link-bold text-teal inline-block"

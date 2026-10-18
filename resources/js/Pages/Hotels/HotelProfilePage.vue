@@ -54,7 +54,7 @@ function nextPhoto() {
     <AppLayout>
         <template #header>
             <div class="flex flex-col gap-1">
-                <h1 class="text-3xl sm:text-4xl leading-tight">{{ hotel.name }}</h1>
+                <h1 class="text-3xl sm:text-4xl">{{ hotel.name }}</h1>
                 <p class="font-sans font-medium tracking-normal text-sm text-moss">
                     {{ hotel.address }}, {{ hotel.city }}
                 </p>

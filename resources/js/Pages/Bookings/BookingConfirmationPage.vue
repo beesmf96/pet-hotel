@@ -3,6 +3,7 @@ import { formatMoney } from '@/money';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { useFormatDate } from '@/composables/useFormatDate.js';
 import UiButton from '@/Components/Ui/UiButton.vue';
+import StatusPill from '@/Components/Ui/StatusPill.vue';
 import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 
 defineProps({
@@ -19,7 +20,7 @@ const { formatDate } = useFormatDate();
         <div class="max-w-lg mx-auto text-center py-8 sm:py-12 space-y-8">
             <div class="flex flex-col items-center gap-5">
                 <span
-                    class="w-20 h-20 rounded-3xl bg-mustard border-3 border-ink shadow-hard flex items-center justify-center text-ink"
+                    class="w-20 h-20 rounded-2xl bg-mustard border-3 border-ink shadow-hard flex items-center justify-center text-ink"
                 >
                     <svg
                         width="40"
@@ -41,7 +42,7 @@ const { formatDate } = useFormatDate();
                     </h1>
                     <p class="text-base text-moss" style="text-wrap: pretty">
                         Your request is
-                        <span class="font-bold text-ink bg-mustard px-1.5 py-0.5 rounded-md">pending</span>. The hotel
+                        <StatusPill status="pending" class="align-middle" />. The hotel
                         will confirm or decline it, and we'll email you either way.
                     </p>
                 </div>
@@ -49,29 +50,29 @@ const { formatDate } = useFormatDate();
 
             <div class="card-hard-lg p-6 text-left space-y-3 text-sm">
                 <div class="flex justify-between gap-4">
-                    <span class="font-semibold text-moss">Hotel</span>
+                    <span class="font-semibold text-moss whitespace-nowrap">Hotel</span>
                     <span class="font-bold text-right">{{ booking.hotel.name }}</span>
                 </div>
                 <div class="flex justify-between gap-4">
-                    <span class="font-semibold text-moss">Pet</span>
+                    <span class="font-semibold text-moss whitespace-nowrap">Pet</span>
                     <span class="font-bold">{{ booking.pet.name }}</span>
                 </div>
                 <div class="flex justify-between gap-4">
-                    <span class="font-semibold text-moss">Check-in</span>
+                    <span class="font-semibold text-moss whitespace-nowrap">Check-in</span>
                     <span class="font-bold"
                         >{{ formatDate(booking.check_in, { weekday: true })
                         }}<template v-if="times">, from {{ times.check_in }}</template></span
                     >
                 </div>
                 <div class="flex justify-between gap-4">
-                    <span class="font-semibold text-moss">Check-out</span>
+                    <span class="font-semibold text-moss whitespace-nowrap">Check-out</span>
                     <span class="font-bold"
                         >{{ formatDate(booking.check_out, { weekday: true })
                         }}<template v-if="times">, by {{ times.check_out }}</template></span
                     >
                 </div>
                 <div class="border-t-2 border-ink/10 pt-3 flex justify-between items-baseline">
-                    <span class="font-semibold text-moss">Total</span>
+                    <span class="font-semibold text-moss whitespace-nowrap">Total</span>
                     <span class="font-display font-extrabold text-2xl">{{ formatMoney(booking.total_price) }}</span>
                 </div>
             </div>

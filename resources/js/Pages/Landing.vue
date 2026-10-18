@@ -63,7 +63,7 @@ function handleSearch(params) {
                     >
                 </template>
                 <template v-else>
-                    <Link href="/login" class="hover:text-teal transition">Sign in</Link>
+                    <Link href="/login" class="whitespace-nowrap hover:text-teal transition">Sign in</Link>
                     <UiButton as="link" variant="mustard" size="sm" href="/register">Register</UiButton>
                 </template>
             </div>
@@ -76,7 +76,7 @@ function handleSearch(params) {
                 aria-hidden="true"
             ></div>
             <div
-                class="hidden lg:block absolute right-28 top-14 w-20 h-20 rounded-3xl bg-teal rotate-12"
+                class="hidden lg:block absolute right-28 top-14 w-20 h-20 rounded-2xl bg-teal rotate-12"
                 aria-hidden="true"
             ></div>
             <div
@@ -129,7 +129,7 @@ function handleSearch(params) {
         <!-- How It Works -->
         <section class="px-5 pb-16 sm:px-10 sm:pb-20" :class="{ 'pt-16 sm:pt-20': !hasFeatured }">
             <div
-                class="max-w-7xl mx-auto bg-teal text-cream border-3 border-ink rounded-3xl shadow-hard-lg px-6 py-10 sm:px-14 sm:py-14 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10"
+                class="max-w-7xl mx-auto bg-teal text-cream border-3 border-ink rounded-2xl shadow-hard-lg px-6 py-10 sm:px-14 sm:py-14 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10"
             >
                 <div v-for="step in steps" :key="step.title" class="flex flex-col gap-3.5">
                     <span

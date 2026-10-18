@@ -58,7 +58,7 @@ function logout() {
                             <Link href="/bookings" class="whitespace-nowrap hover:text-teal transition">My bookings</Link>
                             <Link href="/profile" class="hidden sm:inline hover:text-teal transition">Profile</Link>
                             <NotificationBell :unread-count="unreadCount" />
-                            <button class="hover:text-teal transition" @click="logout">Sign out</button>
+                            <button class="whitespace-nowrap hover:text-teal transition" @click="logout">Sign out</button>
                         </template>
                         <template v-else>
                             <Link href="/login" class="whitespace-nowrap hover:text-teal transition">Sign in</Link>
@@ -70,7 +70,7 @@ function logout() {
         </nav>
 
         <header v-if="$slots.header" class="bg-cream">
-            <div class="max-w-7xl mx-auto pt-8 pb-2 px-4 sm:px-6 lg:px-8 font-display font-extrabold tracking-tight">
+            <div class="max-w-7xl mx-auto pt-8 pb-2 px-4 sm:px-6 lg:px-8 font-display font-extrabold tracking-tight leading-tight">
                 <slot name="header" />
             </div>
         </header>

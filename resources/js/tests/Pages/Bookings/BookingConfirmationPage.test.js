@@ -82,3 +82,11 @@ describe('BookingConfirmationPage — check-in and check-out times', () => {
         expect(w.text()).not.toContain(', from ');
     });
 });
+
+describe('BookingConfirmationPage — status', () => {
+    it('shows the pending status with the shared pill', async () => {
+        const { default: StatusPill } = await import('@/Components/Ui/StatusPill.vue');
+        const w = mount(BookingConfirmationPage, { props: { booking } });
+        expect(w.findComponent(StatusPill).props('status')).toBe('pending');
+    });
+});
