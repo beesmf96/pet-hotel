@@ -38,7 +38,7 @@ test('A2–A3 close one date and lower another', async ({ page }) => {
 });
 
 test('A4 capacity is required unless the dates are closed', async ({ page }) => {
-    await changeDates(page, { from: d1, until: d1 });
+    await changeDates(page, { from: d1, until: d1, invalid: true });
 
     // The browser's own required check stops the submit, so the form stays open.
     const capacity = page.getByRole('dialog').getByLabel('Pets per night');
@@ -48,7 +48,7 @@ test('A4 capacity is required unless the dates are closed', async ({ page }) => 
 });
 
 test('A5 the last night cannot be before the first', async ({ page }) => {
-    await changeDates(page, { from: d2, until: d1, closed: true });
+    await changeDates(page, { from: d2, until: d1, closed: true, invalid: true });
     await expect(page.getByRole('dialog')).toContainText('must be a date after or equal to');
 });
 
