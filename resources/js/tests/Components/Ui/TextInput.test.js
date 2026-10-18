@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
 
 import TextInput from '@/Components/Ui/TextInput.vue';
+import FormField from '@/Components/Ui/FormField.vue';
 
 describe('TextInput', () => {
     it('renders an input by default and syncs v-model', async () => {
@@ -46,5 +47,20 @@ describe('TextInput', () => {
     it('is full width by default and shrinks with full=false', () => {
         expect(mount(TextInput).classes()).toContain('w-full');
         expect(mount(TextInput, { props: { full: false } }).classes()).not.toContain('w-full');
+    });
+
+    it('adds no id or aria attributes outside a FormField', () => {
+        const w = mount(TextInput);
+        expect(w.attributes('id')).toBeUndefined();
+        expect(w.attributes('aria-describedby')).toBeUndefined();
+        expect(w.attributes('aria-invalid')).toBeUndefined();
+    });
+
+    it('keeps an id passed in directly, even inside a FormField', () => {
+        const w = mount({
+            components: { FormField, TextInput },
+            template: '<FormField label="Email"><TextInput id="own-id" /></FormField>',
+        });
+        expect(w.find('input').attributes('id')).toBe('own-id');
     });
 });
