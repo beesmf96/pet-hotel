@@ -2,7 +2,7 @@
 title: Say plainly that a booking is a request
 description: "Book Now" became "Request to Book", and the form, confirmation page and email now say the hotel must confirm; also fixes the booking-form calendar's month buttons, which sent the request.
 date: 2026-10-18
-pr: ~
+pr: 74
 plan: ~
 ---
 
