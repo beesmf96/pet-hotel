@@ -40,7 +40,7 @@ said it worked.
   passed. `bun run lint`: 0 errors, the same 5 existing warnings.
 - `bun run e2e`: 22 passed, 1 failed — A6 (owner daily overview, unrelated
   to this change) read the row before the save landed; the file passed twice
-  on rerun. A flaky test, not fixed here.
+  on rerun. A flaky test, not fixed here; now a backlog entry.
 - On the dev stack, a profile save showed "Profile updated." and Dismiss
   hid it, at desktop and phone widths (screenshots checked).
 - PHPUnit: 527 passed (no PHP change).
