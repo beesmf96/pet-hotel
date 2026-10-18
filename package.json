@@ -9,7 +9,8 @@
         "lint": "eslint resources/js",
         "lint:fix": "eslint resources/js --fix",
         "format": "prettier --write resources/js",
-        "e2e": "docker rm -f pet_hotel_e2e >/dev/null 2>&1; vite build && playwright test"
+        "e2e": "docker rm -f pet_hotel_e2e >/dev/null 2>&1; vite build && playwright test",
+        "design:capture": "docker rm -f pet_hotel_e2e >/dev/null 2>&1; vite build && playwright test --config playwright.design.config.js"
     },
     "devDependencies": {
         "@playwright/test": "1.64.0",

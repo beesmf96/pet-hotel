@@ -95,6 +95,14 @@ addresses is read or deleted in Mailpit. Fixed test data comes from
 screenshot, a trace and a page snapshot under `storage/e2e-results/`, and an
 HTML report in `storage/e2e-report/`.
 
+### Design screenshots
+
+`bun run design:capture` uses the same throwaway server to screenshot every
+customer page and state, at phone and desktop width, into
+`storage/design-review/`. It seeds `DesignReviewSeeder` (the personas plus
+reviews, more stays, notifications and an empty account). The `/design-review`
+skill runs it; the shot list is `e2e/design/capture.spec.js`.
+
 ## More
 
 - [Documentation](https://beesmf96.github.io/pet-hotel/) — the stakeholder site, built from `docs-src/` into `docs/`

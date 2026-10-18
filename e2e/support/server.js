@@ -37,8 +37,9 @@ function artisan(...args) {
 /**
  * Fresh e2e database. Refuses unless the running e2e container resolves to the
  * e2e SQLite file — the check that would have stopped the dev-database wipe.
+ * The design-review capture passes DesignReviewSeeder for fuller pages.
  */
-export function resetDatabase() {
+export function resetDatabase(seeder = 'E2eSeeder') {
     const resolved = artisan(
         'tinker',
         '--execute=echo config("app.env"), "|", config("database.default"), "|", config("database.connections.sqlite.database");',
@@ -48,7 +49,7 @@ export function resetDatabase() {
         throw new Error(`Refusing to reset: the e2e app resolved to "${resolved}".`);
     }
 
-    artisan('migrate:fresh', '--seeder=E2eSeeder', '--force');
+    artisan('migrate:fresh', `--seeder=${seeder}`, '--force');
 }
 
 /** Run PHP in the e2e app, for test setup. Same container, same e2e database. */
