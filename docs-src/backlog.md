@@ -89,19 +89,3 @@ expiry email wording, the owner panel (show the deadline on pending rows and
 in the pop-up), SRS FR-26a, and the user guide. Decide the exact deadline, and
 what happens to requests made less than that long before check-in. Do the
 copy entry above first, so the page can name the deadline.
-
-## Flaky e2e test A6
-
-*Found 2026-10-18, while testing the success messages.* `A6 daily overview
-shows the changes` (`e2e/a-owner-settings.spec.js`) failed once: the 7 Nov
-row did not say "Closed". The same file then passed twice in a row.
-
-Likely cause: `changeDates()` in `e2e/support/owner.js` clicks Submit and
-returns at once. A6 then calls it again and goes to the Daily Overview with
-`page.goto()`, which can start before the save has finished, or cut it off.
-The other A tests assert on the same page right after, so they wait by
-accident.
-
-Touches: `changeDates()` only — wait for the modal to close or for the
-saved notification before returning. Run the file several times
-(`bun run e2e e2e/a-owner-settings.spec.js --repeat-each=5`) to confirm.

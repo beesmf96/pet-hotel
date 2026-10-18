@@ -43,14 +43,36 @@ export async function expectNotice(page, title) {
     await expect(page.getByText(title).first()).toBeVisible();
 }
 
-/** Owner panel → Availability → Change dates. */
-export async function changeDates(page, { from, until, closed = false, capacity = null }) {
+const isLivewireUpdate = (response) => /\/livewire[^/]*\/update/.test(response.url());
+
+/** Do `action` and wait for the Livewire request it sends. */
+async function andLivewire(page, action, isResponse = isLivewireUpdate) {
+    await Promise.all([page.waitForResponse(isResponse), action()]);
+}
+
+/**
+ * Owner panel → Availability → Change dates. "From" and "Closed" are live
+ * fields: a click while their request is out can be lost in the re-render,
+ * so each one waits for it. Submit waits for the save too: Filament hides the
+ * modal at once, and a page.goto() straight after can cancel it. Pass
+ * `invalid: true` when the form is meant to fail (the browser may block it,
+ * so no answer comes).
+ */
+export async function changeDates(page, { from, until, closed = false, capacity = null, invalid = false }) {
     await page.goto('/owner/availabilities');
     await page.getByRole('button', { name: 'Change dates' }).click();
     const modal = page.getByRole('dialog');
-    await modal.getByLabel('From').fill(iso(from));
+    // Wait for the form first, so the request awaited below is the field's own.
+    await modal.getByLabel('From').waitFor();
+    await andLivewire(page, () => modal.getByLabel('From').fill(iso(from)));
     await modal.getByLabel('Until (last night)').fill(iso(until));
-    if (closed) await modal.getByRole('switch', { name: 'Closed' }).click();
+    if (closed) await andLivewire(page, () => modal.getByRole('switch', { name: 'Closed' }).click());
     if (capacity !== null) await modal.getByLabel('Pets per night').fill(String(capacity));
-    await modal.getByRole('button', { name: 'Submit' }).click();
+    const submit = modal.getByRole('button', { name: 'Submit' });
+    if (invalid) return submit.click();
+    await andLivewire(
+        page,
+        () => submit.click(),
+        (response) => response.request().postData()?.includes('"callMountedAction"'),
+    );
 }
