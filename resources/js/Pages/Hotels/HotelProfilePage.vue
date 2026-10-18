@@ -1,4 +1,5 @@
 <script setup>
+import PageSubtitle from '@/Components/Ui/PageSubtitle.vue';
 import { facilityLabel } from '@/facilities';
 import { formatMoney } from '@/money';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -55,10 +56,10 @@ function nextPhoto() {
     <AppLayout>
         <template #header>
             <div class="flex flex-col gap-1">
-                <h1 class="text-3xl sm:text-4xl">{{ hotel.name }}</h1>
-                <p class="font-sans font-medium tracking-normal text-sm text-moss">
+                <h1>{{ hotel.name }}</h1>
+                <PageSubtitle>
                     {{ hotel.address }}, {{ hotel.city }}
-                </p>
+                </PageSubtitle>
             </div>
         </template>
 

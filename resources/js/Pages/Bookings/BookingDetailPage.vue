@@ -1,4 +1,5 @@
 <script setup>
+import PageSubtitle from '@/Components/Ui/PageSubtitle.vue';
 import { formatMoney } from '@/money';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link, router } from '@inertiajs/vue3';
@@ -30,8 +31,8 @@ function cancelBooking() {
         <template #header>
             <div class="flex items-start justify-between gap-4">
                 <div class="flex flex-col gap-1">
-                    <h1 class="text-3xl sm:text-4xl">Booking #{{ booking.id }}</h1>
-                    <p class="font-sans font-medium tracking-normal text-sm text-moss">{{ booking.hotel.name }}</p>
+                    <h1>Booking #{{ booking.id }}</h1>
+                    <PageSubtitle>{{ booking.hotel.name }}</PageSubtitle>
                 </div>
                 <StatusPill :status="booking.status" />
             </div>

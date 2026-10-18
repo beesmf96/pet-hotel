@@ -30,7 +30,7 @@ function closeReview() {
 <template>
     <AppLayout>
         <template #header>
-            <h1 class="text-3xl sm:text-4xl">My bookings</h1>
+            <h1>My bookings</h1>
         </template>
 
         <EmptyState v-if="bookings.length === 0" message="You have no bookings yet.">

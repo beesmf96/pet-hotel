@@ -19,6 +19,14 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue']);
 
+// The same fills cellClass() gives each kind of day (docs-src/design-system.md §2).
+const LEGEND = [
+    { label: 'Available', fill: 'bg-teal-light' },
+    { label: 'Limited', fill: 'bg-mustard' },
+    { label: 'Full', fill: 'bg-coral' },
+    { label: 'Unavailable', fill: 'bg-cream' },
+];
+
 const today = new Date();
 const todayKey = today.toISOString().slice(0, 10);
 
@@ -243,21 +251,13 @@ onMounted(fetchMonth);
 
         <!-- Legend -->
         <div class="flex flex-wrap gap-4 mt-4 pt-4 border-t-2 border-ink/10">
-            <div class="flex items-center gap-1.5 text-xs font-medium text-moss">
-                <span class="w-3.5 h-3.5 rounded-full border-2 border-ink bg-teal-light inline-block" />
-                Available
-            </div>
-            <div class="flex items-center gap-1.5 text-xs font-medium text-moss">
-                <span class="w-3.5 h-3.5 rounded-full border-2 border-ink bg-mustard inline-block" />
-                Limited
-            </div>
-            <div class="flex items-center gap-1.5 text-xs font-medium text-moss">
-                <span class="w-3.5 h-3.5 rounded-full border-2 border-ink bg-coral inline-block" />
-                Full
-            </div>
-            <div class="flex items-center gap-1.5 text-xs font-medium text-moss">
-                <span class="w-3.5 h-3.5 rounded-full border-2 border-ink bg-cream inline-block" />
-                Unavailable
+            <div
+                v-for="item in LEGEND"
+                :key="item.label"
+                class="flex items-center gap-1.5 text-xs font-medium text-moss"
+            >
+                <span class="w-3.5 h-3.5 rounded-full border-2 border-ink inline-block" :class="item.fill" />
+                {{ item.label }}
             </div>
         </div>
 

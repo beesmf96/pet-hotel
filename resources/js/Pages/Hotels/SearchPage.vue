@@ -74,7 +74,7 @@ function decodeLabel(label) {
 <template>
     <AppLayout>
         <template #header>
-            <h1 class="text-3xl sm:text-4xl">Find a pet hotel</h1>
+            <h1>Find a pet hotel</h1>
         </template>
 
         <div class="space-y-6">
