@@ -8,6 +8,7 @@ import { formFieldKey } from './formField.js';
 const props = defineProps({
     label: { type: String, default: '' },
     error: { type: String, default: '' },
+    optional: { type: Boolean, default: false },
 });
 
 const id = useId();
@@ -24,8 +25,9 @@ provide(
     <div>
         <div v-if="label || $slots.aside" class="flex justify-between items-baseline mb-1.5">
             <label :id="labelId" :for="id" class="block text-sm font-bold"
-                >{{ label }}<slot name="label-suffix"
-            /></label>
+                >{{ label
+                }}<span v-if="optional" class="text-moss font-medium"> (optional)</span></label
+            >
             <slot name="aside" />
         </div>
         <slot :id="id" :label-id="labelId" />

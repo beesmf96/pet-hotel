@@ -65,8 +65,7 @@ function submit() {
                     </FormField>
 
                     <!-- Comment -->
-                    <FormField label="Comment" :error="form.errors.comment">
-                        <template #label-suffix> <span class="text-moss font-medium">(optional)</span></template>
+                    <FormField label="Comment" optional :error="form.errors.comment">
                         <TextInput
                             v-model="form.comment"
                             as="textarea"

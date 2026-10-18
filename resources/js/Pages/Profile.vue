@@ -64,11 +64,11 @@ function submitPassword() {
                     <TextInput :model-value="user.email" type="email" disabled />
                 </FormField>
 
-                <FormField label="Phone" :error="form.errors.phone">
+                <FormField label="Phone" optional :error="form.errors.phone">
                     <TextInput v-model="form.phone" type="tel" />
                 </FormField>
 
-                <FormField label="Preferred location" :error="form.errors.preferred_location">
+                <FormField label="Preferred location" optional :error="form.errors.preferred_location">
                     <TextInput v-model="form.preferred_location" type="text" placeholder="e.g. Kuala Lumpur" />
                 </FormField>
 

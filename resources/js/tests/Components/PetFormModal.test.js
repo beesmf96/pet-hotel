@@ -194,7 +194,7 @@ describe('PetFormModal — photo and errors', () => {
     it('ties the Photo label to the file input', () => {
         const w = mount(PetFormModal, { props: { show: true, pet: null }, attachTo: document.body })
         const input = body().find('input[type="file"]')
-        const label = body().findAll('label').find((l) => l.text() === 'Photo')
+        const label = body().findAll('label').find((l) => l.text() === 'Photo (optional)')
         expect(input.attributes('id')).toBeTruthy()
         expect(label.attributes('for')).toBe(input.attributes('id'))
         w.unmount()

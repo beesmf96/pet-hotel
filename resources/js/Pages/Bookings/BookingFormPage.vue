@@ -79,7 +79,7 @@ function submit() {
                 <div class="card-hard p-6 space-y-4">
                     <SectionTitle>Your pet</SectionTitle>
 
-                    <FormField label="Select pet *" :error="form.errors.pet_id">
+                    <FormField label="Pet" :error="form.errors.pet_id">
                         <TextInput v-model="form.pet_id" as="select">
                             <option value="" disabled>Choose a pet…</option>
                             <option v-for="pet in pets" :key="pet.id" :value="pet.id">
@@ -95,25 +95,25 @@ function submit() {
                     :selectable="true"
                     :model-value="{ checkIn: form.check_in, checkOut: form.check_out }"
                     @update:model-value="onDatesSelected"
-                />
-
-                <p v-if="times" class="-mt-4 text-sm font-medium text-moss">
-                    Check-in from <strong class="text-ink">{{ times.check_in }}</strong> · check-out by
-                    <strong class="text-ink">{{ times.check_out }}</strong>
-                </p>
-                <div
-                    v-if="form.errors.check_in || form.errors.check_out"
-                    class="-mt-4 text-sm font-semibold text-coral-deep"
                 >
-                    <p v-if="form.errors.check_in">{{ form.errors.check_in }}</p>
-                    <p v-if="form.errors.check_out">{{ form.errors.check_out }}</p>
-                </div>
+                    <p v-if="times" class="text-sm font-medium text-moss">
+                        Check-in from <strong class="text-ink">{{ times.check_in }}</strong> · check-out by
+                        <strong class="text-ink">{{ times.check_out }}</strong>
+                    </p>
+                    <div
+                        v-if="form.errors.check_in || form.errors.check_out"
+                        class="text-sm font-semibold text-coral-deep"
+                    >
+                        <p v-if="form.errors.check_in">{{ form.errors.check_in }}</p>
+                        <p v-if="form.errors.check_out">{{ form.errors.check_out }}</p>
+                    </div>
+                </AvailabilityCalendar>
 
                 <!-- Notes -->
                 <div class="card-hard p-6 space-y-4">
                     <SectionTitle>Notes</SectionTitle>
 
-                    <FormField label="Special requests (optional)" :error="form.errors.notes">
+                    <FormField label="Special requests" optional :error="form.errors.notes">
                         <TextInput
                             v-model="form.notes"
                             as="textarea"

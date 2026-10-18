@@ -300,3 +300,22 @@ describe('AvailabilityCalendar — inside a form', () => {
         w.unmount();
     });
 });
+
+describe('AvailabilityCalendar — extra lines', () => {
+    it('shows slot content inside the card', async () => {
+        stubFetch();
+        const w = mount(AvailabilityCalendar, {
+            props: { hotelSlug: 'paws-inn' },
+            slots: { default: '<p class="times">Check-in from 2:00 PM</p>' },
+        });
+        await flushPromises();
+        expect(w.find('.card-hard .times').exists()).toBe(true);
+    });
+
+    it('adds no extra block without slot content', async () => {
+        stubFetch();
+        const w = mount(AvailabilityCalendar, { props: { hotelSlug: 'paws-inn' } });
+        await flushPromises();
+        expect(w.find('.mt-4.space-y-2').exists()).toBe(false);
+    });
+});

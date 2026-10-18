@@ -69,11 +69,11 @@ function close() {
                 </SectionTitle>
 
                 <form class="space-y-4" @submit.prevent="submit">
-                    <FormField label="Name *" :error="form.errors.name">
+                    <FormField label="Name" :error="form.errors.name">
                         <TextInput v-model="form.name" type="text" />
                     </FormField>
 
-                    <FormField label="Species *" :error="form.errors.species">
+                    <FormField label="Species" :error="form.errors.species">
                         <TextInput v-model="form.species" as="select">
                             <option value="" disabled>Choose a species…</option>
                             <option v-for="type in PET_TYPES" :key="type.value" :value="type.value">
@@ -83,25 +83,25 @@ function close() {
                     </FormField>
 
                     <div class="grid grid-cols-2 gap-3">
-                        <FormField label="Breed" :error="form.errors.breed">
+                        <FormField label="Breed" optional :error="form.errors.breed">
                             <TextInput v-model="form.breed" type="text" />
                         </FormField>
 
-                        <FormField label="Age (years)" :error="form.errors.age">
+                        <FormField label="Age in years" optional :error="form.errors.age">
                             <TextInput v-model="form.age" type="number" min="0" max="100" />
                         </FormField>
                     </div>
 
-                    <FormField label="Special needs" :error="form.errors.special_needs">
+                    <FormField label="Special needs" optional :error="form.errors.special_needs">
                         <TextInput v-model="form.special_needs" as="textarea" rows="2" />
                     </FormField>
 
-                    <FormField v-slot="{ id }" label="Photo" :error="form.errors.photo">
+                    <FormField v-slot="{ id }" label="Photo" optional :error="form.errors.photo">
                         <input
                             :id="id"
                             type="file"
                             accept="image/*"
-                            class="text-sm text-moss"
+                            class="field-hard w-full text-moss"
                             @change="form.photo = $event.target.files[0]"
                         />
                     </FormField>

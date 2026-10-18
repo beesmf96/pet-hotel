@@ -7,7 +7,7 @@ vi.mock('@/Layouts/AppLayout.vue', () => ({
 }))
 
 vi.mock('@/Components/Hotels/AvailabilityCalendar.vue', () => ({
-    default: { template: '<div data-testid="availability-calendar" />' },
+    default: { template: '<div data-testid="availability-calendar"><slot /></div>' },
 }))
 
 const formState = reactive({

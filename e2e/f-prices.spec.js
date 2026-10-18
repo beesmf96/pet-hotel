@@ -22,7 +22,7 @@ test('F1 the admin pricing tab shows ringgit', async ({ page }) => {
 test('F2 a pet type with no price cannot be booked', async ({ page }) => {
     await loginCustomer(page, USERS.alice);
     await page.goto(`/hotels/${HOTEL.slug}/book`);
-    await page.getByLabel('Select pet *').selectOption({ label: 'Tweety (Bird)' });
+    await page.getByLabel('Pet', { exact: true }).selectOption({ label: 'Tweety (Bird)' });
 
     await expect(page.getByText('no pricing listed for')).toBeVisible();
     await expect(page.getByText('Tweety cannot be booked here')).toBeVisible();

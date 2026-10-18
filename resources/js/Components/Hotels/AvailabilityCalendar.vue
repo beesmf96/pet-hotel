@@ -260,5 +260,10 @@ onMounted(fetchMonth);
                 Unavailable
             </div>
         </div>
+
+        <!-- Extra lines that belong to the calendar, like the hotel's times -->
+        <div v-if="$slots.default" class="mt-4 space-y-2">
+            <slot />
+        </div>
     </div>
 </template>
