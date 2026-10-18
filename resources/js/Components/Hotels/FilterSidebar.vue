@@ -1,4 +1,5 @@
 <script setup>
+import { FACILITIES } from '@/facilities';
 import { ref } from 'vue';
 import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
@@ -19,16 +20,6 @@ const parsedFacilities = (() => {
 
 const selectedFacilities = ref(parsedFacilities);
 
-const FACILITIES = [
-    { value: 'grooming', label: 'Grooming' },
-    { value: 'play_area', label: 'Play Area' },
-    { value: 'vet_care', label: 'Vet Care' },
-    { value: 'swimming_pool', label: 'Swimming Pool' },
-    { value: 'training', label: 'Training' },
-    { value: 'outdoor_walks', label: 'Outdoor Walks' },
-    { value: 'webcam', label: 'Live Webcam' },
-    { value: '24h_care', label: '24h Care' },
-];
 
 function applyFilters() {
     emit('apply', {
@@ -105,12 +96,12 @@ function clearFilters() {
         </div>
 
         <div class="space-y-2 pt-1">
-            <UiButton size="sm" block @click="applyFilters"> Apply Filters </UiButton>
+            <UiButton size="sm" block @click="applyFilters"> Apply filters </UiButton>
             <button
                 class="w-full text-sm font-semibold text-moss py-2 rounded-xl hover:bg-cream transition-colors"
                 @click="clearFilters"
             >
-                Clear Filters
+                Clear filters
             </button>
         </div>
     </div>

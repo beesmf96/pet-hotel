@@ -75,7 +75,7 @@ function cellClass(cell) {
     const isSelectedEndpoint = props.selectable && (cell.date === checkIn.value || cell.date === checkOut.value);
     const isInRange =
         props.selectable && checkIn.value && checkOut.value && cell.date > checkIn.value && cell.date < checkOut.value;
-    const isPast = props.selectable && cell.date < todayKey;
+    const isPast = cell.date < todayKey;
 
     // Priority 1: selected endpoint wins over everything
     if (isSelectedEndpoint) {
@@ -84,28 +84,22 @@ function cellClass(cell) {
 
     // Priority 2: unavailable states (blocked/full/past) — not clickable
     if (cell.status === 'blocked' || isPast) {
-        return 'bg-gray-100 text-gray-300 cursor-not-allowed';
+        return 'bg-cream text-moss/50 cursor-not-allowed';
     }
     if (cell.status === 'full') {
-        return 'bg-red-50 text-red-400 line-through cursor-not-allowed';
+        return 'bg-coral text-ink line-through cursor-not-allowed';
     }
 
     // Priority 3: in-range highlight
     if (isInRange) {
-        return 'bg-mustard text-ink font-medium' + (props.selectable ? ' cursor-pointer' : '');
+        return 'bg-teal text-cream font-medium' + (props.selectable ? ' cursor-pointer' : '');
     }
 
     // Priority 4: availability status with today ring (today ring skipped when selected)
-    const ring = isToday ? 'ring-2 ' : '';
+    const ring = isToday ? 'ring-2 ring-ink ' : '';
+    const fill = cell.status === 'limited' ? 'bg-mustard' : 'bg-teal-light';
 
-    if (cell.status === 'limited') {
-        return (
-            ring +
-            'ring-orange-400 bg-orange-50 text-orange-700 font-medium' +
-            (props.selectable ? ' cursor-pointer' : '')
-        );
-    }
-    return ring + 'ring-green-400 bg-green-50 text-green-700 font-medium' + (props.selectable ? ' cursor-pointer' : '');
+    return ring + fill + ' text-ink font-medium' + (props.selectable ? ' cursor-pointer' : '');
 }
 
 // A night is a date the pet sleeps over. Check-out is not a night, so a full or
@@ -229,7 +223,7 @@ onMounted(fetchMonth);
 
         <!-- Calendar grid -->
         <div v-if="loading" class="grid grid-cols-7 gap-1">
-            <div v-for="i in 35" :key="i" class="h-9 rounded-lg bg-gray-100 animate-pulse" />
+            <div v-for="i in 35" :key="i" class="h-9 rounded-lg bg-cream animate-pulse" />
         </div>
         <div v-else class="grid grid-cols-7 gap-1">
             <div
@@ -245,26 +239,31 @@ onMounted(fetchMonth);
         </div>
 
         <!-- Error state -->
-        <p v-if="error" class="mt-3 text-sm text-red-600 text-center">{{ error }}</p>
+        <p v-if="error" class="mt-3 text-sm font-semibold text-coral-deep text-center">{{ error }}</p>
 
         <!-- Legend -->
         <div class="flex flex-wrap gap-4 mt-4 pt-4 border-t-2 border-ink/10">
             <div class="flex items-center gap-1.5 text-xs font-medium text-moss">
-                <span class="w-3 h-3 rounded-sm bg-green-50 border border-green-300 inline-block" />
+                <span class="w-3.5 h-3.5 rounded-full border-2 border-ink bg-teal-light inline-block" />
                 Available
             </div>
             <div class="flex items-center gap-1.5 text-xs font-medium text-moss">
-                <span class="w-3 h-3 rounded-sm bg-orange-50 border border-orange-300 inline-block" />
+                <span class="w-3.5 h-3.5 rounded-full border-2 border-ink bg-mustard inline-block" />
                 Limited
             </div>
             <div class="flex items-center gap-1.5 text-xs font-medium text-moss">
-                <span class="w-3 h-3 rounded-sm bg-red-50 border border-red-200 inline-block" />
+                <span class="w-3.5 h-3.5 rounded-full border-2 border-ink bg-coral inline-block" />
                 Full
             </div>
             <div class="flex items-center gap-1.5 text-xs font-medium text-moss">
-                <span class="w-3 h-3 rounded-sm bg-gray-100 border border-gray-200 inline-block" />
+                <span class="w-3.5 h-3.5 rounded-full border-2 border-ink bg-cream inline-block" />
                 Unavailable
             </div>
+        </div>
+
+        <!-- Extra lines that belong to the calendar, like the hotel's times -->
+        <div v-if="$slots.default" class="mt-4 space-y-2">
+            <slot />
         </div>
     </div>
 </template>

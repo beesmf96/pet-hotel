@@ -18,7 +18,7 @@ The Filament panels share the tokens but are styled only in
 `resources/css/filament/theme.css`. They are out of scope here.
 
 Sections 1–8 are the rules. Section 9 lists where pages do not match them
-yet — the first design review fixes those.
+yet; `/design-review` keeps it current.
 
 ## 1. Direction: "playful bold"
 
@@ -40,12 +40,18 @@ Every colour comes from `tokens.css`. Never write a hex value anywhere else.
 | `teal` | Primary | Primary buttons, links, brand mark, "confirmed" |
 | `teal-light` | Calm fill | Info notices, "completed" |
 | `mustard` | Attention | Warning notices, "pending", the one call to action that should stand out (Register, Add pet) |
-| `coral` | Danger | Errors, destructive actions (Cancel booking, Remove) |
+| `coral` | Danger | Destructive buttons, "full" days, the unread badge — as a **fill** |
+| `coral-deep` | Danger text | Error messages, destructive text links (Remove), warnings in text — coral is too light for text (2.3:1) |
 
 Rules:
 - **One meaning per colour.** Coral is never decoration; teal is never a warning.
 - Text on `teal` is `cream`; text on every other fill is `ink`.
 - Status colours come only from `StatusPill`.
+- **Availability** (the calendar): available `teal-light`, limited `mustard`,
+  full `coral`, closed or past `cream` with faded moss text, selected nights
+  `teal`, chosen check-in/out `ink`. Never Tailwind's own palette (`green-50`, `gray-100`, …).
+- Text on a fill keeps 4.5:1 contrast. Teal text on `teal-light` is only 4.4:1,
+  so text on `teal-light` is `ink`.
 
 ## 3. Shape: borders, corners, shadows
 
@@ -65,6 +71,9 @@ Rules:
   calendar days, icon tiles), `xl`, `2xl`, `full`.
 - Only ink-coloured hard shadows: `shadow-hard-sm`, `shadow-hard`, `shadow-hard-lg`.
 - Use `card-hard` / `card-hard-lg` rather than rebuilding a card from classes.
+- **Dividers inside a card** may be thin: `border-t-2 border-ink/10` (between
+  review rows, above a total, the "or" on the auth pages). Never on the card's
+  outside — outlines are always full ink.
 
 ## 4. Type
 
@@ -114,13 +123,14 @@ Rules:
 
 | Need | Use | Notes |
 |---|---|---|
-| Main action | `UiButton` (teal) | One per view. |
+| Main action | `UiButton` (teal) | One per view. On a teal feature card, use `mustard` instead (the booking form's price summary). |
 | Action that must stand out from teal (Register, Add pet) | `UiButton variant="mustard"` | Rare; at most one per screen. |
 | Secondary action (Back, Cancel in a modal, Google sign-in) | `UiButton variant="white"` | The only secondary style. |
 | Destructive action | `UiButton variant="coral"` | Cancel booking. |
-| Small inline action or text link | `link-bold` + `text-teal` (or `text-coral` for destructive) | Edit / Remove, Back to list, pagination. |
-| Go to another page | `UiButton as="link"` or Inertia `<Link>` | Not `as="a"` or a plain `<a>` (CLAUDE.md); Google sign-in is the one plain `<a>`. |
-| Text, select or textarea field | `FormField` + `TextInput` | FormField ties label and error to the control. |
+| Small inline action or text link | `link-bold` + `text-teal` (or `text-coral-deep` for destructive) | Edit / Remove, Back to list, pagination. |
+| Go to another page | `UiButton as="link"` or Inertia `<Link>` | Not `as="a"` or a plain `<a>` (CLAUDE.md). Plain `<a>` only where Inertia cannot go: Google sign-in and the Filament panels (`/owner`, `/admin`). |
+| Text, select or textarea field | `FormField` + `TextInput` | FormField ties label and error to the control. Mark an optional field with `optional` — "(optional)" after the label. Never "*" on required fields. |
+| File field | a plain `<input type="file" class="field-hard w-full">` in a `FormField` | `field-hard` styles the file button. |
 | Short message on the page | `Notice` | `info` (teal-light) for status, `warning` (mustard) for "you can't do this yet". |
 | Success after an action | the flash from the server | AppLayout shows it. Pages never show their own success message. |
 | Nothing to show | `EmptyState` | Title optional, one-line message, optional button in the slot. |
@@ -148,34 +158,31 @@ Rules:
   on click. A `card-hard-lg w-full max-w-md mx-4 p-6` panel, a `SectionTitle`,
   the form (`space-y-4`), then Cancel (white) and the main button.
 - **Auth page.** `AuthLayout` only: brand, subtitle, one `card-hard-lg` box.
+  Links under the form ("Register", "Back to sign in") are `link-bold text-teal`.
+- **Nav.** One list of links in `AppLayout`, shown inline from `sm` up and on a
+  second row on phones. Every link must be reachable at 375px — never hide one
+  with `hidden sm:inline` alone. Overlays from the nav (notifications) are
+  full width under the nav on phones.
+- **Label and value rows** (booking details, confirmation): the label never
+  wraps (`whitespace-nowrap`); the value wraps instead.
 
 ## 8. States and words
 
 - **Busy.** A submit button is `:disabled="form.processing"` and its label
   changes to the "-ing" form with "…" (Unicode ellipsis, not three dots):
   "Save changes" → "Saving…".
-- **Errors.** Errors are coral (`text-sm font-semibold text-coral`), under
+- **Errors.** Errors are coral-deep (`text-sm font-semibold text-coral-deep`), under
   their field, written as a sentence that says what to do.
 - **Money, dates, nights.** `formatMoney()`, `formatDate()` and `nightsLabel()`.
   Never type "RM", a date format or "night(s)" by hand.
-- **Sentence case** for every heading and button: "My bookings", "Edit pet",
-  "Save changes", "Browse hotels".
+- **One date format, day first**, the same in pages, emails and panels:
+  "Thu, 01 Oct 2026" with the weekday, "01 Oct 2026" without, "18 Oct, 2:05 PM"
+  for a moment (`formatDateTime()`). Times are 12-hour: "2:00 PM", never "14:00".
+  PHP's `App\Support\Dates` is the source; `useFormatDate` is its JS twin.
+- **Sentence case** for every heading, button, field label, nav link and
+  chip: "My bookings", "Edit pet", "Save changes", "Preferred location",
+  "Outdoor walks".
 
 ## 9. Not matching yet
 
-Decided on 2026-10-18; the pages still need the change.
-
-- **Title Case** on buttons ("Save Changes", "Browse Hotels", "Request Booking",
-  "Apply Filters", "+ Add Pet") and modal titles ("Edit Pet", "Leave a Review").
-- **Busy labels** missing on Profile and the pet form; "..." instead of "…" on
-  the four auth forms.
-- **`cream` button**: "Back" on the booking form. Drop the variant from
-  `UiButton` once it is unused.
-- **`leading-tight`** is written on four page titles; move it into AppLayout's
-  header slot and remove it from the pages.
-- **Plain links**: `UiButton as="a"` and `<a href>` to other pages in the
-  AppLayout nav, the booking detail and confirmation pages, and the booking
-  form's Back button.
-- **Corners off the scale**: `rounded-3xl` on the landing "owners" block and
-  hero image, and on the confirmation icon tile; `rounded-md` on the
-  confirmation page; `rounded-sm` on the availability calendar.
+Nothing known. The 2026-10-18 design review fixed the earlier list.

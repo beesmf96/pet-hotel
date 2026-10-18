@@ -7,7 +7,7 @@ vi.mock('@/Layouts/AuthLayout.vue', () => ({
 
 const form = { email: '', processing: false, errors: {}, post: vi.fn() };
 
-vi.mock('@inertiajs/vue3', () => ({ useForm: vi.fn(() => form) }));
+vi.mock('@inertiajs/vue3', () => ({ Link: { template: '<a :href="$attrs.href" class="inertia-link"><slot /></a>' }, useForm: vi.fn(() => form) }));
 
 import ForgotPassword from '@/Pages/Auth/ForgotPassword.vue';
 
@@ -39,7 +39,7 @@ describe('ForgotPassword page', () => {
     it('changes the button label while processing and links back to login', () => {
         form.processing = true;
         const w = mount(ForgotPassword);
-        expect(w.find('button[type="submit"]').text()).toBe('Sending...');
+        expect(w.find('button[type="submit"]').text()).toBe('Sending…');
         expect(w.find('a[href="/login"]').exists()).toBe(true);
         form.processing = false;
         expect(mount(ForgotPassword).find('button[type="submit"]').text()).toBe('Send reset link');

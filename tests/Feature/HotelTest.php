@@ -61,6 +61,7 @@ class HotelTest extends TestCase
                 ->has('hotel.photos', 1)
                 ->has('hotel.policy')
                 ->has('hotel.pricing', 2)
+                ->where('times', ['check_in' => '2:00 PM', 'check_out' => '11:00 AM'])
             );
     }
 
@@ -98,6 +99,7 @@ class HotelTest extends TestCase
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->where('hotel.policy', null)
+                ->where('times', null)
             );
     }
 

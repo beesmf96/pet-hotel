@@ -37,7 +37,7 @@ function submit() {
         >
             <div class="card-hard-lg w-full max-w-md mx-4 p-6">
                 <div class="flex items-center justify-between mb-5">
-                    <SectionTitle>Leave a Review</SectionTitle>
+                    <SectionTitle>Leave a review</SectionTitle>
                     <button type="button" class="text-moss hover:text-ink text-2xl leading-none" @click="emit('close')">
                         ×
                     </button>
@@ -65,13 +65,12 @@ function submit() {
                     </FormField>
 
                     <!-- Comment -->
-                    <FormField label="Comment" :error="form.errors.comment">
-                        <template #label-suffix> <span class="text-moss font-medium">(optional)</span></template>
+                    <FormField label="Comment" optional :error="form.errors.comment">
                         <TextInput
                             v-model="form.comment"
                             as="textarea"
                             rows="4"
-                            placeholder="Share your experience..."
+                            placeholder="Share your experience…"
                         />
                     </FormField>
 
@@ -80,7 +79,7 @@ function submit() {
                             Cancel
                         </UiButton>
                         <UiButton class="flex-1" type="submit" :disabled="form.processing || form.rating === 0">
-                            Submit Review
+                            {{ form.processing ? 'Submitting…' : 'Submit review' }}
                         </UiButton>
                     </div>
                 </form>

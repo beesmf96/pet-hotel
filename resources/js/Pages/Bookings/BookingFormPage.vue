@@ -2,7 +2,7 @@
 import { formatMoney, toSen } from '@/money';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import AvailabilityCalendar from '@/Components/Hotels/AvailabilityCalendar.vue';
-import { useForm } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import FormField from '@/Components/Ui/FormField.vue';
 import SectionTitle from '@/Components/Ui/SectionTitle.vue';
@@ -58,19 +58,19 @@ function submit() {
     <AppLayout>
         <template #header>
             <div class="flex flex-col gap-1">
-                <h1 class="text-3xl sm:text-4xl leading-tight">Book a stay</h1>
+                <h1 class="text-3xl sm:text-4xl">Book a stay</h1>
                 <p class="font-sans font-medium tracking-normal text-sm text-moss">
                     at
-                    <a :href="`/hotels/${hotel.slug}`" class="font-semibold text-teal hover:underline">{{
+                    <Link :href="`/hotels/${hotel.slug}`" class="font-semibold text-teal hover:underline">{{
                         hotel.name
-                    }}</a>
+                    }}</Link>
                 </p>
             </div>
         </template>
 
         <div class="max-w-2xl">
             <Notice v-if="pets.length === 0" tone="warning"
-                >You need to <a href="/pets" class="underline underline-offset-2 hover:text-teal">add a pet</a> before
+                >You need to <Link href="/pets" class="underline underline-offset-2 hover:text-teal">add a pet</Link> before
                 booking.</Notice
             >
 
@@ -79,7 +79,7 @@ function submit() {
                 <div class="card-hard p-6 space-y-4">
                     <SectionTitle>Your pet</SectionTitle>
 
-                    <FormField label="Select pet *" :error="form.errors.pet_id">
+                    <FormField label="Pet" :error="form.errors.pet_id">
                         <TextInput v-model="form.pet_id" as="select">
                             <option value="" disabled>Choose a pet…</option>
                             <option v-for="pet in pets" :key="pet.id" :value="pet.id">
@@ -95,25 +95,25 @@ function submit() {
                     :selectable="true"
                     :model-value="{ checkIn: form.check_in, checkOut: form.check_out }"
                     @update:model-value="onDatesSelected"
-                />
-
-                <p v-if="times" class="-mt-4 text-sm font-medium text-moss">
-                    Check-in from <strong class="text-ink">{{ times.check_in }}</strong> · check-out by
-                    <strong class="text-ink">{{ times.check_out }}</strong>
-                </p>
-                <div
-                    v-if="form.errors.check_in || form.errors.check_out"
-                    class="-mt-4 text-sm font-semibold text-coral"
                 >
-                    <p v-if="form.errors.check_in">{{ form.errors.check_in }}</p>
-                    <p v-if="form.errors.check_out">{{ form.errors.check_out }}</p>
-                </div>
+                    <p v-if="times" class="text-sm font-medium text-moss">
+                        Check-in from <strong class="text-ink">{{ times.check_in }}</strong> · check-out by
+                        <strong class="text-ink">{{ times.check_out }}</strong>
+                    </p>
+                    <div
+                        v-if="form.errors.check_in || form.errors.check_out"
+                        class="text-sm font-semibold text-coral-deep"
+                    >
+                        <p v-if="form.errors.check_in">{{ form.errors.check_in }}</p>
+                        <p v-if="form.errors.check_out">{{ form.errors.check_out }}</p>
+                    </div>
+                </AvailabilityCalendar>
 
                 <!-- Notes -->
                 <div class="card-hard p-6 space-y-4">
                     <SectionTitle>Notes</SectionTitle>
 
-                    <FormField label="Special requests (optional)" :error="form.errors.notes">
+                    <FormField label="Special requests" optional :error="form.errors.notes">
                         <TextInput
                             v-model="form.notes"
                             as="textarea"
@@ -155,14 +155,14 @@ function submit() {
                     >
 
                     <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-6">
-                        <UiButton as="a" variant="cream" :href="`/hotels/${hotel.slug}`"> Back </UiButton>
+                        <UiButton as="link" variant="white" :href="`/hotels/${hotel.slug}`"> Back </UiButton>
                         <UiButton
                             variant="mustard"
                             size="lg"
                             type="submit"
                             :disabled="form.processing || (selectedPet && !pricing)"
                         >
-                            {{ form.processing ? 'Submitting…' : 'Request Booking' }}
+                            {{ form.processing ? 'Submitting…' : 'Request booking' }}
                         </UiButton>
                     </div>
                 </div>

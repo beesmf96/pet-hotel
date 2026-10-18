@@ -4,7 +4,7 @@ import { describe, it, expect, vi } from 'vitest'
 vi.mock('@/Layouts/AppLayout.vue', () => ({
     default: { template: '<div><slot /><slot name="header" /></div>' },
 }))
-vi.mock('@inertiajs/vue3', () => ({
+vi.mock('@inertiajs/vue3', () => ({ Link: { template: '<a :href="$attrs.href" class="inertia-link"><slot /></a>' },
     router: { patch: vi.fn() },
 }))
 
@@ -54,19 +54,19 @@ describe('BookingDetailPage — notes section', () => {
 })
 
 describe('BookingDetailPage — cancel button', () => {
-    it('shows Cancel Booking button when status is pending', () => {
+    it('shows Cancel booking button when status is pending', () => {
         const w = mountPage({ ...baseBooking, status: 'pending' })
-        expect(w.text()).toContain('Cancel Booking')
+        expect(w.text()).toContain('Cancel booking')
     })
 
-    it('hides Cancel Booking button when status is confirmed', () => {
+    it('hides Cancel booking button when status is confirmed', () => {
         const w = mountPage({ ...baseBooking, status: 'confirmed' })
-        expect(w.text()).not.toContain('Cancel Booking')
+        expect(w.text()).not.toContain('Cancel booking')
     })
 
-    it('hides Cancel Booking button when status is cancelled', () => {
+    it('hides Cancel booking button when status is cancelled', () => {
         const w = mountPage({ ...baseBooking, status: 'cancelled' })
-        expect(w.text()).not.toContain('Cancel Booking')
+        expect(w.text()).not.toContain('Cancel booking')
     })
 })
 

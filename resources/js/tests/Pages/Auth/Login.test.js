@@ -7,7 +7,7 @@ vi.mock('@/Layouts/AuthLayout.vue', () => ({
 
 const form = { email: '', password: '', remember: false, processing: false, errors: {}, post: vi.fn(), reset: vi.fn() }
 
-vi.mock('@inertiajs/vue3', () => ({ useForm: vi.fn(() => form) }))
+vi.mock('@inertiajs/vue3', () => ({ Link: { template: '<a :href="$attrs.href" class="inertia-link"><slot /></a>' }, useForm: vi.fn(() => form) }))
 
 import Login from '@/Pages/Auth/Login.vue'
 
@@ -53,7 +53,7 @@ describe('Login page', () => {
         const w = mount(Login)
         const btn = w.find('button[type="submit"]')
         expect(btn.attributes('disabled')).toBeDefined()
-        expect(btn.text()).toBe('Signing in...')
+        expect(btn.text()).toBe('Signing in…')
         form.processing = false
         expect(mount(Login).find('button[type="submit"]').text()).toBe('Sign in')
     })
@@ -63,5 +63,7 @@ describe('Login page', () => {
         const w = mount(Login)
         const hrefs = w.findAll('a').map((a) => a.attributes('href'))
         expect(hrefs).toEqual(expect.arrayContaining(['/auth/google', '/register', '/forgot-password']))
+        expect(w.find('a[href="/auth/google"]').classes()).not.toContain('inertia-link')
+        expect(w.find('a[href="/register"]').classes()).toContain('inertia-link')
     })
 })

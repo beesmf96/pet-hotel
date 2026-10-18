@@ -209,7 +209,7 @@ describe('AvailabilityCalendar — visual state classes', () => {
         await flushPromises();
         const cells = w.findAll('[class*="grid-cols-7"] > div');
         const rangeCell = cells.find((c) => c.text() === '20');
-        expect(rangeCell.classes()).toContain('bg-mustard');
+        expect(rangeCell.classes()).toContain('bg-teal');
     });
 });
 
@@ -221,14 +221,25 @@ describe('AvailabilityCalendar — limited days and spot labels', () => {
         return w.findAll('[class*="grid-cols-7"] > div').find((c) => c.text() === String(dayNumber));
     }
 
-    it('colours a limited day orange', async () => {
+    it('colours a limited day mustard', async () => {
         const cell = await cellFor({ '2030-06-20': makeDay('2030-06-20', 'limited', 1) }, 20);
-        expect(cell.classes()).toContain('bg-orange-50');
+        expect(cell.classes()).toContain('bg-mustard');
     });
 
-    it('keeps an available day green even with few spots', async () => {
+    it('keeps an available day teal-light even with few spots', async () => {
         const cell = await cellFor({ '2030-06-20': makeDay('2030-06-20', 'available', 2) }, 20);
-        expect(cell.classes()).toContain('bg-green-50');
+        expect(cell.classes()).toContain('bg-teal-light');
+    });
+
+    it('colours a full day coral', async () => {
+        const cell = await cellFor({ '2030-06-20': makeDay('2030-06-20', 'full', 0) }, 20);
+        expect(cell.classes()).toContain('bg-coral');
+    });
+
+    it('greys out a past day even when read-only', async () => {
+        const cell = await cellFor({ '2030-06-10': makeDay('2030-06-10', 'available', 4) }, 10);
+        expect(cell.classes()).toContain('bg-cream');
+        expect(cell.classes()).not.toContain('bg-teal-light');
     });
 
     it('labels an open day with its spots left', async () => {
@@ -287,5 +298,24 @@ describe('AvailabilityCalendar — inside a form', () => {
         await w.findAll('button').at(0).trigger('click');
         expect(onSubmit).not.toHaveBeenCalled();
         w.unmount();
+    });
+});
+
+describe('AvailabilityCalendar — extra lines', () => {
+    it('shows slot content inside the card', async () => {
+        stubFetch();
+        const w = mount(AvailabilityCalendar, {
+            props: { hotelSlug: 'paws-inn' },
+            slots: { default: '<p class="times">Check-in from 2:00 PM</p>' },
+        });
+        await flushPromises();
+        expect(w.find('.card-hard .times').exists()).toBe(true);
+    });
+
+    it('adds no extra block without slot content', async () => {
+        stubFetch();
+        const w = mount(AvailabilityCalendar, { props: { hotelSlug: 'paws-inn' } });
+        await flushPromises();
+        expect(w.find('.mt-4.space-y-2').exists()).toBe(false);
     });
 });

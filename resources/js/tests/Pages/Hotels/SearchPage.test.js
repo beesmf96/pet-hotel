@@ -58,7 +58,7 @@ describe('SearchPage — stay dates', () => {
     it('says which nights the results have space for', () => {
         const w = mount(SearchPage, { props: { hotels: makeHotels(2), filters: baseFilters, stay } });
         expect(w.find('[data-testid="stay-summary"]').text()).toMatch(
-            /With a spot every night from Oct 25, 2026 to\s+Oct 28, 2026 \(3 nights\)/,
+            /With a spot every night from 25 Oct 2026 to\s+28 Oct 2026 \(3 nights\)/,
         );
     });
 

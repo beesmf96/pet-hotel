@@ -29,7 +29,7 @@
 }
 
 /* A bold text link or text button. Add the colour where it is used
-   (text-teal, or text-coral for a destructive action). */
+   (text-teal, or text-coral-deep for a destructive action). */
 @utility link-bold {
     @apply text-sm font-bold hover:underline;
 }
@@ -43,6 +43,15 @@
     &:focus {
         outline: none;
         box-shadow: 0 0 0 2px var(--color-teal);
+    }
+    &::file-selector-button {
+        margin-right: 0.75rem;
+        border: 2px solid var(--color-ink);
+        border-radius: var(--radius-lg);
+        background-color: white;
+        padding: 0.25rem 0.75rem;
+        font-weight: 700;
+        color: var(--color-ink);
     }
     &:disabled {
         background-color: var(--color-cream);

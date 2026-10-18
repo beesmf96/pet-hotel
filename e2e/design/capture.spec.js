@@ -54,7 +54,7 @@ test('customer with history (Daniel)', async ({ page }, testInfo) => {
     await visit(page, testInfo, '16-dashboard', '/dashboard');
 
     await page.goto('/pets');
-    await page.getByRole('button', { name: /Add Pet/ }).click();
+    await page.getByRole('button', { name: /Add pet/ }).click();
     await shot(page, testInfo, '17-pet-modal');
 
     await page.goto('/bookings');

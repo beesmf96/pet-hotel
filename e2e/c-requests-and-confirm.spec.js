@@ -61,7 +61,7 @@ test('C1–C8 two guests ask for the last spot', async ({ browser, request }) =>
 
     await test.step('C4b Ben cannot ask twice for Rex on the same night', async () => {
         await fillRequest(ben, { pet: 'Rex (Dog)', checkIn: night, checkOut });
-        await ben.getByRole('button', { name: 'Request Booking' }).click();
+        await ben.getByRole('button', { name: 'Request booking' }).click();
         await expect(ben.getByText(`Rex already has a booking request at ${HOTEL.name}`)).toBeVisible();
         await expect(ben).toHaveURL(/\/book$/);
     });
@@ -108,7 +108,7 @@ test('C1–C8 two guests ask for the last spot', async ({ browser, request }) =>
     });
 
     await test.step('C8 a request sent after the night filled is refused', async () => {
-        await benLate.getByRole('button', { name: 'Request Booking' }).click();
+        await benLate.getByRole('button', { name: 'Request booking' }).click();
         await expect(
             benLate.getByText('The hotel is full or closed on at least one night of this stay.'),
         ).toBeVisible();

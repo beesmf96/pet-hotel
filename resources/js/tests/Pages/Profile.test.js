@@ -56,14 +56,14 @@ describe('Profile page — email field', () => {
 describe('Profile page — password card', () => {
     it('asks for the current password when the user has one', () => {
         const w = mount(ProfilePage, { props: { user, hasPassword: true } })
-        expect(w.text()).toContain('Change Password')
+        expect(w.text()).toContain('Change password')
         expect(w.findAll('input[type="password"]')).toHaveLength(3)
         expect(w.find('input[autocomplete="current-password"]').exists()).toBe(true)
     })
 
     it('omits the current password field for an OAuth-only account', () => {
         const w = mount(ProfilePage, { props: { user, hasPassword: false } })
-        expect(w.text()).toContain('Set a Password')
+        expect(w.text()).toContain('Set a password')
         expect(w.findAll('input[type="password"]')).toHaveLength(2)
         expect(w.find('input[autocomplete="current-password"]').exists()).toBe(false)
     })
@@ -100,7 +100,18 @@ describe('Profile page — profile form', () => {
         formState.processing = true
         const w = mount(ProfilePage, { props: { user } })
         expect(w.findAll('form')[0].find('button[type="submit"]').attributes('disabled')).toBeDefined()
+        expect(w.findAll('form')[0].find('button[type="submit"]').text()).toBe('Saving…')
         formState.processing = false
+    })
+
+    it('labels the password button by account type and busy state', () => {
+        const button = (props) => mount(ProfilePage, { props: { user, ...props } }).findAll('form')[1].find('button[type="submit"]')
+        expect(button({ hasPassword: true }).text()).toBe('Update password')
+        expect(button({ hasPassword: false }).text()).toBe('Set password')
+        passwordFormState.processing = true
+        expect(button({ hasPassword: true }).text()).toBe('Updating…')
+        expect(button({ hasPassword: false }).text()).toBe('Saving…')
+        passwordFormState.processing = false
     })
 
     it('renders validation errors for name, phone, and preferred location', () => {

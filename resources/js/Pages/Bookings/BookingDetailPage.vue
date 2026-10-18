@@ -1,7 +1,7 @@
 <script setup>
 import { formatMoney } from '@/money';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { router } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import { useFormatDate } from '@/composables/useFormatDate.js';
 import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
@@ -29,7 +29,7 @@ function cancelBooking() {
         <template #header>
             <div class="flex items-start justify-between gap-4">
                 <div class="flex flex-col gap-1">
-                    <h1 class="text-3xl sm:text-4xl leading-tight">Booking #{{ booking.id }}</h1>
+                    <h1 class="text-3xl sm:text-4xl">Booking #{{ booking.id }}</h1>
                     <p class="font-sans font-medium tracking-normal text-sm text-moss">{{ booking.hotel.name }}</p>
                 </div>
                 <StatusPill :status="booking.status" />
@@ -44,43 +44,43 @@ function cancelBooking() {
 
             <!-- Details card -->
             <div class="card-hard p-6 space-y-4">
-                <SectionTitle>Booking Details</SectionTitle>
+                <SectionTitle>Booking details</SectionTitle>
 
                 <dl class="space-y-3 text-sm [&_dt]:font-semibold [&_dt]:text-moss [&_dd]:font-bold [&_dd]:text-right">
                     <div class="flex justify-between">
-                        <dt class="text-moss">Hotel</dt>
+                        <dt class="text-moss whitespace-nowrap">Hotel</dt>
                         <dd class="font-medium text-ink">
-                            <a :href="`/hotels/${booking.hotel.slug}`" class="hover:underline">
+                            <Link :href="`/hotels/${booking.hotel.slug}`" class="hover:underline">
                                 {{ booking.hotel.name }}
-                            </a>
+                            </Link>
                         </dd>
                     </div>
                     <div class="flex justify-between">
-                        <dt class="text-moss">Address</dt>
+                        <dt class="text-moss whitespace-nowrap">Address</dt>
                         <dd class="text-ink">{{ booking.hotel.address }}, {{ booking.hotel.city }}</dd>
                     </div>
                     <div class="flex justify-between">
-                        <dt class="text-moss">Pet</dt>
+                        <dt class="text-moss whitespace-nowrap">Pet</dt>
                         <dd class="font-medium text-ink">
                             {{ booking.pet.name }} ({{ petTypeLabel(booking.pet.species) }})
                         </dd>
                     </div>
                     <div class="flex justify-between">
-                        <dt class="text-moss">Check-in</dt>
+                        <dt class="text-moss whitespace-nowrap">Check-in</dt>
                         <dd class="font-medium text-ink">
                             {{ formatDate(booking.check_in, { weekday: true })
                             }}<template v-if="times">, from {{ times.check_in }}</template>
                         </dd>
                     </div>
                     <div class="flex justify-between">
-                        <dt class="text-moss">Check-out</dt>
+                        <dt class="text-moss whitespace-nowrap">Check-out</dt>
                         <dd class="font-medium text-ink">
                             {{ formatDate(booking.check_out, { weekday: true })
                             }}<template v-if="times">, by {{ times.check_out }}</template>
                         </dd>
                     </div>
                     <div class="flex justify-between">
-                        <dt class="text-moss">Duration</dt>
+                        <dt class="text-moss whitespace-nowrap">Duration</dt>
                         <dd class="text-ink">{{ nightsLabel(nightsBetween(booking.check_in, booking.check_out)) }}</dd>
                     </div>
                     <div class="border-t-2 border-ink/10 pt-3 flex justify-between items-baseline">
@@ -98,10 +98,10 @@ function cancelBooking() {
 
             <!-- Actions -->
             <div class="flex items-center justify-between">
-                <a href="/bookings" class="link-bold text-teal"> Back to My Bookings </a>
+                <Link href="/bookings" class="link-bold text-teal"> Back to my bookings </Link>
 
                 <UiButton v-if="booking.status === 'pending'" variant="coral" @click="cancelBooking">
-                    Cancel Booking
+                    Cancel booking
                 </UiButton>
             </div>
         </div>

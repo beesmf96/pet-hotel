@@ -29,13 +29,22 @@ describe('FormField', () => {
         ).toBe(false);
     });
 
-    it('renders the aside and label-suffix slots', () => {
+    it('renders the aside slot', () => {
         const w = mount(FormField, {
             props: { label: 'Password' },
-            slots: { aside: '<a href="/forgot">Forgot?</a>', 'label-suffix': '<span>(optional)</span>' },
+            slots: { aside: '<a href="/forgot">Forgot?</a>' },
         });
         expect(w.find('a[href="/forgot"]').exists()).toBe(true);
-        expect(w.find('label').text()).toContain('(optional)');
+    });
+
+    it('marks an optional field in its label', () => {
+        const w = mount(FormField, { props: { label: 'Phone', optional: true } });
+        expect(w.find('label').text()).toBe('Phone (optional)');
+    });
+
+    it('adds no marker to a required field', () => {
+        const w = mount(FormField, { props: { label: 'Name' } });
+        expect(w.find('label').text()).toBe('Name');
     });
 
     it('renders no label row when there is neither a label nor an aside', () => {

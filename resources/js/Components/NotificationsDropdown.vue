@@ -1,6 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { router } from '@inertiajs/vue3';
+import { useFormatDate } from '@/composables/useFormatDate.js';
+
+const { formatDateTime } = useFormatDate();
 
 const props = defineProps({
     unreadCount: { type: Number, default: 0 },
@@ -65,12 +68,15 @@ const styleFor = (type) => typeStyle[type] ?? { tint: 'bg-teal-light', glyph: 'b
 </script>
 
 <template>
-    <div class="absolute right-0 mt-2 w-80 card-hard-lg z-50 overflow-hidden">
+    <!-- Phone: fixed under the nav, full width; wider screens: hangs off the bell. -->
+    <div
+        class="fixed inset-x-4 top-28 sm:absolute sm:inset-x-auto sm:top-auto sm:right-0 sm:mt-2 sm:w-80 card-hard-lg z-50 overflow-hidden"
+    >
         <div class="flex items-center justify-between px-4 py-3 border-b border-ink/10">
             <span class="font-display font-bold text-xl">Notifications</span>
             <button
                 v-if="notifications.some((n) => !n.read_at)"
-                class="text-xs font-bold text-teal hover:underline"
+                class="link-bold text-teal"
                 @click="markAllRead"
             >
                 Mark all read
@@ -155,14 +161,7 @@ const styleFor = (type) => typeStyle[type] ?? { tint: 'bg-teal-light', glyph: 'b
                 <div class="flex-1 min-w-0">
                     <p class="text-sm text-ink leading-snug">{{ n.message }}</p>
                     <p class="text-xs text-moss mt-0.5">
-                        {{
-                            new Date(n.created_at).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                            })
-                        }}
+                        {{ formatDateTime(n.created_at) }}
                     </p>
                 </div>
                 <span v-if="!n.read_at" class="unread-dot mt-1.5 h-2 w-2 rounded-full bg-coral shrink-0" />

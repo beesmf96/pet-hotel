@@ -40,7 +40,7 @@ test('D2 a guest cancelling sends "cancelled" and tells the owners', async ({ pa
 
     await page.goto(`/bookings/${id}`);
     page.once('dialog', (dialog) => dialog.accept());
-    await page.getByRole('button', { name: 'Cancel Booking' }).click();
+    await page.getByRole('button', { name: 'Cancel booking' }).click();
     await expect(page.getByText('Booking cancelled.')).toBeVisible();
 
     const mail = await findMail(request, { to: USERS.alice, subject: `Booking Request Cancelled — ${HOTEL.name}` });

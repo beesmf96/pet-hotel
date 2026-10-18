@@ -10,7 +10,7 @@ const form = {
     processing: false, errors: {}, post: vi.fn(), reset: vi.fn(),
 }
 
-vi.mock('@inertiajs/vue3', () => ({ useForm: vi.fn(() => form) }))
+vi.mock('@inertiajs/vue3', () => ({ Link: { template: '<a :href="$attrs.href" class="inertia-link"><slot /></a>' }, useForm: vi.fn(() => form) }))
 
 import Register from '@/Pages/Auth/Register.vue'
 
@@ -46,7 +46,7 @@ describe('Register page', () => {
 
     it('changes the button label while processing', () => {
         form.processing = true
-        expect(mount(Register).find('button[type="submit"]').text()).toBe('Creating account...')
+        expect(mount(Register).find('button[type="submit"]').text()).toBe('Creating account…')
         form.processing = false
         expect(mount(Register).find('button[type="submit"]').text()).toBe('Create account')
     })

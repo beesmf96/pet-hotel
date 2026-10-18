@@ -1,6 +1,6 @@
 <script setup>
 import AuthLayout from '@/Layouts/AuthLayout.vue';
-import { useForm } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import FormField from '@/Components/Ui/FormField.vue';
 import TextInput from '@/Components/Ui/TextInput.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
@@ -36,8 +36,8 @@ function submit() {
 
             <FormField label="Password" :error="form.errors.password">
                 <template #aside>
-                    <a href="/forgot-password" class="text-xs font-semibold text-teal hover:underline"
-                        >Forgot password?</a
+                    <Link href="/forgot-password" class="link-bold text-teal"
+                        >Forgot password?</Link
                     >
                 </template>
                 <TextInput v-model="form.password" type="password" autocomplete="current-password" />
@@ -54,7 +54,7 @@ function submit() {
             </div>
 
             <UiButton block type="submit" :disabled="form.processing">
-                {{ form.processing ? 'Signing in...' : 'Sign in' }}
+                {{ form.processing ? 'Signing in…' : 'Sign in' }}
             </UiButton>
 
             <div class="relative flex items-center">
@@ -70,7 +70,7 @@ function submit() {
 
             <p class="text-center text-sm text-moss">
                 Don't have an account?
-                <a href="/register" class="font-medium text-ink hover:underline">Register</a>
+                <Link href="/register" class="link-bold text-teal">Register</Link>
             </p>
         </form>
     </AuthLayout>

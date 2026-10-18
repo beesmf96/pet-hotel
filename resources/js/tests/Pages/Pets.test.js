@@ -107,9 +107,9 @@ describe('Pets page — modal and actions', () => {
         expect(modal(w).attributes('data-show')).toBe('false');
     });
 
-    it('"+ Add Pet" opens the modal with no pet', async () => {
+    it('"+ Add pet" opens the modal with no pet', async () => {
         const w = mountWithStub([basePet]);
-        await button(w, '+ Add Pet').trigger('click');
+        await button(w, '+ Add pet').trigger('click');
         expect(modal(w).attributes('data-show')).toBe('true');
         expect(modal(w).attributes('data-pet')).toBe('');
     });

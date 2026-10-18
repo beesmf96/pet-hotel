@@ -1,6 +1,6 @@
 <script setup>
 import AuthLayout from '@/Layouts/AuthLayout.vue';
-import { useForm } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import FormField from '@/Components/Ui/FormField.vue';
 import TextInput from '@/Components/Ui/TextInput.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
@@ -36,12 +36,12 @@ function submit() {
                 <TextInput v-model="form.password" type="password" autocomplete="new-password" />
             </FormField>
 
-            <FormField label="Confirm Password">
+            <FormField label="Confirm password">
                 <TextInput v-model="form.password_confirmation" type="password" autocomplete="new-password" />
             </FormField>
 
             <UiButton block type="submit" :disabled="form.processing">
-                {{ form.processing ? 'Creating account...' : 'Create account' }}
+                {{ form.processing ? 'Creating account…' : 'Create account' }}
             </UiButton>
 
             <div class="relative flex items-center">
@@ -57,7 +57,7 @@ function submit() {
 
             <p class="text-center text-sm text-moss">
                 Already have an account?
-                <a href="/login" class="font-medium text-ink hover:underline">Sign in</a>
+                <Link href="/login" class="link-bold text-teal">Sign in</Link>
             </p>
         </form>
     </AuthLayout>

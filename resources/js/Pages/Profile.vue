@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { useForm } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import FormField from '@/Components/Ui/FormField.vue';
 import TextInput from '@/Components/Ui/TextInput.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
@@ -27,6 +28,11 @@ const passwordForm = useForm({
     current_password: '',
     password: '',
     password_confirmation: '',
+});
+
+const passwordButtonLabel = computed(() => {
+    if (passwordForm.processing) return props.hasPassword ? 'Updating…' : 'Saving…';
+    return props.hasPassword ? 'Update password' : 'Set password';
 });
 
 function submit() {
@@ -58,23 +64,25 @@ function submitPassword() {
                     <TextInput :model-value="user.email" type="email" disabled />
                 </FormField>
 
-                <FormField label="Phone" :error="form.errors.phone">
+                <FormField label="Phone" optional :error="form.errors.phone">
                     <TextInput v-model="form.phone" type="tel" />
                 </FormField>
 
-                <FormField label="Preferred Location" :error="form.errors.preferred_location">
+                <FormField label="Preferred location" optional :error="form.errors.preferred_location">
                     <TextInput v-model="form.preferred_location" type="text" placeholder="e.g. Kuala Lumpur" />
                 </FormField>
 
                 <div class="flex items-center gap-3 pt-2">
-                    <UiButton type="submit" :disabled="form.processing"> Save Changes </UiButton>
+                    <UiButton type="submit" :disabled="form.processing">
+                        {{ form.processing ? 'Saving…' : 'Save changes' }}
+                    </UiButton>
                 </div>
             </form>
         </div>
 
         <div class="card-hard p-6 max-w-lg mt-6">
             <SectionTitle size="sm">
-                {{ hasPassword ? 'Change Password' : 'Set a Password' }}
+                {{ hasPassword ? 'Change password' : 'Set a password' }}
             </SectionTitle>
             <p class="mt-1 text-sm text-moss">
                 {{
@@ -85,7 +93,7 @@ function submitPassword() {
             </p>
 
             <form class="space-y-4 mt-4" @submit.prevent="submitPassword">
-                <FormField v-if="hasPassword" label="Current Password" :error="passwordForm.errors.current_password">
+                <FormField v-if="hasPassword" label="Current password" :error="passwordForm.errors.current_password">
                     <TextInput
                         v-model="passwordForm.current_password"
                         type="password"
@@ -93,11 +101,11 @@ function submitPassword() {
                     />
                 </FormField>
 
-                <FormField label="New Password" :error="passwordForm.errors.password">
+                <FormField label="New password" :error="passwordForm.errors.password">
                     <TextInput v-model="passwordForm.password" type="password" autocomplete="new-password" />
                 </FormField>
 
-                <FormField label="Confirm New Password">
+                <FormField label="Confirm new password">
                     <TextInput
                         v-model="passwordForm.password_confirmation"
                         type="password"
@@ -107,7 +115,7 @@ function submitPassword() {
 
                 <div class="flex items-center gap-3 pt-2">
                     <UiButton type="submit" :disabled="passwordForm.processing">
-                        {{ hasPassword ? 'Update Password' : 'Set Password' }}
+                        {{ passwordButtonLabel }}
                     </UiButton>
                 </div>
             </form>

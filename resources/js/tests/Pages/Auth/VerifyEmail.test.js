@@ -52,7 +52,7 @@ describe('VerifyEmail page', () => {
         resendForm.processing = true
         logoutForm.processing = true
         const w = mount(VerifyEmail)
-        const sending = button(w, 'Sending...')
+        const sending = button(w, 'Sending…')
         expect(sending.attributes('disabled')).toBeDefined()
         expect(button(w, 'Sign out').attributes('disabled')).toBeDefined()
     })

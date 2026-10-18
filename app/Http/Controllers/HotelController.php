@@ -39,6 +39,8 @@ class HotelController extends Controller
 
         return Inertia::render('Hotels/HotelProfilePage', [
             'hotel' => $hotel,
+            // The same "2:00 PM" wording the booking pages and emails use.
+            'times' => $hotel->policy?->stayTimes(),
             'stay' => Stay::upcomingFromRequest($request)?->toArray(),
             'reviews' => $reviews,
             'reviewsCount' => $reviewsCount,

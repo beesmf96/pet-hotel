@@ -35,7 +35,7 @@ function logout() {
 
         <div class="flex flex-col gap-3">
             <UiButton block :disabled="resendForm.processing" @click="resend">
-                {{ resendForm.processing ? 'Sending...' : 'Resend verification email' }}
+                {{ resendForm.processing ? 'Sending…' : 'Resend verification email' }}
             </UiButton>
 
             <button

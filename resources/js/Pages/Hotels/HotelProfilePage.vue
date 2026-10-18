@@ -1,4 +1,5 @@
 <script setup>
+import { facilityLabel } from '@/facilities';
 import { formatMoney } from '@/money';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import AvailabilityCalendar from '@/Components/Hotels/AvailabilityCalendar.vue';
@@ -20,20 +21,11 @@ const props = defineProps({
     averageRating: { type: Number, default: null },
     // The dates searched for, if any, carried on to the booking form.
     stay: { type: Object, default: null },
+    // { check_in: '2:00 PM', check_out: '12:00 PM' } when the hotel has a policy.
+    times: { type: Object, default: null },
 });
 
 const { formatDate } = useFormatDate();
-
-const facilityLabels = {
-    grooming: 'Grooming',
-    play_area: 'Play Area',
-    vet_care: 'Vet Care',
-    swimming_pool: 'Swimming Pool',
-    training: 'Training',
-    outdoor_walks: 'Outdoor Walks',
-    webcam: 'Live Webcam',
-    '24h_care': '24h Care',
-};
 
 // Normalised to one shape so the template binds a single key, rather than
 // reading .url off gallery rows and a hand-built cover object that only
@@ -63,7 +55,7 @@ function nextPhoto() {
     <AppLayout>
         <template #header>
             <div class="flex flex-col gap-1">
-                <h1 class="text-3xl sm:text-4xl leading-tight">{{ hotel.name }}</h1>
+                <h1 class="text-3xl sm:text-4xl">{{ hotel.name }}</h1>
                 <p class="font-sans font-medium tracking-normal text-sm text-moss">
                     {{ hotel.address }}, {{ hotel.city }}
                 </p>
@@ -129,7 +121,7 @@ function nextPhoto() {
                                 :key="facility.id"
                                 class="border-2 border-ink rounded-full px-3.5 py-1.5 text-sm font-semibold"
                             >
-                                {{ facilityLabels[facility.type] }}
+                                {{ facilityLabel(facility.type) }}
                             </span>
                         </div>
                     </div>
@@ -140,11 +132,11 @@ function nextPhoto() {
                         <div class="grid grid-cols-2 gap-4 mb-4">
                             <div class="bg-cream border-2 border-ink rounded-xl p-4">
                                 <p class="text-xs font-bold uppercase tracking-wide text-moss mb-1">Check-in</p>
-                                <p class="font-display font-bold text-xl">{{ hotel.policy.check_in_time }}</p>
+                                <p class="font-display font-bold text-xl">{{ times?.check_in }}</p>
                             </div>
                             <div class="bg-cream border-2 border-ink rounded-xl p-4">
                                 <p class="text-xs font-bold uppercase tracking-wide text-moss mb-1">Check-out</p>
-                                <p class="font-display font-bold text-xl">{{ hotel.policy.check_out_time }}</p>
+                                <p class="font-display font-bold text-xl">{{ times?.check_out }}</p>
                             </div>
                         </div>
                         <div v-if="hotel.policy.cancellation_policy">
@@ -156,7 +148,7 @@ function nextPhoto() {
 
                 <!-- Sidebar: Pricing + Ratings -->
                 <div class="space-y-6">
-                    <!-- Pricing + Request to Book -->
+                    <!-- Pricing + Request to book -->
                     <div class="card-hard p-6">
                         <template v-if="hotel.pricing.length > 0">
                             <SectionTitle class="mb-3">Pricing</SectionTitle>
@@ -175,7 +167,7 @@ function nextPhoto() {
                             </ul>
                         </template>
                         <UiButton as="link" size="lg" block :href="`/hotels/${hotel.slug}/book${stayQuery(stay)}`">
-                            Request to Book
+                            Request to book
                         </UiButton>
                         <p v-if="stay" data-testid="stay-dates" class="mt-2 text-center text-sm text-moss">
                             For {{ formatDate(stay.check_in) }} to {{ formatDate(stay.check_out) }} ({{

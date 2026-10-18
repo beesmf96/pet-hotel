@@ -112,6 +112,7 @@ describe('LeaveReviewModal — submit and close', () => {
         form.processing = true;
         await w.vm.$nextTick();
         expect(submitBtn().attributes('disabled')).toBeDefined();
+        expect(submitBtn().text()).toBe('Submitting…');
         w.unmount();
     });
 
