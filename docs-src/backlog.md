@@ -89,3 +89,17 @@ expiry email wording, the owner panel (show the deadline on pending rows and
 in the pop-up), SRS FR-26a, and the user guide. Decide the exact deadline, and
 what happens to requests made less than that long before check-in. Do the
 copy entry above first, so the page can name the deadline.
+
+## Show success messages on every page
+
+*Found 2026-10-18, running the persona journeys.* Seven actions send a
+success message (`back()->with('success', ...)`), but only
+`BookingDetailPage.vue` displays it. After a review ("Your review has been
+submitted.") or adding, changing or removing a pet, nothing says it worked:
+the modal closes or the list changes, and the message is lost. The profile
+page is fine; it shows its own "Saved!".
+
+Touches: render `flash.success` once in `AppLayout.vue` with a `Notice`, and
+remove the page-level one from `BookingDetailPage.vue` so it does not show
+twice. Decide whether Profile keeps its inline "Saved!" or uses the shared
+message. Vitest: one test for the message showing, one for none.
