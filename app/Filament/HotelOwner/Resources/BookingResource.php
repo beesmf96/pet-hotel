@@ -84,6 +84,13 @@ class BookingResource extends Resource
                 TextColumn::make('total_price')
                     ->formatStateUsing(fn ($state): string => Money::format($state))
                     ->sortable(),
+                // Short: a deadline is never more than 48 hours away.
+                TextColumn::make('answer_by')
+                    ->label('Answer by')
+                    ->state(fn (Booking $record): ?string => $record->status === 'pending'
+                        ? $record->answerBy()->timezone(config('app.display_timezone'))->format('d M, g:i A')
+                        : null)
+                    ->placeholder('—'),
                 TextColumn::make('created_at')
                     ->date('d M Y')
                     ->sortable()
@@ -140,6 +147,11 @@ class BookingResource extends Resource
             TextEntry::make('status')
                 ->badge()
                 ->color(fn (string $state): string => static::statusColor($state)),
+            TextEntry::make('answer_by')
+                ->label('Answer by')
+                ->state(fn (Booking $record): string => $record->answerByText())
+                ->helperText('After this, the request expires and the guest is told.')
+                ->visible(fn (Booking $record): bool => $record->status === 'pending'),
             Section::make('Stay')
                 ->columns(2)
                 ->schema([
@@ -177,7 +189,7 @@ class BookingResource extends Resource
                     TextEntry::make('user.name')->label('Name'),
                     TextEntry::make('user.email')->label('Email'),
                     TextEntry::make('user.phone')->label('Phone')->placeholder('—'),
-                    TextEntry::make('created_at')->label('Requested')->dateTime('d M Y, g:i A'),
+                    TextEntry::make('created_at')->label('Requested')->dateTime('d M Y, g:i A', config('app.display_timezone')),
                 ]),
         ]);
     }

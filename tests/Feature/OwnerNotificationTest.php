@@ -147,6 +147,7 @@ class OwnerNotificationTest extends TestCase
         $this->assertStringContainsString('Thu, 24 Oct 2030 to Sat, 26 Oct 2030 (2 nights)', $lines);
         $this->assertStringContainsString('Total: RM 120.00', $lines);
         $this->assertStringContainsString('Notes: Needs medication at 8am', $lines);
+        $this->assertStringContainsString('Please answer by '.$booking->answerByText().', or the request expires.', $lines);
         $this->assertSame('View booking', $mail->actionText);
         $this->assertSame(
             BookingResource::getUrl('index', ['tableAction' => 'view', 'tableActionRecord' => $booking->id], panel: 'hotel-owner'),

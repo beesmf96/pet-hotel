@@ -96,6 +96,7 @@ class BookingController extends Controller
         return Inertia::render('Bookings/BookingConfirmationPage', [
             'booking' => $booking,
             'times' => $booking->hotel->policy?->stayTimes(),
+            'answerBy' => $booking->status === 'pending' ? $booking->answerByText() : null,
         ]);
     }
 
@@ -129,6 +130,7 @@ class BookingController extends Controller
 
         return Inertia::render('Bookings/BookingDetailPage', [
             'times' => $booking->hotel->policy?->stayTimes(),
+            'answerBy' => $booking->status === 'pending' ? $booking->answerByText() : null,
             'booking' => [
                 'id' => $booking->id,
                 'hotel' => [

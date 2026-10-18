@@ -62,18 +62,3 @@ the pending-request count; clicking a day lists that night's bookings, each
 opening the booking pop-up. Decide whether the first version is read-only or
 also blocks days and changes capacity, which would overlap the Availability
 list.
-
-## An answer deadline for requests
-
-*Found 2026-10-18, walking the personas.* A request stays pending until the
-morning after its check-in day (`bookings:expire-pending`). A customer who
-asks two weeks ahead can learn that the pet has no place only after the trip
-has started.
-
-Touches: the expiry rule in `ExpirePendingBookings` (for example: no answer
-within 48 hours, or by a few days before check-in, whichever comes first), the
-expiry email wording, the owner panel (show the deadline on pending rows and
-in the pop-up), SRS FR-26a, and the user guide. Decide the exact deadline, and
-what happens to requests made less than that long before check-in. The
-request note on the booking form and the "What happens next" box on the
-confirmation page should then name the deadline.

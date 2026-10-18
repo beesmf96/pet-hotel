@@ -76,7 +76,7 @@ class NotificationTest extends TestCase
         $this->assertStringContainsString('Total: RM 150.00', $lines);
         $this->assertStringNotContainsString('$', $lines);
         $this->assertSame(
-            ['The hotel will confirm or decline your request, and we will email you either way. Until the hotel confirms, '.$booking->pet->name.' has no place.'],
+            ['The hotel will confirm or decline your request by '.$booking->answerByText().', and we will email you either way. Until the hotel confirms, '.$booking->pet->name.' has no place.'],
             $mail->outroLines,
         );
     }
@@ -265,7 +265,7 @@ class NotificationTest extends TestCase
         $lines = implode(' ', $mail->introLines);
 
         $this->assertSame('Booking Request Expired — Happy Paws', $mail->subject);
-        $this->assertStringContainsString('**Happy Paws** did not answer your booking request before check-in, so it has expired.', $lines);
+        $this->assertStringContainsString('**Happy Paws** did not answer your booking request in time, so it has expired.', $lines);
         $this->assertStringContainsString('No booking was made.', $lines);
         $this->assertSame('Find Another Stay', $mail->actionText);
     }

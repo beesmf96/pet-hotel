@@ -188,8 +188,9 @@ Pick one:
       traffic and can be cut off if the environment scales to zero.
 
 - [ ] **Scheduler.** Click the App cluster and turn on **Scheduler**. It runs
-      `bookings:expire-pending` every day at 00:15 UTC, which cancels booking
-      requests still pending after their check-in day and emails the customer.
+      `bookings:expire-pending` every five minutes, which cancels booking
+      requests the hotel did not answer by their deadline and emails the
+      customer.
       Without it nothing fails, but unanswered requests stay pending forever.
 
 ---

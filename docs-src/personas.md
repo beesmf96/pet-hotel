@@ -12,7 +12,9 @@ people, pets, hotels and bookings each story needs. Every password is
 `password`.
 
 Use them to ask "does this make sense to Aisyah?" when designing a feature,
-and as manual test scripts on the local stack.
+and as manual test scripts on the local stack. Daniel's pending request is
+sent at seed time, so it expires 48 hours later (with the scheduler running):
+reseed to bring it back.
 
 ## Aisyah — dog owner going on holiday
 
@@ -82,9 +84,9 @@ spots are left each night, and Daniel's request for Oyen is waiting.
 details, not just a name; never to take more pets than he has room for.
 
 **Journey:** open the bell → View booking → read Oyen's details and Daniel's
-note → Confirm. Once two more pets are confirmed, the next confirm for those
-nights is refused. A request he never answers expires the morning after its
-check-in day.
+note and the "Answer by" time → Confirm. Once two more pets are confirmed, the
+next confirm for those nights is refused. A request he does not answer by its
+deadline expires.
 
 **Tests:** owner pop-up, notification links, capacity on confirm, closed
 dates, pending expiry. He is also the reason for the owner calendar idea in
@@ -97,9 +99,9 @@ Gaps found by walking the stories on 2026-10-18:
 - ~~**"Book Now" promises more than it does.**~~ Fixed 2026-10-18: the
   button reads "Request to Book", and the form, confirmation page and email
   say the hotel must confirm.
-- **No answer time.** A request can stay pending until the morning after its
-  check-in day. Aisyah could request on 18 October and only learn on
-  2 November, after she has flown, that Milo has no place. In `backlog.md`
-  as "An answer deadline for requests".
+- ~~**No answer time.**~~ Fixed 2026-10-18: the hotel must answer within
+  48 hours, or by noon the day before check-in if sooner, and the customer
+  sees that deadline. Aisyah, requesting on 18 October, would know by
+  20 October.
 - ~~**Some actions end in silence.**~~ Fixed 2026-10-18: every page now shows
   the success message after an action.

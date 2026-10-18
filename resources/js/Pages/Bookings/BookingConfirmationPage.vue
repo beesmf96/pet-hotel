@@ -8,6 +8,7 @@ import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 defineProps({
     booking: { type: Object, required: true },
     times: { type: Object, default: null },
+    answerBy: { type: String, default: null },
 });
 
 const { formatDate } = useFormatDate();
@@ -78,11 +79,15 @@ const { formatDate } = useFormatDate();
             <div class="card-hard p-6 text-left text-sm" data-testid="next-steps">
                 <SectionTitle class="mb-3">What happens next</SectionTitle>
                 <ol class="list-decimal pl-5 space-y-2">
-                    <li>The hotel reviews your request.</li>
+                    <li v-if="answerBy">
+                        The hotel answers by <strong>{{ answerBy }}</strong
+                        >.
+                    </li>
+                    <li v-else>The hotel reviews your request.</li>
                     <li>We email you when they confirm or decline it.</li>
                     <li>
-                        Until the hotel confirms, {{ booking.pet.name }} has no place. If the hotel does not answer
-                        before check-in, the request expires.
+                        Until the hotel confirms, {{ booking.pet.name }} has no place. If the hotel does not answer in
+                        time, the request expires and we tell you, so you can book somewhere else.
                     </li>
                 </ol>
             </div>

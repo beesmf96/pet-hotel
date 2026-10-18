@@ -454,7 +454,27 @@
 
   <h3>Booking Confirmation Page</h3>
   <p><span class="route-label">Route</span><span class="route">/bookings/{booking}/confirmation</span></p>
-  <p>Shows a summary of your booking details and a <span class="badge badge-pending">Pending</span> status badge, meaning the hotel has yet to confirm your stay. A <strong>What happens next</strong> box explains the rest: the hotel confirms or declines the request, you get an email either way, and your pet has no place until the hotel confirms. A request the hotel does not answer before check-in expires. You also receive a "booking request received" email and in-app notification.</p>
+  <p>Shows a summary of your booking details and a <span class="badge badge-pending">Pending</span> status badge, meaning the hotel has yet to confirm your stay. A <strong>What happens next</strong> box explains the rest: the hotel confirms or declines the request, you get an email either way, and your pet has no place until the hotel confirms. It also says the exact time the hotel must answer by (see below). The deadline also shows on the booking's detail page while it is pending, and in the "booking request received" email and in-app notification.</p>
+
+  <h3>When the Hotel Must Answer</h3>
+  <p>The hotel must confirm or decline your request by whichever comes <strong>first</strong>:</p>
+  <ul>
+    <li><strong>48 hours</strong> after you send the request, or</li>
+    <li><strong>12:00 noon on the day before check-in.</strong></li>
+  </ul>
+  <p>So 48 hours is the <em>most</em> a hotel gets, not a fixed time for everyone. A request sent close to check-in gets less, so that you always hear before your stay starts. If you send a request after noon on the day before check-in, the hotel has until the end of the check-in day.</p>
+  <p>Examples, all for a stay with check-in on <strong>Sun 1 Nov</strong>:</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Request sent</th><th>Hotel must answer by</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Sun 18 Oct, 10:00 AM</td><td>Tue 20 Oct, 10:00 AM</td><td>48 hours comes first</td></tr>
+        <tr><td>Fri 30 Oct, 10:00 AM</td><td>Sat 31 Oct, 12:00 PM</td><td>Noon the day before check-in comes first</td></tr>
+        <tr><td>Sat 31 Oct, 3:00 PM</td><td>Sun 1 Nov, 11:59 PM (end of the day)</td><td>Noon the day before has already passed</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>If the hotel has not answered by then, the request expires: it becomes <span class="badge badge-cancelled">Cancelled</span> and you get an email, so you still have time to book somewhere else. You never need to work the deadline out yourself: the confirmation page, the booking detail page and the email show the exact time. All times are Malaysia time.</p>
 
   <hr />
 
@@ -724,6 +744,19 @@
 
   <h3>Booking Details</h3>
   <p>Click a row, or its <strong>View</strong> action, to open the booking's details in a pop-up: the dates with your check-in and check-out times, the number of nights, the total, the guest's notes, the pet (type, breed, age, special needs) and the guest (name, email, phone). While the booking is <span class="badge badge-pending">Pending</span>, the pop-up has <strong>Confirm</strong> and <strong>Decline</strong> buttons that work exactly like the row actions below.</p>
+  <h3>Answer by</h3>
+  <p>Every <span class="badge badge-pending">Pending</span> booking shows an <strong>Answer by</strong> time, in the bookings list, in the pop-up and in the new-request email. It is 48 hours after the guest sent the request, or 12:00 noon on the day before check-in, whichever comes <strong>first</strong>. A request sent after that noon has until the end of the check-in day. So a request sent close to check-in gives you less than 48 hours. Examples for a check-in on <strong>Sun 1 Nov</strong>:</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Request sent</th><th>Answer by</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Sun 18 Oct, 10:00 AM</td><td>Tue 20 Oct, 10:00 AM</td><td>48 hours comes first</td></tr>
+        <tr><td>Fri 30 Oct, 10:00 AM</td><td>Sat 31 Oct, 12:00 PM</td><td>Noon the day before check-in comes first</td></tr>
+        <tr><td>Sat 31 Oct, 3:00 PM</td><td>Sun 1 Nov, 11:59 PM (end of the day)</td><td>Noon the day before has already passed</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>If you have not confirmed or declined by then, the request expires: it becomes Cancelled, the guest is emailed, and it no longer counts as pending. All times are Malaysia time.</p>
 
   <h3>Filter by Status</h3>
   <p>Use the <strong>Status</strong> filter to show only Pending, Confirmed, Cancelled, or Completed bookings.</p>

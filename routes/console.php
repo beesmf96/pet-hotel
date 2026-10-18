@@ -8,6 +8,6 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Just after midnight UTC (8:15 AM in Malaysia): requests whose check-in day
-// has ended.
-Schedule::command('bookings:expire-pending')->dailyAt('00:15');
+// Requests past their answer deadline (Booking::answerBy()). Deadlines fall
+// at any minute, so this runs often: a guest hears within five minutes.
+Schedule::command('bookings:expire-pending')->everyFiveMinutes();

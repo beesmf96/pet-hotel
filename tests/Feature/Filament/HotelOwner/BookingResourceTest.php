@@ -197,6 +197,34 @@ class BookingResourceTest extends TestCase
             ->assertMountedActionModalSee('1 night');
     }
 
+    public function test_pending_bookings_show_when_to_answer_by_in_local_time(): void
+    {
+        // 10:00 AM in Malaysia; 48 hours later is before noon the day before check-in.
+        $this->travelTo('2030-10-01 02:00:00');
+        $booking = Booking::factory()->for($this->hotel, 'hotel')->create([
+            'check_in' => '2030-10-25',
+            'check_out' => '2030-10-26',
+            'status' => 'pending',
+        ]);
+
+        Livewire::test(ListBookings::class)
+            ->assertTableColumnStateSet('answer_by', '03 Oct, 10:00 AM', $booking)
+            ->mountTableAction('view', $booking)
+            ->assertMountedActionModalSee('Answer by')
+            ->assertMountedActionModalSee('Thu, 03 Oct 2030, 10:00 AM')
+            ->assertMountedActionModalSee('01 Oct 2030, 10:00 AM');
+    }
+
+    public function test_answered_bookings_show_no_deadline(): void
+    {
+        $booking = Booking::factory()->for($this->hotel, 'hotel')->confirmed()->create();
+
+        Livewire::test(ListBookings::class)
+            ->assertTableColumnStateSet('answer_by', null, $booking)
+            ->mountTableAction('view', $booking)
+            ->assertMountedActionModalDontSee('Answer by');
+    }
+
     public function test_confirm_from_the_pop_up_confirms_and_closes_it(): void
     {
         Queue::fake();

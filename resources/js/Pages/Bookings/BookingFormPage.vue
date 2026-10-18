@@ -151,8 +151,9 @@ function submit() {
                     >
 
                     <Notice class="mt-4" data-testid="request-note"
-                        >This sends a request. The hotel confirms or declines it, and we email you either way. Your pet
-                        has a place only once the hotel confirms.</Notice
+                        >This sends a request. The hotel confirms or declines it within 48 hours, or by noon the day
+                        before check-in if that is sooner, and we email you either way. Your pet has a place only once
+                        the hotel confirms.</Notice
                     >
 
                     <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-6">
