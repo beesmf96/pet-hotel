@@ -6,6 +6,7 @@ import { useFormatDate } from '@/composables/useFormatDate.js';
 import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
 import StatusPill from '@/Components/Ui/StatusPill.vue';
+import DetailRow from '@/Components/Ui/DetailRow.vue';
 import Notice from '@/Components/Ui/Notice.vue';
 import { petTypeLabel } from '@/petTypes';
 import { nightsBetween, nightsLabel } from '@/stay';
@@ -46,46 +47,28 @@ function cancelBooking() {
             <div class="card-hard p-6 space-y-4">
                 <SectionTitle>Booking details</SectionTitle>
 
-                <dl class="space-y-3 text-sm [&_dt]:font-semibold [&_dt]:text-moss [&_dd]:font-bold [&_dd]:text-right">
-                    <div class="flex justify-between">
-                        <dt class="text-moss whitespace-nowrap">Hotel</dt>
-                        <dd class="font-medium text-ink">
-                            <Link :href="`/hotels/${booking.hotel.slug}`" class="hover:underline">
-                                {{ booking.hotel.name }}
-                            </Link>
-                        </dd>
-                    </div>
-                    <div class="flex justify-between">
-                        <dt class="text-moss whitespace-nowrap">Address</dt>
-                        <dd class="text-ink">{{ booking.hotel.address }}, {{ booking.hotel.city }}</dd>
-                    </div>
-                    <div class="flex justify-between">
-                        <dt class="text-moss whitespace-nowrap">Pet</dt>
-                        <dd class="font-medium text-ink">
-                            {{ booking.pet.name }} ({{ petTypeLabel(booking.pet.species) }})
-                        </dd>
-                    </div>
-                    <div class="flex justify-between">
-                        <dt class="text-moss whitespace-nowrap">Check-in</dt>
-                        <dd class="font-medium text-ink">
-                            {{ formatDate(booking.check_in, { weekday: true })
-                            }}<template v-if="times">, from {{ times.check_in }}</template>
-                        </dd>
-                    </div>
-                    <div class="flex justify-between">
-                        <dt class="text-moss whitespace-nowrap">Check-out</dt>
-                        <dd class="font-medium text-ink">
-                            {{ formatDate(booking.check_out, { weekday: true })
-                            }}<template v-if="times">, by {{ times.check_out }}</template>
-                        </dd>
-                    </div>
-                    <div class="flex justify-between">
-                        <dt class="text-moss whitespace-nowrap">Duration</dt>
-                        <dd class="text-ink">{{ nightsLabel(nightsBetween(booking.check_in, booking.check_out)) }}</dd>
-                    </div>
+                <dl class="space-y-3 text-sm">
+                    <DetailRow label="Hotel">
+                        <Link :href="`/hotels/${booking.hotel.slug}`" class="hover:underline">
+                            {{ booking.hotel.name }}
+                        </Link>
+                    </DetailRow>
+                    <DetailRow label="Address">{{ booking.hotel.address }}, {{ booking.hotel.city }}</DetailRow>
+                    <DetailRow label="Pet">{{ booking.pet.name }} ({{ petTypeLabel(booking.pet.species) }})</DetailRow>
+                    <DetailRow label="Check-in">
+                        {{ formatDate(booking.check_in, { weekday: true })
+                        }}<template v-if="times">, from {{ times.check_in }}</template>
+                    </DetailRow>
+                    <DetailRow label="Check-out">
+                        {{ formatDate(booking.check_out, { weekday: true })
+                        }}<template v-if="times">, by {{ times.check_out }}</template>
+                    </DetailRow>
+                    <DetailRow label="Duration">
+                        {{ nightsLabel(nightsBetween(booking.check_in, booking.check_out)) }}
+                    </DetailRow>
                     <div class="border-t-2 border-ink/10 pt-3 flex justify-between items-baseline">
-                        <dt>Total</dt>
-                        <dd class="font-display text-2xl">{{ formatMoney(booking.total_price) }}</dd>
+                        <dt class="font-semibold text-moss">Total</dt>
+                        <dd class="font-display font-bold text-2xl">{{ formatMoney(booking.total_price) }}</dd>
                     </div>
                 </dl>
             </div>
