@@ -57,3 +57,19 @@ Touches: a hotel switcher (Filament tenancy is the obvious fit, or a stored
 "current hotel"), every owner page and resource that calls `ownerHotel()`, the
 pending-count badge, and the notification links, which should open the right
 hotel.
+
+## Calendar view of availability for owners
+
+*Asked 2026-10-18, after testing the booking pop-up.* The owner panel's Daily
+Overview shows capacity, booked and spots left as a table, one row per day.
+Owners would see full and closed nights faster on a month grid.
+
+Touches: the Daily Overview page (a list/calendar toggle, or a new page), a
+Blade month grid inside the owner panel with styling in
+`resources/css/filament/theme.css` (no calendar package; a package needs an
+intake entry), and `App\Support\Availability` for the numbers. Each day shows
+spots left out of capacity, its state (free, nearly full, full, closed) and
+the pending-request count; clicking a day lists that night's bookings, each
+opening the booking pop-up. Decide whether the first version is read-only or
+also blocks days and changes capacity, which would overlap the Availability
+list.
