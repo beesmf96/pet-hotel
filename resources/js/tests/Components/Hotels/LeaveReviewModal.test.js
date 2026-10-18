@@ -50,6 +50,26 @@ describe('LeaveReviewModal — star picker', () => {
         w.unmount();
     });
 
+    it('labels the stars as a "Rating" group and says which one is chosen', async () => {
+        const w = mountOpen();
+        const group = body().find('[role="group"]');
+        expect(
+            body()
+                .find(`#${group.attributes('aria-labelledby')}`)
+                .text(),
+        ).toBe('Rating');
+        expect(stars().map((s) => s.attributes('aria-label'))).toEqual([
+            '1 star',
+            '2 stars',
+            '3 stars',
+            '4 stars',
+            '5 stars',
+        ]);
+        await stars()[2].trigger('click');
+        expect(stars().map((s) => s.attributes('aria-pressed'))).toEqual(['false', 'false', 'true', 'false', 'false']);
+        w.unmount();
+    });
+
     it('clicking a star sets the rating and lights the stars up to it', async () => {
         const w = mountOpen();
         await stars()[3].trigger('click');

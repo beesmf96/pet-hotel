@@ -5,10 +5,10 @@ import { clickDay } from './calendar.js';
 /** Fill the booking form; does not submit. */
 export async function fillRequest(page, { pet, checkIn, checkOut, notes }) {
     await page.goto(`/hotels/${HOTEL.slug}/book`);
-    await page.locator('select').first().selectOption({ label: pet });
+    await page.getByLabel('Select pet *').selectOption({ label: pet });
     await clickDay(page, checkIn);
     await clickDay(page, checkOut);
-    if (notes) await page.locator('textarea').fill(notes);
+    if (notes) await page.getByLabel('Special requests (optional)').fill(notes);
 }
 
 /** Send a booking request and land on its confirmation page. */

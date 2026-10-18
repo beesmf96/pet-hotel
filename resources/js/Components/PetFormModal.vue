@@ -91,8 +91,9 @@ function close() {
                         <TextInput v-model="form.special_needs" as="textarea" rows="2" />
                     </FormField>
 
-                    <FormField label="Photo" :error="form.errors.photo">
+                    <FormField v-slot="{ id }" label="Photo" :error="form.errors.photo">
                         <input
+                            :id="id"
                             type="file"
                             accept="image/*"
                             class="text-sm text-moss"

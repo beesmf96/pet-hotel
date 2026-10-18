@@ -201,6 +201,7 @@ FR-26a examples, for a stay with check-in on Sun 1 Nov (Malaysia time):
 | ID | Requirement | Pri |
 |----|-------------|-----|
 | NFR-07 | Validation errors shall be shown inline against the field they concern, without losing entered data. | M |
+| NFR-07a | Every customer form field shall have a label tied to it, so clicking the label focuses the field and screen readers announce its name; a field's validation error shall be tied to it as its description. A group control, such as the star rating, shall be labelled as a group. | S |
 | NFR-08 | The interface shall be usable at mobile, tablet, and desktop widths. | M |
 | NFR-09 | Booking status shall be visible at a glance wherever a booking is listed. | M |
 | NFR-10 | End-user instructions shall be maintained in the [user guide](user_guide.html). | S |

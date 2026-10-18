@@ -45,12 +45,14 @@ function submit() {
 
                 <form class="space-y-4" @submit.prevent="submit">
                     <!-- Star picker -->
-                    <FormField label="Rating" :error="form.errors.rating">
-                        <div class="flex items-center gap-1">
+                    <FormField v-slot="{ labelId }" label="Rating" :error="form.errors.rating">
+                        <div class="flex items-center gap-1" role="group" :aria-labelledby="labelId">
                             <button
                                 v-for="star in 5"
                                 :key="star"
                                 type="button"
+                                :aria-label="`${star} star${star > 1 ? 's' : ''}`"
+                                :aria-pressed="star === form.rating"
                                 class="text-3xl leading-none transition-colors focus:outline-none"
                                 :class="star <= (hoverRating || form.rating) ? 'text-mustard' : 'text-ink/15'"
                                 @mouseenter="hoverRating = star"
