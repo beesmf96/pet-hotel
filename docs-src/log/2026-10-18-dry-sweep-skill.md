@@ -2,7 +2,7 @@
 title: DRY sweep skill
 description: Rules for repeated code, and a /dry-sweep skill that audits the codebase against them and extracts approved copies with tests.
 date: 2026-10-18
-pr: ~
+pr: 79
 plan: ~
 ---
 
