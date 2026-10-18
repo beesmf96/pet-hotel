@@ -200,6 +200,7 @@ onMounted(fetchMonth);
         <!-- Month navigation -->
         <div class="flex items-center justify-between mb-4">
             <button
+                type="button"
                 class="w-9 h-9 rounded-full border-2 border-ink flex items-center justify-center text-lg font-bold hover:bg-mustard disabled:opacity-30 disabled:cursor-not-allowed transition"
                 :disabled="isPrevDisabled"
                 @click="prevMonth"
@@ -208,6 +209,7 @@ onMounted(fetchMonth);
             </button>
             <span class="font-display font-bold text-base">{{ monthLabel }}</span>
             <button
+                type="button"
                 class="w-9 h-9 rounded-full border-2 border-ink flex items-center justify-center text-lg font-bold hover:bg-mustard transition"
                 @click="nextMonth"
             >

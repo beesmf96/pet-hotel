@@ -20,12 +20,20 @@ describe('BookingConfirmationPage', () => {
     it('summarises the booking with formatted dates and a two-decimal total', () => {
         const w = mount(BookingConfirmationPage, { props: { booking } });
         expect(w.text()).toContain('Booking Request Sent!');
-        expect(w.text()).toContain('pending review');
+        expect(w.text()).toContain('The hotel will confirm or decline it');
         expect(w.text()).toContain('Pawsome Stay');
         expect(w.text()).toContain('Buddy');
         expect(w.text()).toContain('Thu, Oct 1, 2026');
         expect(w.text()).toContain('Sun, Oct 4, 2026');
         expect(w.text()).toContain('RM 135.00');
+    });
+
+    it('says what happens next, naming the pet', () => {
+        const w = mount(BookingConfirmationPage, { props: { booking } });
+        const steps = w.find('[data-testid="next-steps"]').text();
+        expect(steps).toContain('We email you when they confirm or decline it.');
+        expect(steps).toContain('Until the hotel confirms, Buddy has no place.');
+        expect(steps).toContain('the request expires');
     });
 
     it('links to my bookings and back to the hotel search', () => {

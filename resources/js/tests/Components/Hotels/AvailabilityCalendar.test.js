@@ -269,3 +269,23 @@ describe('AvailabilityCalendar — opening month', () => {
         expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('month=2030-09'));
     });
 });
+
+describe('AvailabilityCalendar — inside a form', () => {
+    it('changing month does not submit the form around it', async () => {
+        stubFetch();
+        const onSubmit = vi.fn((event) => event.preventDefault());
+        const w = mount(
+            {
+                components: { AvailabilityCalendar },
+                template: '<form @submit="onSubmit"><AvailabilityCalendar hotel-slug="paws-inn" /></form>',
+                methods: { onSubmit },
+            },
+            { attachTo: document.body },
+        );
+        await flushPromises();
+        await w.find('button:not([disabled])').trigger('click');
+        await w.findAll('button').at(0).trigger('click');
+        expect(onSubmit).not.toHaveBeenCalled();
+        w.unmount();
+    });
+});

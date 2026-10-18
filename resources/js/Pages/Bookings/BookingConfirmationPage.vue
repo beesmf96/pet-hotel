@@ -3,6 +3,7 @@ import { formatMoney } from '@/money';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { useFormatDate } from '@/composables/useFormatDate.js';
 import UiButton from '@/Components/Ui/UiButton.vue';
+import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 
 defineProps({
     booking: { type: Object, required: true },
@@ -39,8 +40,8 @@ const { formatDate } = useFormatDate();
                     </h1>
                     <p class="text-base text-moss" style="text-wrap: pretty">
                         Your request is
-                        <span class="font-bold text-ink bg-mustard px-1.5 py-0.5 rounded-md">pending review</span>. The
-                        hotel will confirm shortly and we'll let you know.
+                        <span class="font-bold text-ink bg-mustard px-1.5 py-0.5 rounded-md">pending</span>. The hotel
+                        will confirm or decline it, and we'll email you either way.
                     </p>
                 </div>
             </div>
@@ -72,6 +73,18 @@ const { formatDate } = useFormatDate();
                     <span class="font-semibold text-moss">Total</span>
                     <span class="font-display font-extrabold text-2xl">{{ formatMoney(booking.total_price) }}</span>
                 </div>
+            </div>
+
+            <div class="card-hard p-6 text-left text-sm" data-testid="next-steps">
+                <SectionTitle class="mb-3">What happens next</SectionTitle>
+                <ol class="list-decimal pl-5 space-y-2">
+                    <li>The hotel reviews your request.</li>
+                    <li>We email you when they confirm or decline it.</li>
+                    <li>
+                        Until the hotel confirms, {{ booking.pet.name }} has no place. If the hotel does not answer
+                        before check-in, the request expires.
+                    </li>
+                </ol>
             </div>
 
             <div class="flex flex-col sm:flex-row justify-center gap-3">

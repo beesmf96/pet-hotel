@@ -75,6 +75,10 @@ class NotificationTest extends TestCase
         $this->assertStringContainsString($booking->check_out->format('D, d M Y'), $lines);
         $this->assertStringContainsString('Total: RM 150.00', $lines);
         $this->assertStringNotContainsString('$', $lines);
+        $this->assertSame(
+            ['The hotel will confirm or decline your request, and we will email you either way. Until the hotel confirms, '.$booking->pet->name.' has no place.'],
+            $mail->outroLines,
+        );
     }
 
     public function test_booking_requested_mail_gives_the_hotel_times(): void

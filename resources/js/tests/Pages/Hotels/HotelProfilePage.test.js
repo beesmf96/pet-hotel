@@ -236,13 +236,13 @@ describe('HotelProfilePage — reviews link', () => {
 
     it('links to the booking page for this hotel', () => {
         const w = mount(HotelProfilePage, { props: baseProps });
-        const book = w.findAll('a').find((a) => a.text() === 'Book Now');
+        const book = w.findAll('a').find((a) => a.text() === 'Request to Book');
         expect(book).toBeDefined();
     });
 });
 
 describe('HotelProfilePage — searched dates', () => {
-    const bookNow = (w) => w.findAll('a').find((a) => a.text() === 'Book Now');
+    const bookNow = (w) => w.findAll('a').find((a) => a.text() === 'Request to Book');
 
     it('books without dates when none were searched', () => {
         const w = mount(HotelProfilePage, { props: baseProps });

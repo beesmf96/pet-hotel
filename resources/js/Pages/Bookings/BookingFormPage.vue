@@ -150,6 +150,11 @@ function submit() {
                         >, so {{ selectedPet.name }} cannot be booked here. Choose another pet or hotel.</Notice
                     >
 
+                    <Notice class="mt-4" data-testid="request-note"
+                        >This sends a request. The hotel confirms or declines it, and we email you either way. Your pet
+                        has a place only once the hotel confirms.</Notice
+                    >
+
                     <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-6">
                         <UiButton as="a" variant="cream" :href="`/hotels/${hotel.slug}`"> Back </UiButton>
                         <UiButton
