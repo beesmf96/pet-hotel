@@ -113,6 +113,23 @@ class NotificationTest extends TestCase
         $this->assertStringNotContainsString(', by ', $lines);
     }
 
+    public function test_every_customer_mail_writes_the_stay_dates_the_same_way(): void
+    {
+        $booking = Booking::factory()->create(['check_in' => '2030-10-25', 'check_out' => '2030-10-28']);
+        $booking->hotel->policy()->create(['check_in_time' => '14:00', 'check_out_time' => '12:00']);
+        $booking = $booking->fresh();
+
+        foreach ([new BookingRequested($booking), new BookingConfirmed($booking)] as $notification) {
+            $lines = $notification->toMail($booking->user)->introLines;
+            $this->assertContains('Check-in: Fri, 25 Oct 2030, from 2:00 PM', $lines);
+            $this->assertContains('Check-out: Mon, 28 Oct 2030, by 12:00 PM', $lines);
+        }
+
+        $lines = (new BookingCancelled($booking, CancelledBy::Guest, false))->toMail($booking->user)->introLines;
+        $this->assertContains('Check-in was: Fri, 25 Oct 2030', $lines);
+        $this->assertContains('Check-out was: Mon, 28 Oct 2030', $lines);
+    }
+
     public function test_booking_requested_database_payload_describes_the_booking(): void
     {
         $hotel = PetHotel::factory()->create(['name' => 'Happy Paws']);

@@ -111,6 +111,16 @@ describe('BookingFormPage — no pricing warning', () => {
         expect(w.text()).toContain('RM 1,300.00')
     })
 
+    it('says "night" for a one-night stay', async () => {
+        const w = mountPage([{ id: 1, name: 'Buddy', species: 'dog' }])
+        formState.pet_id = 1
+        formState.check_in = '2030-06-01'
+        formState.check_out = '2030-06-02'
+        await w.vm.$nextTick()
+        expect(w.text()).toContain('RM 40.00 × 1 night')
+        expect(w.text()).not.toContain('1 nights')
+    })
+
     it('does not show no-pricing warning when no pet is selected', () => {
         const w = mountPage([{ id: 1, name: 'Buddy', species: 'dog' }])
         expect(w.text()).not.toContain('no pricing listed for')

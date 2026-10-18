@@ -88,3 +88,16 @@ describe('MyBookingsPage — review modal', () => {
         expect(w.find('[data-testid="leave-review-modal"]').exists()).toBe(true)
     })
 })
+
+describe('MyBookingsPage — nights', () => {
+    it('counts the nights of each stay', () => {
+        const w = mount(MyBookingsPage, { props: { bookings: [baseBooking] } })
+        expect(w.text()).toContain('(2 nights)')
+    })
+
+    it('keeps the plural for a one-night stay', () => {
+        const oneNight = { ...baseBooking, check_out: '2025-06-02' }
+        const w = mount(MyBookingsPage, { props: { bookings: [oneNight] } })
+        expect(w.text()).toContain('(1 nights)')
+    })
+})
