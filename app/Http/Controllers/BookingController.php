@@ -62,7 +62,7 @@ class BookingController extends Controller
         // customer should cancel one before asking somewhere else.
         $clash = Booking::clashFor($pet->id, $checkIn, $checkOut, ['pending', ...Availability::HOLDING_STATUSES]);
         if ($clash) {
-            $pending = $clash->status === 'pending';
+            $pending = $clash->isPending();
             // dry-keep: 'j M Y', not Dates::DAY — shorter on purpose, inside a sentence.
             throw ValidationException::withMessages([
                 'pet_id' => $pet->name.' already has '.($pending ? 'a booking request' : 'a booking')
@@ -97,7 +97,7 @@ class BookingController extends Controller
         return Inertia::render('Bookings/BookingConfirmationPage', [
             'booking' => $booking,
             'times' => $booking->hotel->policy?->stayTimes(),
-            'answerBy' => $booking->status === 'pending' ? $booking->answerByText() : null,
+            'answerBy' => $booking->isPending() ? $booking->answerByText() : null,
         ]);
     }
 
@@ -131,7 +131,7 @@ class BookingController extends Controller
 
         return Inertia::render('Bookings/BookingDetailPage', [
             'times' => $booking->hotel->policy?->stayTimes(),
-            'answerBy' => $booking->status === 'pending' ? $booking->answerByText() : null,
+            'answerBy' => $booking->isPending() ? $booking->answerByText() : null,
             'booking' => [
                 'id' => $booking->id,
                 'hotel' => [

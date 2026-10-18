@@ -12,6 +12,8 @@ use App\Support\Dates;
 use Carbon\CarbonInterface;
 use Database\Factories\BookingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -33,6 +35,19 @@ class Booking extends Model
         'check_out' => 'date',
         'total_price' => 'decimal:2',
     ];
+
+    /** A request the hotel has not answered yet. */
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    /** @param  Builder<self>  $query */
+    #[Scope]
+    protected function pending(Builder $query): void
+    {
+        $query->where('status', 'pending');
+    }
 
     /**
      * Confirm a pending request if the hotel still has room for every night.

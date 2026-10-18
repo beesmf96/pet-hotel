@@ -21,7 +21,7 @@ class ExpirePendingBookings extends Command
     {
         // Deadlines depend on when each request was sent, so they are worked
         // out in PHP; pending requests are few.
-        $expired = Booking::where('status', 'pending')
+        $expired = Booking::pending()
             ->get()
             ->filter(fn (Booking $booking) => $booking->answerBy()->lte(now()));
 

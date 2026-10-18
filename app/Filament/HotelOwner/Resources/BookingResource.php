@@ -38,9 +38,7 @@ class BookingResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $pending = Booking::where('hotel_id', static::ownerHotel()->id)
-            ->where('status', 'pending')
-            ->count();
+        $pending = Booking::pending()->where('hotel_id', static::ownerHotel()->id)->count();
 
         return $pending > 0 ? (string) $pending : null;
     }
@@ -88,7 +86,7 @@ class BookingResource extends Resource
                 // Short: a deadline is never more than 48 hours away.
                 TextColumn::make('answer_by')
                     ->label('Answer by')
-                    ->state(fn (Booking $record): ?string => $record->status === 'pending'
+                    ->state(fn (Booking $record): ?string => $record->isPending()
                         ? $record->answerBy()->timezone(config('app.display_timezone'))->format('d M, g:i A')
                         : null)
                     ->placeholder('—'),
@@ -147,7 +145,7 @@ class BookingResource extends Resource
                 ->label('Answer by')
                 ->state(fn (Booking $record): string => $record->answerByText())
                 ->helperText('After this, the request expires and the guest is told.')
-                ->visible(fn (Booking $record): bool => $record->status === 'pending'),
+                ->visible(fn (Booking $record): bool => $record->isPending()),
             Section::make('Stay')
                 ->columns(2)
                 ->schema([
@@ -200,7 +198,7 @@ class BookingResource extends Resource
             ->requiresConfirmation()
             ->modalHeading('Confirm Booking')
             ->modalDescription('This will confirm the booking and notify the guest.')
-            ->visible(fn (Booking $record): bool => $record->status === 'pending')
+            ->visible(fn (Booking $record): bool => $record->isPending())
             ->action(fn (Booking $record) => static::confirm($record));
     }
 
@@ -213,7 +211,7 @@ class BookingResource extends Resource
             ->requiresConfirmation()
             ->modalHeading('Decline Booking')
             ->modalDescription('This will decline the booking and notify the guest.')
-            ->visible(fn (Booking $record): bool => $record->status === 'pending')
+            ->visible(fn (Booking $record): bool => $record->isPending())
             ->action(fn (Booking $record) => $record->cancel(CancelledBy::Hotel));
     }
 

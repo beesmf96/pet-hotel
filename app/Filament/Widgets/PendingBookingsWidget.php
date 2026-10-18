@@ -11,7 +11,7 @@ class PendingBookingsWidget extends StatsOverviewWidget
 {
     protected function getStats(): array
     {
-        $count = Booking::where('status', 'pending')->count();
+        $count = Booking::pending()->count();
 
         return [
             Stat::make('Pending Bookings', $count)
