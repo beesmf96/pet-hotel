@@ -2,7 +2,7 @@
 title: Design system doc
 description: The customer UI's design rules, written down from the current code, with seven open choices settled by the user.
 date: 2026-10-18
-pr: ~
+pr: 81
 plan: ~
 ---
 
