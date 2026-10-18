@@ -245,7 +245,7 @@ onMounted(fetchMonth);
         </div>
 
         <!-- Error state -->
-        <p v-if="error" class="mt-3 text-sm text-red-600 text-center">{{ error }}</p>
+        <p v-if="error" class="mt-3 text-sm font-semibold text-coral-deep text-center">{{ error }}</p>
 
         <!-- Legend -->
         <div class="flex flex-wrap gap-4 mt-4 pt-4 border-t-2 border-ink/10">

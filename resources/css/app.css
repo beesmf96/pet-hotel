@@ -29,7 +29,7 @@
 }
 
 /* A bold text link or text button. Add the colour where it is used
-   (text-teal, or text-coral for a destructive action). */
+   (text-teal, or text-coral-deep for a destructive action). */
 @utility link-bold {
     @apply text-sm font-bold hover:underline;
 }

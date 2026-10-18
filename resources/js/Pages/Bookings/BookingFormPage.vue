@@ -103,7 +103,7 @@ function submit() {
                 </p>
                 <div
                     v-if="form.errors.check_in || form.errors.check_out"
-                    class="-mt-4 text-sm font-semibold text-coral"
+                    class="-mt-4 text-sm font-semibold text-coral-deep"
                 >
                     <p v-if="form.errors.check_in">{{ form.errors.check_in }}</p>
                     <p v-if="form.errors.check_out">{{ form.errors.check_out }}</p>

@@ -29,6 +29,6 @@ provide(
             <slot name="aside" />
         </div>
         <slot :id="id" :label-id="labelId" />
-        <p v-if="error" :id="errorId" class="mt-1.5 text-sm font-semibold text-coral">{{ error }}</p>
+        <p v-if="error" :id="errorId" class="mt-1.5 text-sm font-semibold text-coral-deep">{{ error }}</p>
     </div>
 </template>

@@ -21,6 +21,8 @@
     --color-teal: #0f766e;
     --color-teal-light: #d5ece8;
     --color-coral: #ff8a5b;
+    /* Coral for text: --color-coral is 2.3:1 on white; this is 5.6:1 (5.3:1 on cream). */
+    --color-coral-deep: #b93d14;
     --color-mustard: #ffcf3f;
     --color-moss: #4b5753;
 

@@ -78,13 +78,13 @@ function deletePet(pet) {
                     <p v-if="pet.age != null" class="text-sm text-moss">
                         {{ pet.age }} yr{{ pet.age !== 1 ? 's' : '' }}
                     </p>
-                    <p v-if="pet.special_needs" class="text-xs font-semibold text-coral mt-1 truncate">
+                    <p v-if="pet.special_needs" class="text-xs font-semibold text-coral-deep mt-1 truncate">
                         {{ pet.special_needs }}
                     </p>
 
                     <div class="flex gap-3 mt-3">
                         <button class="link-bold text-teal" @click="openEdit(pet)">Edit</button>
-                        <button class="link-bold text-coral" @click="deletePet(pet)">
+                        <button class="link-bold text-coral-deep" @click="deletePet(pet)">
                             Remove
                         </button>
                     </div>
