@@ -6,10 +6,8 @@ vi.mock('@/Layouts/AppLayout.vue', () => ({
 }))
 vi.mock('@inertiajs/vue3', () => ({
     router: { patch: vi.fn() },
-    usePage: vi.fn(),
 }))
 
-import { usePage } from '@inertiajs/vue3'
 import BookingDetailPage from '@/Pages/Bookings/BookingDetailPage.vue'
 
 const baseBooking = {
@@ -23,22 +21,9 @@ const baseBooking = {
     pet: { id: 1, name: 'Buddy', species: 'dog' },
 }
 
-function mountPage(booking, flash = {}) {
-    usePage.mockReturnValue({ props: { flash } })
+function mountPage(booking) {
     return mount(BookingDetailPage, { props: { booking } })
 }
-
-describe('BookingDetailPage — flash banner', () => {
-    it('shows success banner when flash.success is set', () => {
-        const w = mountPage(baseBooking, { success: 'Booking cancelled.' })
-        expect(w.text()).toContain('Booking cancelled.')
-    })
-
-    it('hides success banner when flash is empty', () => {
-        const w = mountPage(baseBooking, {})
-        expect(w.text()).not.toContain('Booking cancelled.')
-    })
-})
 
 describe('BookingDetailPage — notes section', () => {
     it('shows notes when booking.notes is non-empty', () => {
@@ -88,7 +73,6 @@ describe('BookingDetailPage — status badge', () => {
 
 describe('BookingDetailPage — check-in and check-out times', () => {
     it('adds the hotel times to the dates', () => {
-        usePage.mockReturnValue({ props: { flash: {} } })
         const w = mount(BookingDetailPage, {
             props: { booking: baseBooking, times: { check_in: '2:00 PM', check_out: '12:00 PM' } },
         })

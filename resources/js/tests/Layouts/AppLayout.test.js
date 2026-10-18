@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 const pageProps = { auth: { user: null }, unread_notifications_count: 0 }
 
@@ -18,6 +18,7 @@ beforeEach(() => {
     vi.clearAllMocks()
     pageProps.auth = { user: null }
     pageProps.unread_notifications_count = 0
+    pageProps.flash = {}
 })
 
 const links = (w) => w.findAll('a').map((a) => a.attributes('href'))
@@ -70,5 +71,42 @@ describe('AppLayout — slots', () => {
         })
         expect(w.find('main [data-testid="main"]').exists()).toBe(true)
         expect(links(w)).toContain('/extra')
+    })
+})
+
+describe('AppLayout — success message', () => {
+    afterEach(() => {
+        vi.useRealTimers()
+    })
+
+    const status = (w) => w.find('[role="status"]')
+
+    it('shows the flash success message over the page', () => {
+        pageProps.flash = { success: 'Your review has been submitted.' }
+        const w = mount(AppLayout)
+        expect(status(w).text()).toContain('Your review has been submitted.')
+    })
+
+    it('shows nothing without a success message', () => {
+        expect(status(mount(AppLayout)).exists()).toBe(false)
+    })
+
+    it('hides the message when dismissed', async () => {
+        pageProps.flash = { success: 'Pet added.' }
+        const w = mount(AppLayout)
+        await w.find('button[aria-label="Dismiss"]').trigger('click')
+        expect(status(w).exists()).toBe(false)
+    })
+
+    it('hides the message by itself after five seconds', async () => {
+        vi.useFakeTimers()
+        pageProps.flash = { success: 'Pet added.' }
+        const w = mount(AppLayout)
+        vi.advanceTimersByTime(4999)
+        await w.vm.$nextTick()
+        expect(status(w).exists()).toBe(true)
+        vi.advanceTimersByTime(1)
+        await w.vm.$nextTick()
+        expect(status(w).exists()).toBe(false)
     })
 })
