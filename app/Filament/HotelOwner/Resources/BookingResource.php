@@ -2,6 +2,7 @@
 
 namespace App\Filament\HotelOwner\Resources;
 
+use App\Enums\BookingStatus;
 use App\Enums\CancelledBy;
 use App\Enums\PetType;
 use App\Exceptions\BookingDoesNotFit;
@@ -79,7 +80,7 @@ class BookingResource extends Resource
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => static::statusColor($state))
+                    ->color(fn (string $state): string => BookingStatus::colorOf($state))
                     ->sortable(),
                 TextColumn::make('total_price')
                     ->formatStateUsing(fn ($state): string => Money::format($state))
@@ -99,12 +100,7 @@ class BookingResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('status')
-                    ->options([
-                        'pending' => 'Pending',
-                        'confirmed' => 'Confirmed',
-                        'cancelled' => 'Cancelled',
-                        'completed' => 'Completed',
-                    ]),
+                    ->options(BookingStatus::options()),
             ])
             ->recordAction('view')
             ->recordActions([
@@ -146,7 +142,7 @@ class BookingResource extends Resource
         return $schema->components([
             TextEntry::make('status')
                 ->badge()
-                ->color(fn (string $state): string => static::statusColor($state)),
+                ->color(fn (string $state): string => BookingStatus::colorOf($state)),
             TextEntry::make('answer_by')
                 ->label('Answer by')
                 ->state(fn (Booking $record): string => $record->answerByText())
@@ -219,17 +215,6 @@ class BookingResource extends Resource
             ->modalDescription('This will decline the booking and notify the guest.')
             ->visible(fn (Booking $record): bool => $record->status === 'pending')
             ->action(fn (Booking $record) => $record->cancel(CancelledBy::Hotel));
-    }
-
-    protected static function statusColor(string $state): string
-    {
-        return match ($state) {
-            'pending' => 'warning',
-            'confirmed' => 'success',
-            'cancelled' => 'danger',
-            'completed' => 'info',
-            default => 'gray',
-        };
     }
 
     /**

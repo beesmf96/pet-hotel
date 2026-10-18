@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\BookingStatus;
 use App\Enums\CancelledBy;
 use App\Exceptions\BookingDoesNotFit;
 use App\Filament\Resources\BookingResource\Pages;
@@ -65,24 +66,13 @@ class BookingResource extends Resource
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'pending' => 'warning',
-                        'confirmed' => 'success',
-                        'cancelled' => 'danger',
-                        'completed' => 'info',
-                        default => 'gray',
-                    })
+                    ->color(fn (string $state): string => BookingStatus::colorOf($state))
                     ->sortable(),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('status')
-                    ->options([
-                        'pending' => 'Pending',
-                        'confirmed' => 'Confirmed',
-                        'cancelled' => 'Cancelled',
-                        'completed' => 'Completed',
-                    ]),
+                    ->options(BookingStatus::options()),
             ])
             ->recordActions([
                 Action::make('confirm')
