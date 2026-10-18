@@ -2,7 +2,7 @@
 title: An answer deadline for requests
 description: A hotel must answer a request within 48 hours, or by noon the day before check-in if sooner; the customer and the owner see the deadline, and unanswered requests expire at it.
 date: 2026-10-18
-pr: ~
+pr: 75
 plan: ~
 ---
 
