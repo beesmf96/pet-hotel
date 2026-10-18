@@ -53,7 +53,7 @@ function handleSearch(params) {
                 <a href="/hotels" class="hidden sm:inline hover:text-teal transition">Browse hotels</a>
                 <template v-if="user">
                     <span class="hidden sm:inline text-moss">{{ user.name }}</span>
-                    <a href="/bookings" class="hover:text-teal transition">My Bookings</a>
+                    <a href="/bookings" class="hover:text-teal transition">My bookings</a>
                     <UiButton
                         variant="mustard"
                         size="sm"
@@ -205,19 +205,19 @@ function handleSearch(params) {
                 <span class="font-display font-extrabold text-cream">PetHotel</span>
                 <span class="text-sm">© 2026 PetHotel. All rights reserved.</span>
                 <div class="flex gap-6 text-sm">
-                    <a href="/hotels" class="hover:text-cream transition">Browse Hotels</a>
+                    <a href="/hotels" class="hover:text-cream transition">Browse hotels</a>
                     <template v-if="user">
-                        <a href="/bookings" class="hover:text-cream transition">My Bookings</a>
+                        <a href="/bookings" class="hover:text-cream transition">My bookings</a>
                         <button
                             class="hover:text-cream transition"
                             :disabled="logoutForm.processing"
                             @click="logoutForm.post('/logout')"
                         >
-                            Sign Out
+                            Sign out
                         </button>
                     </template>
                     <template v-else>
-                        <a href="/login" class="hover:text-cream transition">Sign In</a>
+                        <a href="/login" class="hover:text-cream transition">Sign in</a>
                         <a href="/register" class="hover:text-cream transition">Register</a>
                     </template>
                 </div>

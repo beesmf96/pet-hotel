@@ -33,11 +33,11 @@ function submit() {
                 <TextInput v-model="form.email" type="email" autocomplete="email" />
             </FormField>
 
-            <FormField label="New Password" :error="form.errors.password">
+            <FormField label="New password" :error="form.errors.password">
                 <TextInput v-model="form.password" type="password" autocomplete="new-password" />
             </FormField>
 
-            <FormField label="Confirm New Password">
+            <FormField label="Confirm new password">
                 <TextInput v-model="form.password_confirmation" type="password" autocomplete="new-password" />
             </FormField>
 

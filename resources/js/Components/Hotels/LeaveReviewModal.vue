@@ -37,7 +37,7 @@ function submit() {
         >
             <div class="card-hard-lg w-full max-w-md mx-4 p-6">
                 <div class="flex items-center justify-between mb-5">
-                    <SectionTitle>Leave a Review</SectionTitle>
+                    <SectionTitle>Leave a review</SectionTitle>
                     <button type="button" class="text-moss hover:text-ink text-2xl leading-none" @click="emit('close')">
                         ×
                     </button>
@@ -80,7 +80,7 @@ function submit() {
                             Cancel
                         </UiButton>
                         <UiButton class="flex-1" type="submit" :disabled="form.processing || form.rating === 0">
-                            Submit Review
+                            Submit review
                         </UiButton>
                     </div>
                 </form>

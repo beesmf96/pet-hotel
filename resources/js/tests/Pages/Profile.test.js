@@ -56,14 +56,14 @@ describe('Profile page — email field', () => {
 describe('Profile page — password card', () => {
     it('asks for the current password when the user has one', () => {
         const w = mount(ProfilePage, { props: { user, hasPassword: true } })
-        expect(w.text()).toContain('Change Password')
+        expect(w.text()).toContain('Change password')
         expect(w.findAll('input[type="password"]')).toHaveLength(3)
         expect(w.find('input[autocomplete="current-password"]').exists()).toBe(true)
     })
 
     it('omits the current password field for an OAuth-only account', () => {
         const w = mount(ProfilePage, { props: { user, hasPassword: false } })
-        expect(w.text()).toContain('Set a Password')
+        expect(w.text()).toContain('Set a password')
         expect(w.findAll('input[type="password"]')).toHaveLength(2)
         expect(w.find('input[autocomplete="current-password"]').exists()).toBe(false)
     })

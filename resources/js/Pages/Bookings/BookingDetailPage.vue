@@ -44,7 +44,7 @@ function cancelBooking() {
 
             <!-- Details card -->
             <div class="card-hard p-6 space-y-4">
-                <SectionTitle>Booking Details</SectionTitle>
+                <SectionTitle>Booking details</SectionTitle>
 
                 <dl class="space-y-3 text-sm [&_dt]:font-semibold [&_dt]:text-moss [&_dd]:font-bold [&_dd]:text-right">
                     <div class="flex justify-between">
@@ -98,10 +98,10 @@ function cancelBooking() {
 
             <!-- Actions -->
             <div class="flex items-center justify-between">
-                <a href="/bookings" class="link-bold text-teal"> Back to My Bookings </a>
+                <a href="/bookings" class="link-bold text-teal"> Back to my bookings </a>
 
                 <UiButton v-if="booking.status === 'pending'" variant="coral" @click="cancelBooking">
-                    Cancel Booking
+                    Cancel booking
                 </UiButton>
             </div>
         </div>

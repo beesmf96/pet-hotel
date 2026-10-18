@@ -96,12 +96,12 @@ function clearFilters() {
         </div>
 
         <div class="space-y-2 pt-1">
-            <UiButton size="sm" block @click="applyFilters"> Apply Filters </UiButton>
+            <UiButton size="sm" block @click="applyFilters"> Apply filters </UiButton>
             <button
                 class="w-full text-sm font-semibold text-moss py-2 rounded-xl hover:bg-cream transition-colors"
                 @click="clearFilters"
             >
-                Clear Filters
+                Clear filters
             </button>
         </div>
     </div>

@@ -36,7 +36,7 @@ function submit() {
                 <TextInput v-model="form.password" type="password" autocomplete="new-password" />
             </FormField>
 
-            <FormField label="Confirm Password">
+            <FormField label="Confirm password">
                 <TextInput v-model="form.password_confirmation" type="password" autocomplete="new-password" />
             </FormField>
 

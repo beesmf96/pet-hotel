@@ -37,7 +37,7 @@ const { formatDate } = useFormatDate();
                 </span>
                 <div class="flex flex-col gap-2">
                     <h1 class="font-display font-extrabold text-3xl sm:text-4xl tracking-tight">
-                        Booking Request Sent!
+                        Booking request sent!
                     </h1>
                     <p class="text-base text-moss" style="text-wrap: pretty">
                         Your request is
@@ -93,8 +93,8 @@ const { formatDate } = useFormatDate();
             </div>
 
             <div class="flex flex-col sm:flex-row justify-center gap-3">
-                <UiButton as="a" href="/bookings"> View My Bookings </UiButton>
-                <UiButton as="a" variant="white" href="/hotels"> Browse Hotels </UiButton>
+                <UiButton as="a" href="/bookings"> View my bookings </UiButton>
+                <UiButton as="a" variant="white" href="/hotels"> Browse hotels </UiButton>
             </div>
         </div>
     </AppLayout>

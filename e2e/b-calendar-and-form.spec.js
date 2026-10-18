@@ -69,7 +69,7 @@ test('B6 searched dates carry through to the booking form', async ({ page }) => 
     await page.getByText(HOTEL.name).click();
     await expect(page.getByText(/\(2\s+nights\)/)).toBeVisible();
 
-    await page.getByRole('link', { name: 'Request to Book' }).click();
+    await page.getByRole('link', { name: 'Request to book' }).click();
     await page.getByLabel('Select pet *').selectOption({ label: 'Buddy (Dog)' });
     await expect(dayCell(page, checkIn)).toHaveClass(/bg-ink/);
     await expect(dayCell(page, checkOut)).toHaveClass(/bg-ink/);

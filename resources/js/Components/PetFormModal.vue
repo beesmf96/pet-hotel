@@ -60,7 +60,7 @@ function close() {
         <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center bg-ink/60" @click.self="close">
             <div class="card-hard-lg w-full max-w-md mx-4 p-6">
                 <SectionTitle class="mb-4">
-                    {{ pet ? 'Edit Pet' : 'Add Pet' }}
+                    {{ pet ? 'Edit pet' : 'Add pet' }}
                 </SectionTitle>
 
                 <form class="space-y-4" @submit.prevent="submit">
@@ -87,7 +87,7 @@ function close() {
                         </FormField>
                     </div>
 
-                    <FormField label="Special Needs" :error="form.errors.special_needs">
+                    <FormField label="Special needs" :error="form.errors.special_needs">
                         <TextInput v-model="form.special_needs" as="textarea" rows="2" />
                     </FormField>
 
@@ -104,7 +104,7 @@ function close() {
                     <div class="flex justify-end gap-3 pt-2">
                         <UiButton variant="white" type="button" @click="close"> Cancel </UiButton>
                         <UiButton type="submit" :disabled="form.processing">
-                            {{ pet ? 'Save Changes' : 'Add Pet' }}
+                            {{ pet ? 'Save changes' : 'Add pet' }}
                         </UiButton>
                     </div>
                 </form>

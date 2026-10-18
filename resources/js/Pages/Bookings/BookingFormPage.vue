@@ -162,7 +162,7 @@ function submit() {
                             type="submit"
                             :disabled="form.processing || (selectedPet && !pricing)"
                         >
-                            {{ form.processing ? 'Submitting…' : 'Request Booking' }}
+                            {{ form.processing ? 'Submitting…' : 'Request booking' }}
                         </UiButton>
                     </div>
                 </div>

@@ -26,7 +26,7 @@ test('F2 a pet type with no price cannot be booked', async ({ page }) => {
 
     await expect(page.getByText('no pricing listed for')).toBeVisible();
     await expect(page.getByText('Tweety cannot be booked here')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Request Booking' })).toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Request booking' })).toBeDisabled();
 });
 
 test('F3 search and hotel pages print ringgit', async ({ page }) => {

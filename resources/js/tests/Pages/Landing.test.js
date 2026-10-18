@@ -46,13 +46,13 @@ describe('Landing — guest state (unauthenticated)', () => {
 
     it('does not show Sign out button in nav', () => {
         const w = mountLanding(null);
-        // The Sign out / Sign Out buttons only render when user is truthy
+        // The Sign out / Sign out buttons only render when user is truthy
         const buttons = w.findAll('button');
         const signOutButtons = buttons.filter((b) => b.text().toLowerCase().includes('sign out'));
         expect(signOutButtons).toHaveLength(0);
     });
 
-    it('does not show My Bookings link', () => {
+    it('does not show My bookings link', () => {
         const w = mountLanding(null);
         const links = w.findAll('a[href="/bookings"]');
         expect(links).toHaveLength(0);
@@ -72,7 +72,7 @@ describe('Landing — authenticated state', () => {
         expect(w.text()).toContain('Jane');
     });
 
-    it('shows My Bookings link in nav', () => {
+    it('shows My bookings link in nav', () => {
         const w = mountLanding(authUser);
         const links = w.findAll('a[href="/bookings"]');
         expect(links.length).toBeGreaterThan(0);

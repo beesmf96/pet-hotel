@@ -50,12 +50,12 @@ function logout() {
                         <slot name="nav" />
 
                         <a href="/hotels" class="hidden sm:inline whitespace-nowrap hover:text-teal transition"
-                            >Find Hotels</a
+                            >Find hotels</a
                         >
 
                         <template v-if="user">
-                            <a href="/pets" class="hidden sm:inline hover:text-teal transition">My Pets</a>
-                            <a href="/bookings" class="whitespace-nowrap hover:text-teal transition">My Bookings</a>
+                            <a href="/pets" class="hidden sm:inline hover:text-teal transition">My pets</a>
+                            <a href="/bookings" class="whitespace-nowrap hover:text-teal transition">My bookings</a>
                             <a href="/profile" class="hidden sm:inline hover:text-teal transition">Profile</a>
                             <NotificationBell :unread-count="unreadCount" />
                             <button class="hover:text-teal transition" @click="logout">Sign out</button>

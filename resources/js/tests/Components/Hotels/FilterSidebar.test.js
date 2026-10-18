@@ -30,7 +30,7 @@ describe('FilterSidebar — initial state', () => {
     })
 })
 
-describe('FilterSidebar — Apply Filters', () => {
+describe('FilterSidebar — Apply filters', () => {
     it('emits the search context plus price and facilities', async () => {
         const w = mount(FilterSidebar, {
             props: { filters: { city: 'Bedok', pet_type: 'dog', check_in: '2026-10-01', check_out: '2026-10-03' } },
@@ -39,7 +39,7 @@ describe('FilterSidebar — Apply Filters', () => {
         await min.setValue('10')
         await max.setValue('50')
         await w.find('input[value="grooming"]').setValue(true)
-        await button(w, 'Apply Filters').trigger('click')
+        await button(w, 'Apply filters').trigger('click')
         expect(lastApply(w)).toEqual({
             city: 'Bedok', pet_type: 'dog', check_in: '2026-10-01', check_out: '2026-10-03',
             price_min: 10, price_max: 50, facilities: ['grooming'],
@@ -48,17 +48,17 @@ describe('FilterSidebar — Apply Filters', () => {
 
     it('sends undefined for empty price and facilities', async () => {
         const w = mount(FilterSidebar, { props: { filters: {} } })
-        await button(w, 'Apply Filters').trigger('click')
+        await button(w, 'Apply filters').trigger('click')
         expect(lastApply(w)).toMatchObject({ price_min: undefined, price_max: undefined, facilities: undefined })
     })
 })
 
-describe('FilterSidebar — Clear Filters', () => {
+describe('FilterSidebar — Clear filters', () => {
     it('resets the inputs and emits only the search context', async () => {
         const w = mount(FilterSidebar, {
             props: { filters: { city: 'Bedok', price_min: '10', facilities: ['grooming'] } },
         })
-        await button(w, 'Clear Filters').trigger('click')
+        await button(w, 'Clear filters').trigger('click')
         expect(w.findAll('input[type="number"]')[0].element.value).toBe('')
         expect(checked(w)).toEqual([])
         expect(lastApply(w)).toEqual({ city: 'Bedok', pet_type: undefined, check_in: undefined, check_out: undefined })

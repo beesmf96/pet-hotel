@@ -14,6 +14,6 @@ export async function fillRequest(page, { pet, checkIn, checkOut, notes }) {
 /** Send a booking request and land on its confirmation page. */
 export async function requestStay(page, stay) {
     await fillRequest(page, stay);
-    await page.getByRole('button', { name: 'Request Booking' }).click();
+    await page.getByRole('button', { name: 'Request booking' }).click();
     await expect(page).toHaveURL(/\/bookings\/\d+\/confirmation/);
 }

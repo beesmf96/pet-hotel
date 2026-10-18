@@ -19,7 +19,7 @@ const booking = {
 describe('BookingConfirmationPage', () => {
     it('summarises the booking with formatted dates and a two-decimal total', () => {
         const w = mount(BookingConfirmationPage, { props: { booking } });
-        expect(w.text()).toContain('Booking Request Sent!');
+        expect(w.text()).toContain('Booking request sent!');
         expect(w.text()).toContain('The hotel will confirm or decline it');
         expect(w.text()).toContain('Pawsome Stay');
         expect(w.text()).toContain('Buddy');

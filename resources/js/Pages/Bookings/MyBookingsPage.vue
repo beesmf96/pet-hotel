@@ -34,7 +34,7 @@ function closeReview() {
         </template>
 
         <EmptyState v-if="bookings.length === 0" message="You have no bookings yet.">
-            <UiButton as="link" href="/hotels"> Find a Hotel </UiButton>
+            <UiButton as="link" href="/hotels"> Find a hotel </UiButton>
         </EmptyState>
 
         <div v-else class="space-y-5 max-w-3xl">
