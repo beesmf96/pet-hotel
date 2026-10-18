@@ -2,7 +2,7 @@
 title: Design review skill
 description: A /design-review skill that checks the customer pages against the design system doc, in code and in screenshots of every page state, and fixes approved findings with tests.
 date: 2026-10-18
-pr: ~
+pr: 82
 plan: ~
 ---
 
