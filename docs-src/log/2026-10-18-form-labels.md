@@ -2,7 +2,7 @@
 title: Form labels tied to their inputs
 description: Every customer form label now points at its field, so clicking it focuses the field and screen readers announce the name and any error; the e2e helpers find fields by label.
 date: 2026-10-18
-pr: ~
+pr: 77
 plan: ~
 ---
 
