@@ -2,11 +2,15 @@
 title: An answer deadline for requests
 description: A hotel must answer a request within 48 hours, or by noon the day before check-in if sooner; the customer and the owner see the deadline, and unanswered requests expire at it.
 date: 2026-10-18
-pr: 75
+pr: 76
 plan: ~
 ---
 
 # An answer deadline for requests
+
+Reviewed as #75, which was stacked on #74 and merged into
+`feature/request-wording` instead of `dev`; the same commits reached `dev`
+through #76.
 
 ## Asked
 Backlog item from the persona run: a request could stay pending until the
