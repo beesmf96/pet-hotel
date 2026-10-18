@@ -92,8 +92,9 @@ the backlog.
 
 ## What the personas show today
 
-Gaps found by walking the stories on 2026-10-18. Not yet decided or
-scheduled:
+Gaps found by walking the stories on 2026-10-18. Both are in
+`backlog.md` ("Say plainly that a booking is a request" and "An answer
+deadline for requests"):
 
 - **"Book Now" promises more than it does.** The hotel page says Book Now,
   but it sends a request the owner must accept. The form's button says
