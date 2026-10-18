@@ -43,20 +43,6 @@ beforeEach(() => {
     passwordFormState.errors = {}
 })
 
-describe('Profile page — Saved! message', () => {
-    it('shows Saved! when form.recentlySuccessful is true', async () => {
-        formState.recentlySuccessful = true
-        const w = mount(ProfilePage, { props: { user } })
-        expect(w.text()).toContain('Saved!')
-    })
-
-    it('hides Saved! when form.recentlySuccessful is false', () => {
-        formState.recentlySuccessful = false
-        const w = mount(ProfilePage, { props: { user } })
-        expect(w.text()).not.toContain('Saved!')
-    })
-})
-
 describe('Profile page — email field', () => {
     it('renders email input as disabled with user.email value', () => {
         formState.recentlySuccessful = false
@@ -158,11 +144,5 @@ describe('Profile page — password form callbacks', () => {
     it('keeps scroll position on submit', async () => {
         const options = await submitPassword()
         expect(options.preserveScroll).toBe(true)
-    })
-
-    it('shows Saved! after a successful password change', () => {
-        passwordFormState.recentlySuccessful = true
-        const w = mount(ProfilePage, { props: { user, hasPassword: true } })
-        expect(w.findAll('form')[1].text()).toContain('Saved!')
     })
 })

@@ -2,13 +2,10 @@
 import { formatMoney } from '@/money';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { router } from '@inertiajs/vue3';
-import { usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
 import { useFormatDate } from '@/composables/useFormatDate.js';
 import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
 import StatusPill from '@/Components/Ui/StatusPill.vue';
-import Notice from '@/Components/Ui/Notice.vue';
 import { petTypeLabel } from '@/petTypes';
 
 const props = defineProps({
@@ -16,7 +13,6 @@ const props = defineProps({
     times: { type: Object, default: null },
 });
 
-const flash = computed(() => usePage().props.flash ?? {});
 const { formatDate } = useFormatDate();
 
 function nights() {
@@ -42,9 +38,6 @@ function cancelBooking() {
         </template>
 
         <div class="max-w-2xl space-y-6">
-            <!-- Flash message -->
-            <Notice v-if="flash.success">{{ flash.success }}</Notice>
-
             <!-- Details card -->
             <div class="card-hard p-6 space-y-4">
                 <SectionTitle>Booking Details</SectionTitle>

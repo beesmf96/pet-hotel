@@ -68,7 +68,6 @@ function submitPassword() {
 
                 <div class="flex items-center gap-3 pt-2">
                     <UiButton type="submit" :disabled="form.processing"> Save Changes </UiButton>
-                    <span v-if="form.recentlySuccessful" class="text-sm font-bold text-teal">Saved!</span>
                 </div>
             </form>
         </div>
@@ -110,7 +109,6 @@ function submitPassword() {
                     <UiButton type="submit" :disabled="passwordForm.processing">
                         {{ hasPassword ? 'Update Password' : 'Set Password' }}
                     </UiButton>
-                    <span v-if="passwordForm.recentlySuccessful" class="text-sm font-bold text-teal">Saved!</span>
                 </div>
             </form>
         </div>

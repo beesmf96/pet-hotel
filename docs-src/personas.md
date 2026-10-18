@@ -104,7 +104,5 @@ deadline for requests"):
   shortly". In fact a request can stay pending until the morning after its
   check-in day. Aisyah could request on 18 October and only learn on
   2 November, after she has flown, that Milo has no place.
-- **Some actions end in silence.** After Daniel submits his review, the
-  modal closes and nothing says it worked; the success message is sent but
-  only the booking detail page shows one. In `backlog.md` as "Show success
-  messages on every page".
+- ~~**Some actions end in silence.**~~ Fixed 2026-10-18: every page now shows
+  the success message after an action.

@@ -90,16 +90,18 @@ in the pop-up), SRS FR-26a, and the user guide. Decide the exact deadline, and
 what happens to requests made less than that long before check-in. Do the
 copy entry above first, so the page can name the deadline.
 
-## Show success messages on every page
+## Flaky e2e test A6
 
-*Found 2026-10-18, running the persona journeys.* Seven actions send a
-success message (`back()->with('success', ...)`), but only
-`BookingDetailPage.vue` displays it. After a review ("Your review has been
-submitted.") or adding, changing or removing a pet, nothing says it worked:
-the modal closes or the list changes, and the message is lost. The profile
-page is fine; it shows its own "Saved!".
+*Found 2026-10-18, while testing the success messages.* `A6 daily overview
+shows the changes` (`e2e/a-owner-settings.spec.js`) failed once: the 7 Nov
+row did not say "Closed". The same file then passed twice in a row.
 
-Touches: render `flash.success` once in `AppLayout.vue` with a `Notice`, and
-remove the page-level one from `BookingDetailPage.vue` so it does not show
-twice. Decide whether Profile keeps its inline "Saved!" or uses the shared
-message. Vitest: one test for the message showing, one for none.
+Likely cause: `changeDates()` in `e2e/support/owner.js` clicks Submit and
+returns at once. A6 then calls it again and goes to the Daily Overview with
+`page.goto()`, which can start before the save has finished, or cut it off.
+The other A tests assert on the same page right after, so they wait by
+accident.
+
+Touches: `changeDates()` only — wait for the modal to close or for the
+saved notification before returning. Run the file several times
+(`bun run e2e e2e/a-owner-settings.spec.js --repeat-each=5`) to confirm.
