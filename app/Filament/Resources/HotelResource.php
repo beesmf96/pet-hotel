@@ -115,7 +115,7 @@ class HotelResource extends Resource
                     ->boolean()
                     ->label('Active'),
                 TextColumn::make('created_at')
-                    ->date()
+                    ->date('M j, Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

@@ -42,6 +42,7 @@ class BookingController extends Controller
         // A booking at RM 0 would only mislead both sides.
         $pricing = $hotel->pricing->firstWhere('pet_type', $pet->species);
         if (! $pricing) {
+            // dry-keep: 'j M Y', not Dates::DAY — shorter on purpose, inside a sentence.
             throw ValidationException::withMessages([
                 'pet_id' => $hotel->name.' has no price for '.$pet->name.'\'s pet type ('.PetType::from($pet->species)->label().') yet, so '.$pet->name.' cannot be booked here.',
             ]);

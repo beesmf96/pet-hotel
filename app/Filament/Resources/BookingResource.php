@@ -56,10 +56,10 @@ class BookingResource extends Resource
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('check_in')
-                    ->date('d M Y')
+                    ->date()
                     ->sortable(),
                 TextColumn::make('check_out')
-                    ->date('d M Y')
+                    ->date()
                     ->sortable(),
                 TextColumn::make('total_price')
                     ->formatStateUsing(fn ($state): string => Money::format($state))

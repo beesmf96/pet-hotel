@@ -11,6 +11,9 @@ final class Dates
     /** "Sat, 25 Oct 2026" */
     public const DAY = 'D, d M Y';
 
+    /** "25 Oct 2026" — the default for every panel table column (AppServiceProvider). */
+    public const SHORT = 'd M Y';
+
     /** "Sat, 25 Oct 2026, 2:00 PM" */
     public const DAY_TIME = 'D, d M Y, g:i A';
 }

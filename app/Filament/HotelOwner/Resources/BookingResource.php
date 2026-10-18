@@ -73,10 +73,10 @@ class BookingResource extends Resource
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('check_in')
-                    ->date('d M Y')
+                    ->date()
                     ->sortable(),
                 TextColumn::make('check_out')
-                    ->date('d M Y')
+                    ->date()
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
@@ -93,7 +93,7 @@ class BookingResource extends Resource
                         : null)
                     ->placeholder('—'),
                 TextColumn::make('created_at')
-                    ->date('d M Y')
+                    ->date()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
