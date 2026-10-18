@@ -28,6 +28,17 @@ export async function confirmedBookingAction(page, panel, guest, action) {
     await page.locator('.fi-modal-window:visible').getByRole('button', { name: 'Confirm', exact: true }).click();
 }
 
+/** Open a booking's pop-up from its notification in the owner panel's bell. */
+export async function openFromBell(page, guest) {
+    await page.goto('/owner/bookings');
+    await page.getByRole('button', { name: 'Notifications' }).click();
+    const item = page.locator('.fi-no-notification').filter({ hasText: guest }).first();
+    await item.getByRole('link', { name: 'View booking' }).click();
+    const popup = page.locator('.fi-modal-window:visible');
+    await expect(popup).toContainText(`Booking from ${guest}`);
+    return popup;
+}
+
 export async function expectNotice(page, title) {
     await expect(page.getByText(title).first()).toBeVisible();
 }
