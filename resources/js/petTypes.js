@@ -1,4 +1,4 @@
-// The one list of pet types on the frontend. Mirrors App\Enums\PetType: a
+// dry-keep: the one list of pet types on the frontend. Mirrors App\Enums\PetType: a
 // pet's species and a hotel's per-type pricing share these keys.
 export const PET_TYPES = [
     { value: 'dog', label: 'Dog' },

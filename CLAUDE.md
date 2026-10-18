@@ -97,6 +97,10 @@ service; any hosted deployment needs its own long-running worker process. Likewi
   not follow the 302 to Google. Everything else navigates with `<Link>` / `router.visit()`.
 - **Every page wraps itself in `<AppLayout>` or `<AuthLayout>`.** `Landing.vue` is the one
   `layout: null` page.
+- **Repeated code follows `.claude/skills/dry-sweep/rules.md`** — extract on the third copy,
+  or the second for business rules (money, dates shown to users, availability, status changes,
+  security). Code repeated on purpose carries a `dry-keep:` comment with the reason. `/dry-sweep`
+  audits the whole codebase against these rules.
 - **Every price is printed by `App\Support\Money::format()` or `formatMoney()` from
   `resources/js/money.js`** — never type "RM" or a currency code. Sum prices in sen
   (`Money::toSen()` / `toSen()`). The currency is `config('app.currency')`; the JS file is its copy.

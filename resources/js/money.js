@@ -1,4 +1,4 @@
-// The JS twin of App\Support\Money. Every price shown on a page goes through
+// dry-keep: the JS twin of App\Support\Money. Every price shown on a page goes through
 // formatMoney(), so the currency lives here and in config('app.currency').
 // Change both together.
 export const CURRENCY_SYMBOL = 'RM';
