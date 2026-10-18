@@ -87,8 +87,8 @@ function close() {
                             <TextInput v-model="form.breed" type="text" />
                         </FormField>
 
-                        <FormField label="Age in years" optional :error="form.errors.age">
-                            <TextInput v-model="form.age" type="number" min="0" max="100" />
+                        <FormField label="Age" optional :error="form.errors.age">
+                            <TextInput v-model="form.age" type="number" min="0" max="100" placeholder="In years" />
                         </FormField>
                     </div>
 

@@ -81,7 +81,7 @@ function logout() {
                     </div>
                 </div>
 
-                <div data-testid="phone-nav" class="sm:hidden flex gap-5 pb-3 text-sm font-semibold overflow-x-auto">
+                <div data-testid="phone-nav" class="sm:hidden flex justify-between gap-3 pb-3 text-sm font-semibold overflow-x-auto">
                     <Link
                         v-for="link in navLinks"
                         :key="link.href"

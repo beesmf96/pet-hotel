@@ -70,7 +70,7 @@ const styleFor = (type) => typeStyle[type] ?? { tint: 'bg-teal-light', glyph: 'b
 <template>
     <!-- Phone: fixed under the nav, full width; wider screens: hangs off the bell. -->
     <div
-        class="fixed inset-x-4 top-20 sm:absolute sm:inset-x-auto sm:top-auto sm:right-0 sm:mt-2 sm:w-80 card-hard-lg z-50 overflow-hidden"
+        class="fixed inset-x-4 top-28 sm:absolute sm:inset-x-auto sm:top-auto sm:right-0 sm:mt-2 sm:w-80 card-hard-lg z-50 overflow-hidden"
     >
         <div class="flex items-center justify-between px-4 py-3 border-b border-ink/10">
             <span class="font-display font-bold text-xl">Notifications</span>
