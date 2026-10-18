@@ -18,7 +18,7 @@ const props = defineProps({
                 <h1 class="text-3xl sm:text-4xl leading-tight">Reviews: {{ hotel.name }}</h1>
                 <Link
                     :href="`/hotels/${hotel.slug}`"
-                    class="font-sans font-medium tracking-normal text-sm text-teal hover:underline inline-block"
+                    class="font-sans tracking-normal link-bold text-teal inline-block"
                 >
                     ← Back to hotel
                 </Link>

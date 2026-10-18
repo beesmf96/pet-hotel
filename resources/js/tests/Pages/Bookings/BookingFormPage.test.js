@@ -22,7 +22,7 @@ const formState = reactive({
     clearErrors: vi.fn(),
 })
 
-vi.mock('@inertiajs/vue3', () => ({
+vi.mock('@inertiajs/vue3', () => ({ Link: { template: '<a :href="$attrs.href" class="inertia-link"><slot /></a>' },
     useForm: vi.fn(() => formState),
 }))
 

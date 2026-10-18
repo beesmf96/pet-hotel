@@ -11,7 +11,7 @@ vi.mock('@/Components/Hotels/HotelCard.vue', () => ({
 
 // Stub Inertia — usePage and useForm are called at module level in Landing.vue
 const mockLogoutPost = vi.fn();
-vi.mock('@inertiajs/vue3', () => ({
+vi.mock('@inertiajs/vue3', () => ({ Link: { template: '<a :href="$attrs.href" class="inertia-link"><slot /></a>' },
     router: { get: vi.fn() },
     usePage: vi.fn(),
     useForm: vi.fn(() => ({

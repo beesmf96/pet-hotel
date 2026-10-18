@@ -1,6 +1,6 @@
 <script setup>
 import AuthLayout from '@/Layouts/AuthLayout.vue';
-import { useForm } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import FormField from '@/Components/Ui/FormField.vue';
 import TextInput from '@/Components/Ui/TextInput.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
@@ -35,7 +35,7 @@ function submit() {
             </UiButton>
 
             <p class="text-center text-sm text-moss">
-                <a href="/login" class="font-medium text-ink hover:underline">Back to sign in</a>
+                <Link href="/login" class="link-bold text-teal">Back to sign in</Link>
             </p>
         </form>
     </AuthLayout>

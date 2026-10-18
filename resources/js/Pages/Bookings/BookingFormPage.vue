@@ -2,7 +2,7 @@
 import { formatMoney, toSen } from '@/money';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import AvailabilityCalendar from '@/Components/Hotels/AvailabilityCalendar.vue';
-import { useForm } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import FormField from '@/Components/Ui/FormField.vue';
 import SectionTitle from '@/Components/Ui/SectionTitle.vue';
@@ -61,16 +61,16 @@ function submit() {
                 <h1 class="text-3xl sm:text-4xl leading-tight">Book a stay</h1>
                 <p class="font-sans font-medium tracking-normal text-sm text-moss">
                     at
-                    <a :href="`/hotels/${hotel.slug}`" class="font-semibold text-teal hover:underline">{{
+                    <Link :href="`/hotels/${hotel.slug}`" class="font-semibold text-teal hover:underline">{{
                         hotel.name
-                    }}</a>
+                    }}</Link>
                 </p>
             </div>
         </template>
 
         <div class="max-w-2xl">
             <Notice v-if="pets.length === 0" tone="warning"
-                >You need to <a href="/pets" class="underline underline-offset-2 hover:text-teal">add a pet</a> before
+                >You need to <Link href="/pets" class="underline underline-offset-2 hover:text-teal">add a pet</Link> before
                 booking.</Notice
             >
 
@@ -155,7 +155,7 @@ function submit() {
                     >
 
                     <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-6">
-                        <UiButton as="a" variant="cream" :href="`/hotels/${hotel.slug}`"> Back </UiButton>
+                        <UiButton as="link" variant="white" :href="`/hotels/${hotel.slug}`"> Back </UiButton>
                         <UiButton
                             variant="mustard"
                             size="lg"

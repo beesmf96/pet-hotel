@@ -4,7 +4,7 @@ import { Link } from '@inertiajs/vue3';
 
 // One place for the "bold" button: outlined, hard shadow, presses in on hover.
 const props = defineProps({
-    variant: { type: String, default: 'teal' }, // teal | mustard | white | cream | coral
+    variant: { type: String, default: 'teal' }, // teal | mustard | white | coral
     size: { type: String, default: 'md' }, // sm | md | lg
     as: { type: String, default: 'button' }, // button | a | link
     block: { type: Boolean, default: false },
@@ -14,7 +14,6 @@ const variants = {
     teal: 'bg-teal text-cream',
     mustard: 'bg-mustard text-ink',
     white: 'bg-white text-ink',
-    cream: 'bg-cream text-ink',
     coral: 'bg-coral text-ink',
 };
 

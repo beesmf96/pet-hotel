@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { router, usePage, useForm } from '@inertiajs/vue3';
+import { Link, router, usePage, useForm } from '@inertiajs/vue3';
 import SearchBar from '@/Components/Hotels/SearchBar.vue';
 import HotelCard from '@/Components/Hotels/HotelCard.vue';
 import BrandMark from '@/Components/Ui/BrandMark.vue';
@@ -50,10 +50,10 @@ function handleSearch(params) {
         <nav class="flex items-center justify-between gap-4 px-5 py-4 sm:px-10 border-b-3 border-ink">
             <BrandMark />
             <div class="flex items-center gap-3 sm:gap-6 text-sm font-semibold">
-                <a href="/hotels" class="hidden sm:inline hover:text-teal transition">Browse hotels</a>
+                <Link href="/hotels" class="hidden sm:inline hover:text-teal transition">Browse hotels</Link>
                 <template v-if="user">
                     <span class="hidden sm:inline text-moss">{{ user.name }}</span>
-                    <a href="/bookings" class="hover:text-teal transition">My bookings</a>
+                    <Link href="/bookings" class="hover:text-teal transition">My bookings</Link>
                     <UiButton
                         variant="mustard"
                         size="sm"
@@ -63,8 +63,8 @@ function handleSearch(params) {
                     >
                 </template>
                 <template v-else>
-                    <a href="/login" class="hover:text-teal transition">Sign in</a>
-                    <UiButton as="a" variant="mustard" size="sm" href="/register">Register</UiButton>
+                    <Link href="/login" class="hover:text-teal transition">Sign in</Link>
+                    <UiButton as="link" variant="mustard" size="sm" href="/register">Register</UiButton>
                 </template>
             </div>
         </nav>
@@ -111,7 +111,7 @@ function handleSearch(params) {
             <div class="max-w-7xl mx-auto">
                 <div class="flex items-end justify-between gap-4 mb-8">
                     <h2 class="font-display font-extrabold text-3xl sm:text-4xl tracking-tight">Crowd favourites</h2>
-                    <UiButton as="a" variant="white" size="sm" class="whitespace-nowrap" href="/hotels"
+                    <UiButton as="link" variant="white" size="sm" class="whitespace-nowrap" href="/hotels"
                         >All hotels</UiButton
                     >
                 </div>
@@ -193,6 +193,7 @@ function handleSearch(params) {
                 <p class="text-moss text-lg" style="text-wrap: pretty">
                     List your rooms, set a price per pet type, and manage bookings from one place.
                 </p>
+                <!-- /owner is a Filament panel, not an Inertia page: a plain link. -->
                 <UiButton as="a" variant="mustard" size="lg" :href="user ? '/owner' : '/register'"
                     >List your hotel</UiButton
                 >
@@ -205,9 +206,9 @@ function handleSearch(params) {
                 <span class="font-display font-extrabold text-cream">PetHotel</span>
                 <span class="text-sm">© 2026 PetHotel. All rights reserved.</span>
                 <div class="flex gap-6 text-sm">
-                    <a href="/hotels" class="hover:text-cream transition">Browse hotels</a>
+                    <Link href="/hotels" class="hover:text-cream transition">Browse hotels</Link>
                     <template v-if="user">
-                        <a href="/bookings" class="hover:text-cream transition">My bookings</a>
+                        <Link href="/bookings" class="hover:text-cream transition">My bookings</Link>
                         <button
                             class="hover:text-cream transition"
                             :disabled="logoutForm.processing"
@@ -217,8 +218,8 @@ function handleSearch(params) {
                         </button>
                     </template>
                     <template v-else>
-                        <a href="/login" class="hover:text-cream transition">Sign in</a>
-                        <a href="/register" class="hover:text-cream transition">Register</a>
+                        <Link href="/login" class="hover:text-cream transition">Sign in</Link>
+                        <Link href="/register" class="hover:text-cream transition">Register</Link>
                     </template>
                 </div>
             </div>

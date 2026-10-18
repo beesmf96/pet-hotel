@@ -1,7 +1,7 @@
 <script setup>
 import { formatMoney } from '@/money';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { router } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import { useFormatDate } from '@/composables/useFormatDate.js';
 import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
@@ -50,9 +50,9 @@ function cancelBooking() {
                     <div class="flex justify-between">
                         <dt class="text-moss">Hotel</dt>
                         <dd class="font-medium text-ink">
-                            <a :href="`/hotels/${booking.hotel.slug}`" class="hover:underline">
+                            <Link :href="`/hotels/${booking.hotel.slug}`" class="hover:underline">
                                 {{ booking.hotel.name }}
-                            </a>
+                            </Link>
                         </dd>
                     </div>
                     <div class="flex justify-between">
@@ -98,7 +98,7 @@ function cancelBooking() {
 
             <!-- Actions -->
             <div class="flex items-center justify-between">
-                <a href="/bookings" class="link-bold text-teal"> Back to my bookings </a>
+                <Link href="/bookings" class="link-bold text-teal"> Back to my bookings </Link>
 
                 <UiButton v-if="booking.status === 'pending'" variant="coral" @click="cancelBooking">
                     Cancel booking

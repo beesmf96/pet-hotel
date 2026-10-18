@@ -4,7 +4,7 @@ import { describe, it, expect, vi } from 'vitest'
 vi.mock('@/Layouts/AppLayout.vue', () => ({
     default: { template: '<div><slot /><slot name="header" /></div>' },
 }))
-vi.mock('@inertiajs/vue3', () => ({
+vi.mock('@inertiajs/vue3', () => ({ Link: { template: '<a :href="$attrs.href" class="inertia-link"><slot /></a>' },
     router: { patch: vi.fn() },
 }))
 

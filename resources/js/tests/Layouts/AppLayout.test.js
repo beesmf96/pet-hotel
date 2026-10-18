@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 const pageProps = { auth: { user: null }, unread_notifications_count: 0 }
 
-vi.mock('@inertiajs/vue3', () => ({
+vi.mock('@inertiajs/vue3', () => ({ Link: { template: '<a :href="$attrs.href" class="inertia-link"><slot /></a>' },
     usePage: () => ({ props: pageProps }),
     router: { post: vi.fn() },
 }))

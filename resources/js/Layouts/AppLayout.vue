@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
-import { usePage, router } from '@inertiajs/vue3';
+import { Link, usePage, router } from '@inertiajs/vue3';
 import NotificationBell from '@/Components/NotificationBell.vue';
 import UiButton from '@/Components/Ui/UiButton.vue';
 import BrandMark from '@/Components/Ui/BrandMark.vue';
@@ -49,20 +49,20 @@ function logout() {
                     <div class="flex items-center gap-3 sm:gap-5 text-sm font-semibold">
                         <slot name="nav" />
 
-                        <a href="/hotels" class="hidden sm:inline whitespace-nowrap hover:text-teal transition"
-                            >Find hotels</a
+                        <Link href="/hotels" class="hidden sm:inline whitespace-nowrap hover:text-teal transition"
+                            >Find hotels</Link
                         >
 
                         <template v-if="user">
-                            <a href="/pets" class="hidden sm:inline hover:text-teal transition">My pets</a>
-                            <a href="/bookings" class="whitespace-nowrap hover:text-teal transition">My bookings</a>
-                            <a href="/profile" class="hidden sm:inline hover:text-teal transition">Profile</a>
+                            <Link href="/pets" class="hidden sm:inline hover:text-teal transition">My pets</Link>
+                            <Link href="/bookings" class="whitespace-nowrap hover:text-teal transition">My bookings</Link>
+                            <Link href="/profile" class="hidden sm:inline hover:text-teal transition">Profile</Link>
                             <NotificationBell :unread-count="unreadCount" />
                             <button class="hover:text-teal transition" @click="logout">Sign out</button>
                         </template>
                         <template v-else>
-                            <a href="/login" class="whitespace-nowrap hover:text-teal transition">Sign in</a>
-                            <UiButton as="a" variant="mustard" size="sm" href="/register"> Register </UiButton>
+                            <Link href="/login" class="whitespace-nowrap hover:text-teal transition">Sign in</Link>
+                            <UiButton as="link" variant="mustard" size="sm" href="/register"> Register </UiButton>
                         </template>
                     </div>
                 </div>

@@ -7,7 +7,7 @@ vi.mock('@/Layouts/AuthLayout.vue', () => ({
 
 const form = { email: '', processing: false, errors: {}, post: vi.fn() };
 
-vi.mock('@inertiajs/vue3', () => ({ useForm: vi.fn(() => form) }));
+vi.mock('@inertiajs/vue3', () => ({ Link: { template: '<a :href="$attrs.href" class="inertia-link"><slot /></a>' }, useForm: vi.fn(() => form) }));
 
 import ForgotPassword from '@/Pages/Auth/ForgotPassword.vue';
 

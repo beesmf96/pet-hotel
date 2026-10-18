@@ -1,4 +1,5 @@
 <script setup>
+import { Link } from '@inertiajs/vue3';
 import PawIcon from '@/Components/Ui/PawIcon.vue';
 
 defineProps({
@@ -11,10 +12,10 @@ const text = { sm: 'text-xl', md: 'text-2xl', lg: 'text-2xl' };
 </script>
 
 <template>
-    <a href="/" class="inline-flex items-center gap-2.5">
+    <Link href="/" class="inline-flex items-center gap-2.5">
         <span class="bg-teal flex items-center justify-center text-cream" :class="box[size]">
             <PawIcon :size="icon[size]" />
         </span>
         <span class="font-display font-extrabold" :class="text[size]">PetHotel</span>
-    </a>
+    </Link>
 </template>

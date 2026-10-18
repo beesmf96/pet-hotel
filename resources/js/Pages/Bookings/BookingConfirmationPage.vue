@@ -93,8 +93,8 @@ const { formatDate } = useFormatDate();
             </div>
 
             <div class="flex flex-col sm:flex-row justify-center gap-3">
-                <UiButton as="a" href="/bookings"> View my bookings </UiButton>
-                <UiButton as="a" variant="white" href="/hotels"> Browse hotels </UiButton>
+                <UiButton as="link" href="/bookings"> View my bookings </UiButton>
+                <UiButton as="link" variant="white" href="/hotels"> Browse hotels </UiButton>
             </div>
         </div>
     </AppLayout>
