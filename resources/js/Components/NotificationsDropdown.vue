@@ -65,12 +65,15 @@ const styleFor = (type) => typeStyle[type] ?? { tint: 'bg-teal-light', glyph: 'b
 </script>
 
 <template>
-    <div class="absolute right-0 mt-2 w-80 card-hard-lg z-50 overflow-hidden">
+    <!-- Phone: fixed under the nav, full width; wider screens: hangs off the bell. -->
+    <div
+        class="fixed inset-x-4 top-20 sm:absolute sm:inset-x-auto sm:top-auto sm:right-0 sm:mt-2 sm:w-80 card-hard-lg z-50 overflow-hidden"
+    >
         <div class="flex items-center justify-between px-4 py-3 border-b border-ink/10">
             <span class="font-display font-bold text-xl">Notifications</span>
             <button
                 v-if="notifications.some((n) => !n.read_at)"
-                class="text-xs font-bold text-teal hover:underline"
+                class="link-bold text-teal"
                 @click="markAllRead"
             >
                 Mark all read

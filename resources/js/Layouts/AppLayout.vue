@@ -10,6 +10,19 @@ const page = usePage();
 const user = computed(() => page.props.auth?.user);
 const unreadCount = computed(() => page.props.unread_notifications_count ?? 0);
 
+// One list for both nav rows: inline next to the brand from sm up, and on a
+// second row on phones, where the first row only has room for the account buttons.
+const navLinks = computed(() => [
+    { href: '/hotels', label: 'Find hotels' },
+    ...(user.value
+        ? [
+              { href: '/pets', label: 'My pets' },
+              { href: '/bookings', label: 'My bookings' },
+              { href: '/profile', label: 'Profile' },
+          ]
+        : []),
+]);
+
 // A flash from the last action, shown over the page so it is seen even when
 // the visit kept the scroll position. Watching the flash object, not its text,
 // shows the same message again after a repeated action.
@@ -49,14 +62,15 @@ function logout() {
                     <div class="flex items-center gap-3 sm:gap-5 text-sm font-semibold">
                         <slot name="nav" />
 
-                        <Link href="/hotels" class="hidden sm:inline whitespace-nowrap hover:text-teal transition"
-                            >Find hotels</Link
+                        <Link
+                            v-for="link in navLinks"
+                            :key="link.href"
+                            :href="link.href"
+                            class="hidden sm:inline whitespace-nowrap hover:text-teal transition"
+                            >{{ link.label }}</Link
                         >
 
                         <template v-if="user">
-                            <Link href="/pets" class="hidden sm:inline hover:text-teal transition">My pets</Link>
-                            <Link href="/bookings" class="whitespace-nowrap hover:text-teal transition">My bookings</Link>
-                            <Link href="/profile" class="hidden sm:inline hover:text-teal transition">Profile</Link>
                             <NotificationBell :unread-count="unreadCount" />
                             <button class="whitespace-nowrap hover:text-teal transition" @click="logout">Sign out</button>
                         </template>
@@ -65,6 +79,16 @@ function logout() {
                             <UiButton as="link" variant="mustard" size="sm" href="/register"> Register </UiButton>
                         </template>
                     </div>
+                </div>
+
+                <div data-testid="phone-nav" class="sm:hidden flex gap-5 pb-3 text-sm font-semibold overflow-x-auto">
+                    <Link
+                        v-for="link in navLinks"
+                        :key="link.href"
+                        :href="link.href"
+                        class="whitespace-nowrap hover:text-teal transition"
+                        >{{ link.label }}</Link
+                    >
                 </div>
             </div>
         </nav>

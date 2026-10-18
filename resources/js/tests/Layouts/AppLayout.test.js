@@ -30,6 +30,11 @@ describe('AppLayout — guest', () => {
         expect(links(w)).not.toContain('/pets')
         expect(w.find('[data-testid="bell"]').exists()).toBe(false)
     })
+
+    it('gives phones a second row with Find hotels only', () => {
+        const row = mount(AppLayout).find('[data-testid="phone-nav"]')
+        expect(row.findAll('a').map((a) => a.attributes('href'))).toEqual(['/hotels'])
+    })
 })
 
 describe('AppLayout — signed in', () => {
@@ -43,6 +48,11 @@ describe('AppLayout — signed in', () => {
         expect(links(w)).toEqual(expect.arrayContaining(['/pets', '/bookings', '/profile']))
         expect(links(w)).not.toContain('/login')
         expect(w.find('[data-testid="bell"]').attributes('data-count')).toBe('4')
+    })
+
+    it('gives phones a second row with every account link', () => {
+        const row = mount(AppLayout).find('[data-testid="phone-nav"]')
+        expect(row.findAll('a').map((a) => a.attributes('href'))).toEqual(['/hotels', '/pets', '/bookings', '/profile'])
     })
 
     it('treats a missing unread count as zero', () => {
