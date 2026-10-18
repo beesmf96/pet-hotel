@@ -2,7 +2,7 @@
 title: Success messages on every page
 description: The customer layout now shows the server's success message after any action, over the page, so a review or a pet change no longer ends in silence.
 date: 2026-10-18
-pr: ~
+pr: 72
 plan: ~
 ---
 
