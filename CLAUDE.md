@@ -109,7 +109,8 @@ service; any hosted deployment needs its own long-running worker process. Likewi
   elsewhere. New customer UI uses the components under `resources/js/Components/Ui/` (`UiButton`,
   `TextInput`, `FormField`, `StatusPill`, `Notice`, `EmptyState`, ...) and the `card-hard` /
   `field-hard` utilities — no inline class bundles for buttons, fields, cards, pills or notices.
-  Panel styling goes in `resources/css/filament/theme.css`, never in a resource class.
+  Panel styling goes in `resources/css/filament/theme.css`, never in a resource class. Which token,
+  component and pattern to use when: `docs-src/design-system.md`.
 
 ## Testing
 
