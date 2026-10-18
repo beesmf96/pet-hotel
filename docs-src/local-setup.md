@@ -36,6 +36,10 @@ Then open:
 | http://web.pet-hotel.local/owner | Hotel owner panel — `owner@example.com` / `password` |
 | http://mailpit.local | Caught email |
 
+The seed also creates the people in [Personas](personas.md) — `aisyah@example.com`,
+`daniel@example.com`, `meiling@example.com` and the owner `rahman@example.com`, all with
+password `password` — with bookings around the next 1–5 November.
+
 Frontend hot reload: `docker compose --profile dev up -d` starts the Vite container.
 
 ## Everyday commands
