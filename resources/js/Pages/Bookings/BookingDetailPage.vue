@@ -98,7 +98,7 @@ function cancelBooking() {
 
             <!-- Actions -->
             <div class="flex items-center justify-between">
-                <a href="/bookings" class="text-sm font-bold text-teal hover:underline"> Back to My Bookings </a>
+                <a href="/bookings" class="link-bold text-teal"> Back to My Bookings </a>
 
                 <UiButton v-if="booking.status === 'pending'" variant="coral" @click="cancelBooking">
                     Cancel Booking

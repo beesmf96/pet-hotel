@@ -36,7 +36,7 @@ const props = defineProps({
                 <Link
                     v-if="reviews.prev_page_url"
                     :href="reviews.prev_page_url"
-                    class="text-sm font-bold text-teal hover:underline"
+                    class="link-bold text-teal"
                 >
                     ← Previous
                 </Link>
@@ -47,7 +47,7 @@ const props = defineProps({
                 <Link
                     v-if="reviews.next_page_url"
                     :href="reviews.next_page_url"
-                    class="text-sm font-bold text-teal hover:underline"
+                    class="link-bold text-teal"
                 >
                     Next →
                 </Link>

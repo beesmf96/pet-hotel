@@ -70,7 +70,7 @@ function closeReview() {
                     class="px-5 pb-4 border-t-2 border-ink/10 pt-3"
                 >
                     <button
-                        class="text-sm font-bold text-teal hover:underline underline-offset-2"
+                        class="link-bold text-teal underline-offset-2"
                         @click="openReview(booking)"
                     >
                         Leave a review →
