@@ -15,7 +15,7 @@ export function useFormatDate() {
         return weekday ? `${WEEKDAYS[date.getDay()]}, ${day}` : day;
     }
 
-    // "18 Oct, 2:05 PM" in the viewer's time: a moment, not a calendar day.
+    // "18 Oct, 2:05 PM" (Dates::MOMENT) in the viewer's time: a moment, not a calendar day.
     function formatDateTime(iso) {
         const date = new Date(iso);
         const hour = date.getHours() % 12 || 12;

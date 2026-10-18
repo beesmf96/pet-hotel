@@ -9,6 +9,7 @@ use App\Exceptions\BookingDoesNotFit;
 use App\Filament\HotelOwner\Concerns\ResolvesOwnerHotel;
 use App\Filament\HotelOwner\Resources\BookingResource\Pages;
 use App\Models\Booking;
+use App\Support\Dates;
 use App\Support\Money;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -87,7 +88,7 @@ class BookingResource extends Resource
                 TextColumn::make('answer_by')
                     ->label('Answer by')
                     ->state(fn (Booking $record): ?string => $record->isPending()
-                        ? $record->answerBy()->timezone(config('app.display_timezone'))->format('d M, g:i A')
+                        ? $record->answerBy()->timezone(config('app.display_timezone'))->format(Dates::MOMENT)
                         : null)
                     ->placeholder('—'),
                 TextColumn::make('created_at')
@@ -183,7 +184,7 @@ class BookingResource extends Resource
                     TextEntry::make('user.name')->label('Name'),
                     TextEntry::make('user.email')->label('Email'),
                     TextEntry::make('user.phone')->label('Phone')->placeholder('—'),
-                    TextEntry::make('created_at')->label('Requested')->dateTime('d M Y, g:i A', config('app.display_timezone')),
+                    TextEntry::make('created_at')->label('Requested')->dateTime(Dates::SHORT_TIME, config('app.display_timezone')),
                 ]),
         ]);
     }
