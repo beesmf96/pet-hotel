@@ -6,6 +6,10 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * /dashboard was a placeholder no page linked to; it now sends old links and
+ * bookmarks to My bookings, where sign-in lands.
+ */
 class DashboardTest extends TestCase
 {
     use RefreshDatabase;
@@ -15,18 +19,10 @@ class DashboardTest extends TestCase
         $this->get('/dashboard')->assertRedirect('/login');
     }
 
-    public function test_unverified_user_is_redirected_to_email_verify(): void
-    {
-        $this->actingAs(User::factory()->unverified()->create())
-            ->get('/dashboard')
-            ->assertRedirect('/email/verify');
-    }
-
-    public function test_verified_user_can_access_dashboard(): void
+    public function test_signed_in_user_is_sent_to_my_bookings(): void
     {
         $this->actingAs(User::factory()->create())
             ->get('/dashboard')
-            ->assertOk()
-            ->assertInertia(fn ($page) => $page->component('Dashboard'));
+            ->assertRedirect('/bookings');
     }
 }

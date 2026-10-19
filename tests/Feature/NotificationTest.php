@@ -435,7 +435,7 @@ class NotificationTest extends TestCase
         ]);
 
         $this->actingAs($user)
-            ->get('/dashboard')
+            ->get('/profile')
             ->assertInertia(fn ($page) => $page->where('unread_notifications_count', 1));
     }
 }

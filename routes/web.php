@@ -10,7 +10,6 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CspReportController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HotelAvailabilityController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\HotelSearchController;
@@ -62,7 +61,7 @@ Route::middleware('auth')->group(function () {
         ->middleware('throttle:6,1')->name('verification.send');
 
     Route::middleware('verified')->group(function () {
-        Route::get('/dashboard', DashboardController::class)->name('dashboard');
+        Route::redirect('/dashboard', '/bookings');
 
         Route::get('/profile', [UserController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [UserController::class, 'update'])->name('profile.update');

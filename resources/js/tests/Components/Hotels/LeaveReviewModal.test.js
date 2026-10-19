@@ -50,6 +50,15 @@ describe('LeaveReviewModal — star picker', () => {
         w.unmount();
     });
 
+    // A keyboard user tabbing onto a star needs to see which one has focus;
+    // focus-visible keeps the ring off mouse clicks.
+    it('shows a teal focus ring on a star reached by keyboard', () => {
+        const w = mountOpen();
+        expect(stars().every((s) => s.classes().includes('focus-visible:ring-2'))).toBe(true);
+        expect(stars().every((s) => s.classes().includes('focus-visible:ring-teal'))).toBe(true);
+        w.unmount();
+    });
+
     it('labels the stars as a "Rating" group and says which one is chosen', async () => {
         const w = mountOpen();
         const group = body().find('[role="group"]');

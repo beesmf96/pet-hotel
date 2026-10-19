@@ -110,7 +110,7 @@ function nextPhoto() {
                     <!-- Description -->
                     <div class="card-hard p-6">
                         <SectionTitle class="mb-3">About</SectionTitle>
-                        <p class="text-[15px] text-moss leading-relaxed whitespace-pre-line">{{ hotel.description }}</p>
+                        <p class="text-base text-moss leading-relaxed whitespace-pre-line">{{ hotel.description }}</p>
                     </div>
 
                     <!-- Facilities -->
@@ -142,7 +142,7 @@ function nextPhoto() {
                         </div>
                         <div v-if="hotel.policy.cancellation_policy">
                             <p class="text-xs font-bold uppercase tracking-wide text-moss mb-1">Cancellation</p>
-                            <p class="text-[15px] text-moss leading-relaxed">{{ hotel.policy.cancellation_policy }}</p>
+                            <p class="text-base text-moss leading-relaxed">{{ hotel.policy.cancellation_policy }}</p>
                         </div>
                     </div>
                 </div>

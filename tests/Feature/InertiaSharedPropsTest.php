@@ -22,7 +22,7 @@ class InertiaSharedPropsTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)
-            ->get('/dashboard')
+            ->get('/profile')
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->where('auth.user.id', $user->id)
@@ -36,7 +36,7 @@ class InertiaSharedPropsTest extends TestCase
     public function test_flash_status_is_null_when_not_set(): void
     {
         $this->actingAs(User::factory()->create())
-            ->get('/dashboard')
+            ->get('/profile')
             ->assertOk()
             ->assertInertia(fn ($page) => $page->where('flash.status', null));
     }
@@ -45,7 +45,7 @@ class InertiaSharedPropsTest extends TestCase
     {
         $this->actingAs(User::factory()->create())
             ->withSession(['status' => 'Password reset successfully.'])
-            ->get('/dashboard')
+            ->get('/profile')
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->where('flash.status', 'Password reset successfully.')

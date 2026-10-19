@@ -77,7 +77,7 @@ function cancelBooking() {
             <!-- Notes -->
             <div v-if="booking.notes" class="card-hard p-6">
                 <SectionTitle class="mb-2">Notes</SectionTitle>
-                <p class="text-[15px] text-moss leading-relaxed whitespace-pre-line">{{ booking.notes }}</p>
+                <p class="text-base text-moss leading-relaxed whitespace-pre-line">{{ booking.notes }}</p>
             </div>
 
             <!-- Actions -->

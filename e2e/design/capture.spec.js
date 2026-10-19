@@ -51,7 +51,6 @@ test('customer with history (Daniel)', async ({ page }, testInfo) => {
     await visit(page, testInfo, '13-booking-form', `/hotels/${HOTEL}/book`);
     await visit(page, testInfo, '14-pets', '/pets');
     await visit(page, testInfo, '15-profile', '/profile');
-    await visit(page, testInfo, '16-dashboard', '/dashboard');
 
     await page.goto('/pets');
     await page.getByRole('button', { name: /Add pet/ }).click();

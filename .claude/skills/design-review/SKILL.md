@@ -48,7 +48,7 @@ bun run design:capture
 
 This builds the assets, seeds `DesignReviewSeeder` into the throwaway e2e
 database, and saves full-page screenshots to
-`storage/design-review/{phone,desktop}/NN-name.png` (24 page states × 2
+`storage/design-review/{phone,desktop}/NN-name.png` (23 page states × 2
 widths, about a minute). The shot list is `e2e/design/capture.spec.js` — when
 a new page or state ships, add it there (and to the seeder if it needs data).
 
