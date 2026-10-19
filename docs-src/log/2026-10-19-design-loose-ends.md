@@ -2,7 +2,7 @@
 title: Design loose ends
 description: Keyboard focus on the rating stars, long text at text-base, /dashboard redirects to My bookings, and doc rules for the native date picker.
 date: 2026-10-19
-pr: ~
+pr: 86
 plan: ~
 ---
 
