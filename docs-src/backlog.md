@@ -50,17 +50,3 @@ the pending-request count; clicking a day lists that night's bookings, each
 opening the booking pop-up. Decide whether the first version is read-only or
 also blocks days and changes capacity, which would overlap the Availability
 list.
-
-## Visible keyboard focus on the rating stars
-
-*Found 2026-10-18, while tying form labels to their inputs.* The five star
-buttons in `LeaveReviewModal.vue` have `focus:outline-none` with nothing in
-its place, so a keyboard user who tabs onto them cannot see which star is
-focused. Mouse and touch users are not affected. Everywhere else that drops
-the outline puts a teal ring instead (`field-hard` in `app.css`, the price
-inputs in `FilterSidebar.vue`).
-
-Touches: one class list in `LeaveReviewModal.vue` —
-`rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-teal`
-(`focus-visible`, so a mouse click does not flash the ring) — a Vitest check
-for the class, and a browser check by tabbing onto the stars. Small.

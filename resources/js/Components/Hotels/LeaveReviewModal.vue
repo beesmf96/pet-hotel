@@ -53,7 +53,7 @@ function submit() {
                                 type="button"
                                 :aria-label="`${star} star${star > 1 ? 's' : ''}`"
                                 :aria-pressed="star === form.rating"
-                                class="text-3xl leading-none transition-colors focus:outline-none"
+                                class="text-3xl leading-none rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
                                 :class="star <= (hoverRating || form.rating) ? 'text-mustard' : 'text-ink/15'"
                                 @mouseenter="hoverRating = star"
                                 @mouseleave="hoverRating = 0"
