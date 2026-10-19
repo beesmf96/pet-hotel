@@ -181,7 +181,7 @@ function handleSearch(params) {
                         </svg>
                     </span>
                     <h3 class="font-display font-bold text-2xl">{{ step.title }}</h3>
-                    <p class="text-[15px] leading-relaxed text-teal-light">{{ step.body }}</p>
+                    <p class="text-base leading-relaxed text-teal-light">{{ step.body }}</p>
                 </div>
             </div>
         </section>
