@@ -87,6 +87,7 @@ Fonts: `font-display` (Bricolage Grotesque) for headings and the brand;
 | Card / small section title | `<SectionTitle size="sm">` | `text-xl` |
 | Item title in a list or grid | `h3`, `font-display font-bold` | `text-lg` – `text-xl` |
 | Body | sans | `text-sm` in cards and forms, `text-base` on its own |
+| Long text a person wrote (hotel description, policy, booking notes) | sans, `text-moss leading-relaxed` | `text-base`, even in a card |
 | Meta, hint, subtitle | sans, `text-moss` | `text-xs` – `text-sm` |
 | Field label | `FormField` | `text-sm font-bold` |
 
@@ -94,6 +95,7 @@ Rules:
 - One `h1` per page, always the page title.
 - A heading is never smaller than the text under it.
 - Use `SectionTitle` for every section heading rather than its classes.
+- Sizes come from Tailwind's scale; no `text-[NNpx]`.
 
 ## 5. Layout and spacing
 
@@ -179,6 +181,14 @@ Rules:
   "Thu, 01 Oct 2026" with the weekday, "01 Oct 2026" without, "18 Oct, 2:05 PM"
   for a moment (`formatDateTime()`). Times are 12-hour: "2:00 PM", never "14:00".
   PHP's `App\Support\Dates` is the source; `useFormatDate` is its JS twin.
+  The one exception is the browser's own date picker (`<TextInput type="date">`):
+  it shows dates in the visitor's browser language (US English shows
+  "10/25/2026") and a page cannot change that. Once dates are chosen, the page
+  repeats them through `formatDate()`, as the hotel page's "For 25 Oct 2026 to …" line does.
+- **Keyboard focus.** Anything you can tab to shows where focus is. Fields get
+  the teal ring from `field-hard`; a control that drops the outline replaces it
+  with `focus-visible:ring-2 focus-visible:ring-teal` (`focus-visible`, so a
+  mouse click does not flash the ring).
 - **Sentence case** for every heading, button, field label, nav link and
   chip: "My bookings", "Edit pet", "Save changes", "Preferred location",
   "Outdoor walks".
