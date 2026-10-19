@@ -209,7 +209,7 @@ class OwnerNotificationTest extends TestCase
             ->assertJsonCount(1)
             ->assertJsonPath('0.message', 'Your request was received.');
 
-        $this->actingAs($owner)->get('/dashboard')
+        $this->actingAs($owner)->get('/profile')
             ->assertInertia(fn ($page) => $page->where('unread_notifications_count', 1));
     }
 
