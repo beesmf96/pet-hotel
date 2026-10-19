@@ -1,6 +1,9 @@
 ---
 title: Design System
 description: How the customer pages look and why — tokens, shapes, type, layout, components, page patterns, states and wording — drawn from the current code.
+badges: Design
+audience: stakeholder
+order: 40
 ---
 
 # Design System

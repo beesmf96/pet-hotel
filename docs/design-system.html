@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pet Hotel — Design System</title>
+  <link rel="stylesheet" href="assets/doc.css" />
+</head>
+<body class="doc">
+<a class="backlink" href="index.html">&larr; All docs</a>
+<h1><a id="design-system" href="#content-design-system" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>Design System</h1>
+<p>The written rules for the customer UI (the Vue pages). The code holds the
+parts — <code>resources/css/tokens.css</code>, the utilities in <code>resources/css/app.css</code>,
+the components in <code>resources/js/Components/Ui/</code> and the two layouts. This file
+says <strong>which part to use when</strong>, so every page looks like the same app.</p>
+<p>Use it when building a page, and as the reference a design review checks
+pages against. A rule here is the default; break it only with a reason, and
+write the reason down (a comment, or a change to this file).</p>
+<p>The Filament panels share the tokens but are styled only in
+<code>resources/css/filament/theme.css</code>. They are out of scope here.</p>
+<p>Sections 1–8 are the rules. Section 9 lists where pages do not match them
+yet; <code>/design-review</code> keeps it current.</p>
+<h2><a id="1-direction-playful-bold" href="#content-1-direction-playful-bold" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>1. Direction: &quot;playful bold&quot;</h2>
+<p>A cream page, ink outlines, flat bright fills and hard offset shadows — like
+a printed sticker. No gradients, no soft blurred shadows, no thin grey borders.
+Headings are loud (display font); body text is quiet (sans, moss for the
+less important parts).</p>
+<h2><a id="2-colour" href="#content-2-colour" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>2. Colour</h2>
+<p>Every colour comes from <code>tokens.css</code>. Never write a hex value anywhere else.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Token</th>
+<th>Role</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cream</code></td>
+<td>Page</td>
+<td>Page background, nav, header</td>
+</tr>
+<tr>
+<td><code>white</code></td>
+<td>Surface</td>
+<td>Cards, fields, secondary buttons</td>
+</tr>
+<tr>
+<td><code>ink</code></td>
+<td>Line and text</td>
+<td>All outlines, shadows, main text</td>
+</tr>
+<tr>
+<td><code>moss</code></td>
+<td>Quiet text</td>
+<td>Subtitles, meta lines, hints, empty-state text</td>
+</tr>
+<tr>
+<td><code>teal</code></td>
+<td>Primary</td>
+<td>Primary buttons, links, brand mark, &quot;confirmed&quot;</td>
+</tr>
+<tr>
+<td><code>teal-light</code></td>
+<td>Calm fill</td>
+<td>Info notices, &quot;completed&quot;</td>
+</tr>
+<tr>
+<td><code>mustard</code></td>
+<td>Attention</td>
+<td>Warning notices, &quot;pending&quot;, the one call to action that should stand out (Register, Add pet)</td>
+</tr>
+<tr>
+<td><code>coral</code></td>
+<td>Danger</td>
+<td>Destructive buttons, &quot;full&quot; days, the unread badge — as a <strong>fill</strong></td>
+</tr>
+<tr>
+<td><code>coral-deep</code></td>
+<td>Danger text</td>
+<td>Error messages, destructive text links (Remove), warnings in text — coral is too light for text (2.3:1)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Rules:</p>
+<ul>
+<li><strong>One meaning per colour.</strong> Coral is never decoration; teal is never a warning.</li>
+<li>Text on <code>teal</code> is <code>cream</code>; text on every other fill is <code>ink</code>.</li>
+<li>Status colours come only from <code>StatusPill</code>.</li>
+<li><strong>Availability</strong> (the calendar): available <code>teal-light</code>, limited <code>mustard</code>,
+full <code>coral</code>, closed or past <code>cream</code> with faded moss text, selected nights
+<code>teal</code>, chosen check-in/out <code>ink</code>. Never Tailwind's own palette (<code>green-50</code>, <code>gray-100</code>, …).</li>
+<li>Text on a fill keeps 4.5:1 contrast. Teal text on <code>teal-light</code> is only 4.4:1,
+so text on <code>teal-light</code> is <code>ink</code>.</li>
+</ul>
+<h2><a id="3-shape-borders-corners-shadows" href="#content-3-shape-borders-corners-shadows" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>3. Shape: borders, corners, shadows</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Border</th>
+<th>Corner</th>
+<th>Shadow</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Card (<code>card-hard</code>)</td>
+<td>3px ink</td>
+<td><code>rounded-2xl</code></td>
+<td><code>shadow-hard</code></td>
+</tr>
+<tr>
+<td>Big card: auth box, hero, search box (<code>card-hard-lg</code>)</td>
+<td>3px ink</td>
+<td><code>rounded-2xl</code></td>
+<td><code>shadow-hard-lg</code></td>
+</tr>
+<tr>
+<td>Button (<code>UiButton</code>)</td>
+<td>3px ink</td>
+<td><code>rounded-xl</code></td>
+<td><code>shadow-hard</code>, drops to none on hover</td>
+</tr>
+<tr>
+<td>Field (<code>field-hard</code>)</td>
+<td>2px ink</td>
+<td><code>rounded-xl</code></td>
+<td>none; teal ring on focus</td>
+</tr>
+<tr>
+<td>Notice, pill, small inner box</td>
+<td>2px ink</td>
+<td><code>rounded-xl</code> / <code>rounded-full</code></td>
+<td>none</td>
+</tr>
+<tr>
+<td>Round icon button, avatar</td>
+<td>3px ink</td>
+<td><code>rounded-full</code></td>
+<td>none</td>
+</tr>
+<tr>
+<td>Feature card (teal fill: price summary, landing &quot;owners&quot; block)</td>
+<td>3px ink</td>
+<td><code>rounded-2xl</code></td>
+<td><code>shadow-hard-lg</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Rules:</p>
+<ul>
+<li><strong>3px for things you press or that hold a section; 2px for things inside them.</strong></li>
+<li>Corners stay on this scale: <code>lg</code> (small things under about 40px: checkboxes,
+calendar days, icon tiles), <code>xl</code>, <code>2xl</code>, <code>full</code>.</li>
+<li>Only ink-coloured hard shadows: <code>shadow-hard-sm</code>, <code>shadow-hard</code>, <code>shadow-hard-lg</code>.</li>
+<li>Use <code>card-hard</code> / <code>card-hard-lg</code> rather than rebuilding a card from classes.</li>
+<li><strong>Dividers inside a card</strong> may be thin: <code>border-t-2 border-ink/10</code> (between
+review rows, above a total, the &quot;or&quot; on the auth pages). Never on the card's
+outside — outlines are always full ink.</li>
+</ul>
+<h2><a id="4-type" href="#content-4-type" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>4. Type</h2>
+<p>Fonts: <code>font-display</code> (Bricolage Grotesque) for headings and the brand;
+<code>font-sans</code> (Instrument Sans) for everything else.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Level</th>
+<th>How</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Page title</td>
+<td><code>&lt;h1&gt;</code> in AppLayout's <code>#header</code> slot (the slot adds display, extrabold, tight tracking, <code>leading-tight</code>)</td>
+<td><code>text-3xl sm:text-4xl</code></td>
+</tr>
+<tr>
+<td>Section title</td>
+<td><code>&lt;SectionTitle&gt;</code> (h2)</td>
+<td><code>md</code>: <code>text-2xl</code></td>
+</tr>
+<tr>
+<td>Card / small section title</td>
+<td><code>&lt;SectionTitle size=&quot;sm&quot;&gt;</code></td>
+<td><code>text-xl</code></td>
+</tr>
+<tr>
+<td>Item title in a list or grid</td>
+<td><code>h3</code>, <code>font-display font-bold</code></td>
+<td><code>text-lg</code> – <code>text-xl</code></td>
+</tr>
+<tr>
+<td>Body</td>
+<td>sans</td>
+<td><code>text-sm</code> in cards and forms, <code>text-base</code> on its own</td>
+</tr>
+<tr>
+<td>Meta, hint, subtitle</td>
+<td>sans, <code>text-moss</code></td>
+<td><code>text-xs</code> – <code>text-sm</code></td>
+</tr>
+<tr>
+<td>Field label</td>
+<td><code>FormField</code></td>
+<td><code>text-sm font-bold</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Rules:</p>
+<ul>
+<li>One <code>h1</code> per page, always the page title.</li>
+<li>A heading is never smaller than the text under it.</li>
+<li>Use <code>SectionTitle</code> for every section heading rather than its classes.</li>
+</ul>
+<h2><a id="5-layout-and-spacing" href="#content-5-layout-and-spacing" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>5. Layout and spacing</h2>
+<ul>
+<li>
+<p>Every page wraps itself in <code>AppLayout</code> or <code>AuthLayout</code> (<code>Landing.vue</code> is the
+one exception). The layout sets the page width (<code>max-w-7xl</code>) and gutters
+(<code>px-4 sm:px-6 lg:px-8</code>) — pages never set their own gutters.</p>
+</li>
+<li>
+<p><strong>Content width</strong>, chosen by the kind of page:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Page kind</th>
+<th>Width</th>
+<th>Pages today</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Browse (grid, sidebar)</td>
+<td>full (<code>max-w-7xl</code> from the layout)</td>
+<td>Search, Hotel profile, Pets</td>
+</tr>
+<tr>
+<td>List</td>
+<td><code>max-w-3xl</code></td>
+<td>My bookings, Reviews</td>
+</tr>
+<tr>
+<td>Form or detail</td>
+<td><code>max-w-2xl</code></td>
+<td>Book a stay, Booking detail</td>
+</tr>
+<tr>
+<td>Settings</td>
+<td><code>max-w-lg</code></td>
+<td>Profile</td>
+</tr>
+<tr>
+<td>Moment (one message, centred)</td>
+<td><code>max-w-lg mx-auto text-center</code></td>
+<td>Booking confirmation</td>
+</tr>
+</tbody>
+</table></div>
+</li>
+<li>
+<p><strong>Spacing scale</strong> (Tailwind steps):</p>
+<ul>
+<li>between sections or cards: <code>6</code></li>
+<li>between list items: <code>4</code> – <code>5</code></li>
+<li>inside a card: <code>4</code></li>
+<li>a heading and its content: <code>3</code> – <code>4</code></li>
+<li>a label and its control: <code>1.5</code> (FormField)</li>
+</ul>
+</li>
+<li>
+<p>Card padding is <code>p-6</code>. Use <code>p-4</code> only for a small card in a dense grid.</p>
+</li>
+<li>
+<p>Every layout must work at 375px wide with no sideways scroll.</p>
+</li>
+</ul>
+<h2><a id="6-components-which-one-when" href="#content-6-components-which-one-when" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>6. Components: which one when</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Use</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Main action</td>
+<td><code>UiButton</code> (teal)</td>
+<td>One per view. On a teal feature card, use <code>mustard</code> instead (the booking form's price summary).</td>
+</tr>
+<tr>
+<td>Action that must stand out from teal (Register, Add pet)</td>
+<td><code>UiButton variant=&quot;mustard&quot;</code></td>
+<td>Rare; at most one per screen.</td>
+</tr>
+<tr>
+<td>Secondary action (Back, Cancel in a modal, Google sign-in)</td>
+<td><code>UiButton variant=&quot;white&quot;</code></td>
+<td>The only secondary style.</td>
+</tr>
+<tr>
+<td>Destructive action</td>
+<td><code>UiButton variant=&quot;coral&quot;</code></td>
+<td>Cancel booking.</td>
+</tr>
+<tr>
+<td>Small inline action or text link</td>
+<td><code>link-bold</code> + <code>text-teal</code> (or <code>text-coral-deep</code> for destructive)</td>
+<td>Edit / Remove, Back to list, pagination.</td>
+</tr>
+<tr>
+<td>Go to another page</td>
+<td><code>UiButton as=&quot;link&quot;</code> or Inertia <code>&lt;Link&gt;</code></td>
+<td>Not <code>as=&quot;a&quot;</code> or a plain <code>&lt;a&gt;</code> (CLAUDE.md). Plain <code>&lt;a&gt;</code> only where Inertia cannot go: Google sign-in and the Filament panels (<code>/owner</code>, <code>/admin</code>).</td>
+</tr>
+<tr>
+<td>Text, select or textarea field</td>
+<td><code>FormField</code> + <code>TextInput</code></td>
+<td>FormField ties label and error to the control. Mark an optional field with <code>optional</code> — &quot;(optional)&quot; after the label. Never &quot;*&quot; on required fields.</td>
+</tr>
+<tr>
+<td>File field</td>
+<td>a plain <code>&lt;input type=&quot;file&quot; class=&quot;field-hard w-full&quot;&gt;</code> in a <code>FormField</code></td>
+<td><code>field-hard</code> styles the file button.</td>
+</tr>
+<tr>
+<td>Short message on the page</td>
+<td><code>Notice</code></td>
+<td><code>info</code> (teal-light) for status, <code>warning</code> (mustard) for &quot;you can't do this yet&quot;.</td>
+</tr>
+<tr>
+<td>Success after an action</td>
+<td>the flash from the server</td>
+<td>AppLayout shows it. Pages never show their own success message.</td>
+</tr>
+<tr>
+<td>Nothing to show</td>
+<td><code>EmptyState</code></td>
+<td>Title optional, one-line message, optional button in the slot.</td>
+</tr>
+<tr>
+<td>Booking status</td>
+<td><code>StatusPill</code></td>
+<td>Never a hand-made pill.</td>
+</tr>
+<tr>
+<td>Section heading</td>
+<td><code>SectionTitle</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Brand</td>
+<td><code>BrandMark</code>, <code>PawIcon</code></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<h2><a id="7-page-patterns" href="#content-7-page-patterns" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>7. Page patterns</h2>
+<ul>
+<li><strong>Page header.</strong> <code>#header</code> slot: the <code>h1</code>. Optional subtitle under it
+(<code>font-sans font-medium tracking-normal text-sm text-moss</code>); use
+<code>flex flex-col gap-1</code> for title plus subtitle. An optional single action goes
+on the right (<code>flex items-center justify-between gap-4</code>).</li>
+<li><strong>List page.</strong> Header, then <code>EmptyState</code> when empty, or a <code>space-y-5</code>
+list of <code>card-hard</code> rows. Each row: title, meta line in moss, <code>StatusPill</code>
+on the right where there is a status.</li>
+<li><strong>Detail page.</strong> Header (title + subtitle + status), then <code>space-y-6</code> cards,
+one per topic, each starting with a <code>SectionTitle</code>. Actions at the bottom:
+a <code>link-bold</code> back link on the left, the main or destructive button on the right.</li>
+<li><strong>Form page.</strong> Header, then the form: one <code>card-hard p-6</code> per group of
+fields, <code>space-y-6</code> between the cards and <code>space-y-4</code> between the
+<code>FormField</code>s inside one, the submit button last. Errors for a group of fields (like the two stay
+dates) sit under the group with the same style as a FormField error.</li>
+<li><strong>Modal.</strong> <code>fixed inset-0 z-50</code> with a <code>bg-ink/60</code> backdrop that closes it
+on click. A <code>card-hard-lg w-full max-w-md mx-4 p-6</code> panel, a <code>SectionTitle</code>,
+the form (<code>space-y-4</code>), then Cancel (white) and the main button.</li>
+<li><strong>Auth page.</strong> <code>AuthLayout</code> only: brand, subtitle, one <code>card-hard-lg</code> box.
+Links under the form (&quot;Register&quot;, &quot;Back to sign in&quot;) are <code>link-bold text-teal</code>.</li>
+<li><strong>Nav.</strong> One list of links in <code>AppLayout</code>, shown inline from <code>sm</code> up and on a
+second row on phones. Every link must be reachable at 375px — never hide one
+with <code>hidden sm:inline</code> alone. Overlays from the nav (notifications) are
+full width under the nav on phones.</li>
+<li><strong>Label and value rows</strong> (booking details, confirmation): the label never
+wraps (<code>whitespace-nowrap</code>); the value wraps instead.</li>
+</ul>
+<h2><a id="8-states-and-words" href="#content-8-states-and-words" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>8. States and words</h2>
+<ul>
+<li><strong>Busy.</strong> A submit button is <code>:disabled=&quot;form.processing&quot;</code> and its label
+changes to the &quot;-ing&quot; form with &quot;…&quot; (Unicode ellipsis, not three dots):
+&quot;Save changes&quot; → &quot;Saving…&quot;.</li>
+<li><strong>Errors.</strong> Errors are coral-deep (<code>text-sm font-semibold text-coral-deep</code>), under
+their field, written as a sentence that says what to do.</li>
+<li><strong>Money, dates, nights.</strong> <code>formatMoney()</code>, <code>formatDate()</code> and <code>nightsLabel()</code>.
+Never type &quot;RM&quot;, a date format or &quot;night(s)&quot; by hand.</li>
+<li><strong>One date format, day first</strong>, the same in pages, emails and panels:
+&quot;Thu, 01 Oct 2026&quot; with the weekday, &quot;01 Oct 2026&quot; without, &quot;18 Oct, 2:05 PM&quot;
+for a moment (<code>formatDateTime()</code>). Times are 12-hour: &quot;2:00 PM&quot;, never &quot;14:00&quot;.
+PHP's <code>App\Support\Dates</code> is the source; <code>useFormatDate</code> is its JS twin.</li>
+<li><strong>Sentence case</strong> for every heading, button, field label, nav link and
+chip: &quot;My bookings&quot;, &quot;Edit pet&quot;, &quot;Save changes&quot;, &quot;Preferred location&quot;,
+&quot;Outdoor walks&quot;.</li>
+</ul>
+<h2><a id="9-not-matching-yet" href="#content-9-not-matching-yet" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>9. Not matching yet</h2>
+<p>Nothing known. The 2026-10-18 design review fixed the earlier list.</p>
+
+</body>
+</html>
