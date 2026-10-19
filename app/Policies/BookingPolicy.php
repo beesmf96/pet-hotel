@@ -14,6 +14,6 @@ class BookingPolicy
 
     public function cancel(User $user, Booking $booking): bool
     {
-        return $user->id === $booking->user_id && $booking->status === 'pending';
+        return $user->id === $booking->user_id && $booking->isPending();
     }
 }

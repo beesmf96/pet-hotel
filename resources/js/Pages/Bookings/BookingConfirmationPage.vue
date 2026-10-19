@@ -4,6 +4,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { useFormatDate } from '@/composables/useFormatDate.js';
 import UiButton from '@/Components/Ui/UiButton.vue';
 import StatusPill from '@/Components/Ui/StatusPill.vue';
+import DetailRow from '@/Components/Ui/DetailRow.vue';
 import SectionTitle from '@/Components/Ui/SectionTitle.vue';
 
 defineProps({
@@ -48,34 +49,22 @@ const { formatDate } = useFormatDate();
                 </div>
             </div>
 
-            <div class="card-hard-lg p-6 text-left space-y-3 text-sm">
-                <div class="flex justify-between gap-4">
-                    <span class="font-semibold text-moss whitespace-nowrap">Hotel</span>
-                    <span class="font-bold text-right">{{ booking.hotel.name }}</span>
-                </div>
-                <div class="flex justify-between gap-4">
-                    <span class="font-semibold text-moss whitespace-nowrap">Pet</span>
-                    <span class="font-bold">{{ booking.pet.name }}</span>
-                </div>
-                <div class="flex justify-between gap-4">
-                    <span class="font-semibold text-moss whitespace-nowrap">Check-in</span>
-                    <span class="font-bold"
-                        >{{ formatDate(booking.check_in, { weekday: true })
-                        }}<template v-if="times">, from {{ times.check_in }}</template></span
-                    >
-                </div>
-                <div class="flex justify-between gap-4">
-                    <span class="font-semibold text-moss whitespace-nowrap">Check-out</span>
-                    <span class="font-bold"
-                        >{{ formatDate(booking.check_out, { weekday: true })
-                        }}<template v-if="times">, by {{ times.check_out }}</template></span
-                    >
-                </div>
+            <dl class="card-hard-lg p-6 text-left space-y-3 text-sm">
+                <DetailRow label="Hotel">{{ booking.hotel.name }}</DetailRow>
+                <DetailRow label="Pet">{{ booking.pet.name }}</DetailRow>
+                <DetailRow label="Check-in">
+                    {{ formatDate(booking.check_in, { weekday: true })
+                    }}<template v-if="times">, from {{ times.check_in }}</template>
+                </DetailRow>
+                <DetailRow label="Check-out">
+                    {{ formatDate(booking.check_out, { weekday: true })
+                    }}<template v-if="times">, by {{ times.check_out }}</template>
+                </DetailRow>
                 <div class="border-t-2 border-ink/10 pt-3 flex justify-between items-baseline">
-                    <span class="font-semibold text-moss whitespace-nowrap">Total</span>
-                    <span class="font-display font-extrabold text-2xl">{{ formatMoney(booking.total_price) }}</span>
+                    <dt class="font-semibold text-moss">Total</dt>
+                    <dd class="font-display font-extrabold text-2xl">{{ formatMoney(booking.total_price) }}</dd>
                 </div>
-            </div>
+            </dl>
 
             <div class="card-hard p-6 text-left text-sm" data-testid="next-steps">
                 <SectionTitle class="mb-3">What happens next</SectionTitle>

@@ -10,7 +10,7 @@ const user = computed(() => usePage().props.auth.user);
 <template>
     <AppLayout>
         <template #header>
-            <h1 class="text-3xl sm:text-4xl">Dashboard</h1>
+            <h1>Dashboard</h1>
         </template>
 
         <div class="card-hard p-6">

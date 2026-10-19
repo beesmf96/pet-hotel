@@ -44,7 +44,7 @@ function deletePet(pet) {
     <AppLayout>
         <template #header>
             <div class="flex items-center justify-between gap-4">
-                <h1 class="text-3xl sm:text-4xl">My pets</h1>
+                <h1>My pets</h1>
                 <UiButton variant="mustard" @click="openAdd"> + Add pet </UiButton>
             </div>
         </template>

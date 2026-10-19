@@ -75,6 +75,13 @@ describe('AppLayout — slots', () => {
         expect(w.find('header').text()).toBe('Title')
     })
 
+    it('sizes the page title from the header, so pages write a plain h1', () => {
+        const w = mount(AppLayout, { slots: { header: '<h1>Title</h1>' } })
+        expect(w.find('header > div').classes()).toEqual(
+            expect.arrayContaining(['[&_h1]:text-3xl', 'sm:[&_h1]:text-4xl', 'leading-tight']),
+        )
+    })
+
     it('renders the default and nav slots', () => {
         const w = mount(AppLayout, {
             slots: { default: '<p data-testid="main" />', nav: '<a href="/extra">Extra</a>' },

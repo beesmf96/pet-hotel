@@ -9,6 +9,7 @@ use App\Exceptions\BookingDoesNotFit;
 use App\Filament\HotelOwner\Concerns\ResolvesOwnerHotel;
 use App\Filament\HotelOwner\Resources\BookingResource\Pages;
 use App\Models\Booking;
+use App\Support\Dates;
 use App\Support\Money;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -38,9 +39,7 @@ class BookingResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $pending = Booking::where('hotel_id', static::ownerHotel()->id)
-            ->where('status', 'pending')
-            ->count();
+        $pending = Booking::pending()->where('hotel_id', static::ownerHotel()->id)->count();
 
         return $pending > 0 ? (string) $pending : null;
     }
@@ -88,8 +87,8 @@ class BookingResource extends Resource
                 // Short: a deadline is never more than 48 hours away.
                 TextColumn::make('answer_by')
                     ->label('Answer by')
-                    ->state(fn (Booking $record): ?string => $record->status === 'pending'
-                        ? $record->answerBy()->timezone(config('app.display_timezone'))->format('d M, g:i A')
+                    ->state(fn (Booking $record): ?string => $record->isPending()
+                        ? $record->answerBy()->timezone(config('app.display_timezone'))->format(Dates::MOMENT)
                         : null)
                     ->placeholder('—'),
                 TextColumn::make('created_at')
@@ -147,7 +146,7 @@ class BookingResource extends Resource
                 ->label('Answer by')
                 ->state(fn (Booking $record): string => $record->answerByText())
                 ->helperText('After this, the request expires and the guest is told.')
-                ->visible(fn (Booking $record): bool => $record->status === 'pending'),
+                ->visible(fn (Booking $record): bool => $record->isPending()),
             Section::make('Stay')
                 ->columns(2)
                 ->schema([
@@ -185,7 +184,7 @@ class BookingResource extends Resource
                     TextEntry::make('user.name')->label('Name'),
                     TextEntry::make('user.email')->label('Email'),
                     TextEntry::make('user.phone')->label('Phone')->placeholder('—'),
-                    TextEntry::make('created_at')->label('Requested')->dateTime('d M Y, g:i A', config('app.display_timezone')),
+                    TextEntry::make('created_at')->label('Requested')->dateTime(Dates::SHORT_TIME, config('app.display_timezone')),
                 ]),
         ]);
     }
@@ -200,7 +199,7 @@ class BookingResource extends Resource
             ->requiresConfirmation()
             ->modalHeading('Confirm Booking')
             ->modalDescription('This will confirm the booking and notify the guest.')
-            ->visible(fn (Booking $record): bool => $record->status === 'pending')
+            ->visible(fn (Booking $record): bool => $record->isPending())
             ->action(fn (Booking $record) => static::confirm($record));
     }
 
@@ -213,7 +212,7 @@ class BookingResource extends Resource
             ->requiresConfirmation()
             ->modalHeading('Decline Booking')
             ->modalDescription('This will decline the booking and notify the guest.')
-            ->visible(fn (Booking $record): bool => $record->status === 'pending')
+            ->visible(fn (Booking $record): bool => $record->isPending())
             ->action(fn (Booking $record) => $record->cancel(CancelledBy::Hotel));
     }
 

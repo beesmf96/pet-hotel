@@ -51,7 +51,7 @@ function submitPassword() {
 <template>
     <AppLayout>
         <template #header>
-            <h1 class="text-3xl sm:text-4xl">My profile</h1>
+            <h1>My profile</h1>
         </template>
 
         <div class="card-hard p-6 max-w-lg">

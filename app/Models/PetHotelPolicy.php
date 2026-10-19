@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Dates;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,8 +24,8 @@ class PetHotelPolicy extends Model
     public function stayTimes(): array
     {
         return [
-            'check_in' => Carbon::parse($this->check_in_time)->format('g:i A'),
-            'check_out' => Carbon::parse($this->check_out_time)->format('g:i A'),
+            'check_in' => Carbon::parse($this->check_in_time)->format(Dates::TIME),
+            'check_out' => Carbon::parse($this->check_out_time)->format(Dates::TIME),
         ];
     }
 }

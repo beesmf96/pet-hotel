@@ -82,7 +82,7 @@ class BookingResource extends Resource
                     ->requiresConfirmation()
                     ->modalHeading('Confirm Booking')
                     ->modalDescription('This will confirm the booking and notify the customer.')
-                    ->visible(fn (Booking $record): bool => $record->status === 'pending')
+                    ->visible(fn (Booking $record): bool => $record->isPending())
                     ->action(fn (Booking $record) => static::confirm($record)),
 
                 Action::make('cancel')

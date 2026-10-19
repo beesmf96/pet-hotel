@@ -94,7 +94,7 @@ function logout() {
         </nav>
 
         <header v-if="$slots.header" class="bg-cream">
-            <div class="max-w-7xl mx-auto pt-8 pb-2 px-4 sm:px-6 lg:px-8 font-display font-extrabold tracking-tight leading-tight">
+            <div class="max-w-7xl mx-auto pt-8 pb-2 px-4 sm:px-6 lg:px-8 font-display font-extrabold tracking-tight leading-tight [&_h1]:text-3xl sm:[&_h1]:text-4xl">
                 <slot name="header" />
             </div>
         </header>
