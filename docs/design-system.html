@@ -198,6 +198,11 @@ outside — outlines are always full ink.</li>
 <td><code>text-sm</code> in cards and forms, <code>text-base</code> on its own</td>
 </tr>
 <tr>
+<td>Long text a person wrote (hotel description, policy, booking notes)</td>
+<td>sans, <code>text-moss leading-relaxed</code></td>
+<td><code>text-base</code>, even in a card</td>
+</tr>
+<tr>
 <td>Meta, hint, subtitle</td>
 <td>sans, <code>text-moss</code></td>
 <td><code>text-xs</code> – <code>text-sm</code></td>
@@ -214,6 +219,7 @@ outside — outlines are always full ink.</li>
 <li>One <code>h1</code> per page, always the page title.</li>
 <li>A heading is never smaller than the text under it.</li>
 <li>Use <code>SectionTitle</code> for every section heading rather than its classes.</li>
+<li>Sizes come from Tailwind's scale; no <code>text-[NNpx]</code>.</li>
 </ul>
 <h2><a id="5-layout-and-spacing" href="#content-5-layout-and-spacing" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">#</a>5. Layout and spacing</h2>
 <ul>
@@ -400,7 +406,15 @@ Never type &quot;RM&quot;, a date format or &quot;night(s)&quot; by hand.</li>
 <li><strong>One date format, day first</strong>, the same in pages, emails and panels:
 &quot;Thu, 01 Oct 2026&quot; with the weekday, &quot;01 Oct 2026&quot; without, &quot;18 Oct, 2:05 PM&quot;
 for a moment (<code>formatDateTime()</code>). Times are 12-hour: &quot;2:00 PM&quot;, never &quot;14:00&quot;.
-PHP's <code>App\Support\Dates</code> is the source; <code>useFormatDate</code> is its JS twin.</li>
+PHP's <code>App\Support\Dates</code> is the source; <code>useFormatDate</code> is its JS twin.
+The one exception is the browser's own date picker (<code>&lt;TextInput type=&quot;date&quot;&gt;</code>):
+it shows dates in the visitor's browser language (US English shows
+&quot;10/25/2026&quot;) and a page cannot change that. Once dates are chosen, the page
+repeats them through <code>formatDate()</code>, as the hotel page's &quot;For 25 Oct 2026 to …&quot; line does.</li>
+<li><strong>Keyboard focus.</strong> Anything you can tab to shows where focus is. Fields get
+the teal ring from <code>field-hard</code>; a control that drops the outline replaces it
+with <code>focus-visible:ring-2 focus-visible:ring-teal</code> (<code>focus-visible</code>, so a
+mouse click does not flash the ring).</li>
 <li><strong>Sentence case</strong> for every heading, button, field label, nav link and
 chip: &quot;My bookings&quot;, &quot;Edit pet&quot;, &quot;Save changes&quot;, &quot;Preferred location&quot;,
 &quot;Outdoor walks&quot;.</li>
