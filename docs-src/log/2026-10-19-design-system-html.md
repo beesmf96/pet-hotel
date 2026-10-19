@@ -2,7 +2,7 @@
 title: Design system on the docs site
 description: The design system now renders to docs/design-system.html and has a card on the docs index.
 date: 2026-10-19
-pr: ~
+pr: 85
 plan: ~
 ---
 
