@@ -15,6 +15,8 @@ class OwnersRelationManager extends RelationManager
 {
     protected static string $relationship = 'owners';
 
+    protected static ?string $inverseRelationship = 'ownedHotels';
+
     protected static ?string $title = 'Owners';
 
     public function form(Schema $schema): Schema
