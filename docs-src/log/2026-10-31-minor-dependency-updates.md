@@ -2,7 +2,7 @@
 title: Minor dependency updates
 description: Patch and minor updates for PHP and JS packages, which clear 10 of the 12 dev-tool advisories.
 date: 2026-10-31
-pr: ~
+pr: 89
 plan: ~
 ---
 
