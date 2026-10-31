@@ -28,8 +28,8 @@ the three notes left by the 2026-10-18 design review.
   change that; chosen dates are repeated through `formatDate()`.
 
 ## Not done
-- `docs/design-system.html` is not rebuilt here: it comes in with PR #85.
-  Run `php docs-src/build.php` after both are merged.
+- `docs/design-system.html` was not rebuilt here, since it came in with PR #85.
+  It was rebuilt after both merged, in its own PR.
 - `resources/views/welcome.blade.php` (Laravel's starter page, with an inline
   copy of Tailwind) is still in the repo. No route uses it; left for a sweep.
 
