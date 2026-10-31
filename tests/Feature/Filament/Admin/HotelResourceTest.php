@@ -339,6 +339,21 @@ class HotelResourceTest extends TestCase
             ->assertCanSeeTableRecords([$owner]);
     }
 
+    public function test_owners_relation_manager_attaches_a_new_owner(): void
+    {
+        $hotel = PetHotel::factory()->create();
+        $owner = User::factory()->create();
+
+        Livewire::test(OwnersRelationManager::class, [
+            'ownerRecord' => $hotel,
+            'pageClass' => EditHotel::class,
+        ])
+            ->callTableAction('attach', data: ['recordId' => $owner->id])
+            ->assertHasNoErrors();
+
+        $this->assertTrue($hotel->owners()->whereKey($owner->id)->exists());
+    }
+
     public function test_owners_relation_manager_dates_the_assignment_day_first(): void
     {
         $this->travelTo('2030-10-25 09:00');
