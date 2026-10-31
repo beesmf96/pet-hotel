@@ -9,7 +9,7 @@ traps. For everything else — naming, structure, style — match the surroundin
 
 ## Stack
 
-Laravel 13 · Vue 3 + Vite + Tailwind v4 (no `tailwind.config.js`) · Inertia 3 · Filament 4
+Laravel 13 · Vue 3 + Vite + Tailwind v4 (no `tailwind.config.js`) · Inertia 3 · Filament 5
 (two panels) · Sanctum cookie SPA + Google OAuth via Socialite · PostgreSQL in Docker, SQLite
 locally and in every test · Bun (never npm/pnpm) · Pint + ESLint/Prettier · PHPUnit 12 · Vitest 4.
 

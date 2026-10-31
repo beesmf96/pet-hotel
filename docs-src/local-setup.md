@@ -7,7 +7,7 @@ order: 45
 
 # Local Setup
 
-A booking platform for pet boarding. Laravel 13 · Vue 3 · Inertia · Filament 4 · PostgreSQL · Redis.
+A booking platform for pet boarding. Laravel 13 · Vue 3 · Inertia · Filament 5 · PostgreSQL · Redis.
 
 ## Run it
 

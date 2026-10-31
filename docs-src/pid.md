@@ -178,7 +178,7 @@ each request — which keeps the MVP simple and avoids payment integration.
 | Backend | Laravel 13 (PHP 8.4 in Docker; `^8.3` required) |
 | Frontend | Vue 3, Vite 8, Tailwind CSS v4 |
 | SPA bridge | Inertia.js 3 |
-| Admin UI | Filament v4 (two panels) |
+| Admin UI | Filament v5 (two panels) |
 | Auth | Sanctum cookie SPA + Google OAuth via Socialite |
 | Database | PostgreSQL 16 (Docker); SQLite locally and in tests |
 | Queue, cache, sessions | Redis |
