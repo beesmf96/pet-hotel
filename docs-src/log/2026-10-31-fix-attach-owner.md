@@ -2,7 +2,7 @@
 title: Fix the Attach button on hotel owners
 description: The Attach pop-up on a hotel's Owners tab crashed because Filament guessed the wrong relation on User.
 date: 2026-10-31
-pr: ~
+pr: 90
 plan: ~
 ---
 
@@ -31,4 +31,4 @@ while loading page".
 ## Verified
 - The new test failed before the fix with that exception and passes after.
 - The Attach pop-up opened against local Postgres through a Livewire test.
-- `composer test` and `vendor/bin/pint`, as reported in the PR.
+- `composer test`: 552 passed. `vendor/bin/pint --test`: pass.
